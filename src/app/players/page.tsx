@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase";
 import { PlayerCard } from "@/components/players/PlayerCard";
 import { RankingsTable } from "@/components/players/RankingsTable";
 import type { Metadata } from "next";
+import type { Player } from "@/types/player";
 
 export const revalidate = 300;
 
@@ -31,7 +32,7 @@ export default async function PlayersPage({
   if (level) query = query.eq("level", level);
   if (q) query = query.or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`);
 
-  const { data: players } = await query.limit(100);
+  const { data: players } = await query.limit(100) as { data: Player[] | null };
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">

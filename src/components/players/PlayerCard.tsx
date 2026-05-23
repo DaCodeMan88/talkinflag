@@ -1,22 +1,12 @@
-interface Player {
-  id: string;
-  first_name: string;
-  last_name: string;
-  position?: string | null;
-  level?: string | null;
-  school_or_team?: string | null;
-  country?: string | null;
-  country_code?: string | null;
-  ranking_national?: number | null;
-  highlight_url?: string | null;
-  instagram?: string | null;
-  bio?: string | null;
-  is_verified?: boolean;
+import { Player } from "@/types/player";
+
+function isSafeUrl(url: string | null | undefined): boolean {
+  return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
 }
 
 export function PlayerCard({ player }: { player: Player }) {
   const name = `${player.first_name} ${player.last_name}`;
-  const levelLabel = player.level?.replace("_", " ");
+  const levelLabel = player.level?.replaceAll("_", " ");
 
   return (
     <article className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors p-5">
@@ -57,9 +47,9 @@ export function PlayerCard({ player }: { player: Player }) {
       )}
 
       <div className="flex items-center gap-3 mt-3">
-        {player.highlight_url && (
+        {isSafeUrl(player.highlight_url) && (
           <a
-            href={player.highlight_url}
+            href={player.highlight_url!}
             target="_blank"
             rel="noopener noreferrer"
             className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:underline"

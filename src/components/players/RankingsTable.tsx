@@ -1,16 +1,6 @@
-interface RankedPlayer {
-  id: string;
-  first_name: string;
-  last_name: string;
-  position?: string | null;
-  level?: string | null;
-  school_or_team?: string | null;
-  country?: string | null;
-  ranking_national?: number | null;
-  is_verified?: boolean;
-}
+import { Player } from "@/types/player";
 
-export function RankingsTable({ players }: { players: RankedPlayer[] }) {
+export function RankingsTable({ players }: { players: Player[] }) {
   if (players.length === 0) return null;
 
   return (
@@ -43,7 +33,7 @@ export function RankingsTable({ players }: { players: RankedPlayer[] }) {
                 <span className="text-brand-yellow font-display text-xs uppercase">{player.position || "—"}</span>
               </td>
               <td className="py-3 pr-4 text-brand-white/50 text-xs hidden md:table-cell">
-                {player.level?.replace("_", " ") || "—"}
+                {player.level?.replaceAll("_", " ") || "—"}
               </td>
               <td className="py-3 text-brand-white/50 text-xs hidden lg:table-cell">
                 {player.school_or_team || player.country || "—"}

@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import type { Player } from "@/types/player";
 
 export const revalidate = 300;
 
@@ -9,9 +10,13 @@ export const revalidate = 300;
 // Helpers
 // ---------------------------------------------------------------------------
 
+function isSafeUrl(url: string | null | undefined): boolean {
+  return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
+}
+
 function formatLevel(level: string | null): string {
   if (!level) return "";
-  return level.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return level.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function formatHeight(inches: number | null): string {
@@ -88,7 +93,7 @@ export default async function PlayerDetailPage({
     .from("players")
     .select("*")
     .eq("id", id)
-    .single();
+    .single() as { data: Player | null };
 
   if (!player) notFound();
 
@@ -184,9 +189,9 @@ export default async function PlayerDetailPage({
                 <h2 className="font-display uppercase text-brand-yellow text-sm tracking-widest">
                   Links
                 </h2>
-                {player.highlight_url && (
+                {isSafeUrl(player.highlight_url) && (
                   <a
-                    href={player.highlight_url}
+                    href={player.highlight_url!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-brand-yellow hover:underline text-sm"

@@ -38,7 +38,7 @@ const players = [
 ];
 
 async function seed() {
-  const { error } = await supabase.from("players").insert(players);
+  const { error } = await supabase.from("players").upsert(players, { onConflict: "first_name,last_name" });
 
   if (error) {
     console.error("Seed error:", error.message);
