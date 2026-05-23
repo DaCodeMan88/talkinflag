@@ -113,8 +113,8 @@ export function HeroContent() {
         <span className="text-sm text-brand-white/80">
           Episode 39 — Phil Cutler: Adria Bowl 2026 Champion
         </span>
-        <Link href="/episodes">
-          <Button variant="ghost" size="sm">
+        <Link href="/episodes" aria-label="Watch Episode 39 — Phil Cutler: Adria Bowl 2026 Champion">
+          <Button variant="ghost" size="sm" aria-hidden="true" tabIndex={-1}>
             Watch →
           </Button>
         </Link>
