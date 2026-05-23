@@ -21,6 +21,8 @@ export function Footer() {
             <div className="flex gap-4 mt-6">
               {socials.map((s) => (
                 <Link key={s.label} href={s.href}
+                  target={s.href.startsWith("http") ? "_blank" : undefined}
+                  rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
                   className="text-brand-white/60 hover:text-brand-yellow text-sm font-display uppercase tracking-widest transition-colors">
                   {s.label}
                 </Link>

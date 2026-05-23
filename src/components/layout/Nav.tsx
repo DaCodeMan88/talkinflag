@@ -24,6 +24,13 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
@@ -60,6 +67,8 @@ export function Nav() {
             className="md:hidden text-brand-white"
             onClick={() => setOpen(!open)}
             aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
           >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -68,7 +77,7 @@ export function Nav() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-brand-black border-t border-brand-yellow/20 px-4 py-6 space-y-4">
+        <div id="mobile-menu" className="md:hidden bg-brand-black border-t border-brand-yellow/20 px-4 py-6 space-y-4">
           {navLinks.map((link) => (
             <Link
               key={link.href}
