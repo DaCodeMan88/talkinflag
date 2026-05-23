@@ -3,6 +3,7 @@ import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
+import { PlayerProvider } from "@/components/player/MiniPlayer";
 
 const anton = Anton({
   weight: "400",
@@ -41,8 +42,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
       <body className="bg-brand-black text-brand-white font-body antialiased">
         <Nav />
-        <main>{children}</main>
-        <Footer />
+        <PlayerProvider>
+          <main>{children}</main>
+          <Footer />
+        </PlayerProvider>
       </body>
     </html>
   );
