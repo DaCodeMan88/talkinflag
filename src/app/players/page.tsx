@@ -68,7 +68,7 @@ export default async function PlayersPage({
             aria-label="Filter by level"
           >
             <option value="">All Levels</option>
-            {LEVELS.map((l) => <option key={l} value={l}>{l.replace("_", " ")}</option>)}
+            {LEVELS.map((l) => <option key={l} value={l}>{l.replaceAll("_", " ")}</option>)}
           </select>
           <button
             type="submit"
