@@ -1,6 +1,6 @@
 "use client";
-import { useRef, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 import { Sphere, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -30,15 +30,9 @@ const GUEST_PINS: GlobePin[] = [
 ];
 
 function GlobeMesh({ pins }: { pins: GlobePin[] }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((_, delta) => {
-    if (meshRef.current) meshRef.current.rotation.y += delta * 0.1;
-  });
-
   return (
     <group>
-      <Sphere ref={meshRef} args={[2, 64, 64]}>
+      <Sphere args={[2, 64, 64]}>
         <meshStandardMaterial
           color="#001a0d"
           emissive="#004d1a"
