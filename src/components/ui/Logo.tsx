@@ -12,7 +12,7 @@ export function Logo({ variant = "horizontal", size = "md" }: {
     circle: "/logo-circle.png",
   };
   return (
-    <Link href="/">
+    <Link href="/" aria-label="Go to homepage">
       <Image
         src={src[variant]}
         alt="Talkin Flag"
