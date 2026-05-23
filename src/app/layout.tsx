@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Anton, Inter } from "next/font/google";
 import "./globals.css";
+import { Nav } from "@/components/layout/Nav";
+import { Footer } from "@/components/layout/Footer";
 
 const anton = Anton({
   weight: "400",
@@ -29,7 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
       <body className="bg-brand-black text-brand-white font-body antialiased">
-        {children}
+        <Nav />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );
