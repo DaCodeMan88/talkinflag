@@ -11,6 +11,7 @@ const socials = [
 const mediaLinks = [
   { label: "Episodes", href: "/episodes" },
   { label: "Blog", href: "/blog" },
+  { label: "RSS Feed", href: "/blog/feed.xml", external: true },
   { label: "About", href: "/about" },
   { label: "Network", href: "https://youtube.com/@thetalkinballsnetwork", external: true },
 ];
