@@ -1,3 +1,7 @@
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+
 interface Host {
   name: string;
   title: string;
@@ -8,12 +12,24 @@ interface Host {
 }
 
 export function HostCard({ host }: { host: Host }) {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <div className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors overflow-hidden">
       <div className="relative aspect-square bg-[#111111]">
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-brand-yellow/10 to-brand-black">
-          <span className="text-8xl" role="img" aria-label="Italian flag">🇮🇹</span>
-        </div>
+        {!imgError ? (
+          <Image
+            src={host.image}
+            alt={host.name}
+            fill
+            className="object-cover object-top"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-brand-yellow/10 to-brand-black">
+            <span className="text-8xl" role="img" aria-label="Italian flag">{host.flag}</span>
+          </div>
+        )}
       </div>
       <div className="p-6">
         <p className="text-brand-yellow font-display text-xs uppercase tracking-widest">{host.title}</p>

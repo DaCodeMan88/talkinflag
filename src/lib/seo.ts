@@ -14,7 +14,8 @@ export function buildMetadata({
   path?: string;
 }): Metadata {
   const fullTitle = title.includes("Talkin Flag") ? title : `${title} | Talkin Flag`;
-  const ogImage = image || `${siteUrl}/og-image.png`;
+  const pageTitle = encodeURIComponent(fullTitle.replace(" | Talkin Flag", "").replace("Talkin Flag — ", "").replace("Talkin Flag | ", ""));
+  const ogImage = image || `${siteUrl}/og?title=${pageTitle}`;
 
   return {
     title: fullTitle,
