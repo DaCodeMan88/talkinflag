@@ -50,6 +50,11 @@ export default async function BlogPage({
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
 
+  // Posts published within the last 30 days get a "New" badge
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const isNew = (publishedAt: string) => new Date(publishedAt) >= thirtyDaysAgo;
+
   // Filter by category if one is selected (preserving date order)
   const filteredPosts = activeCategory
     ? sortedPosts.filter((p) => p.category === activeCategory)
@@ -197,9 +202,16 @@ export default async function BlogPage({
                         className="group"
                       >
                         <article className="h-full bg-[#111111] border border-brand-white/10 hover:border-brand-yellow/40 transition-all duration-300 p-6 flex flex-col">
-                          <span className="text-brand-yellow font-display text-xs uppercase tracking-widest mb-3">
-                            {post.category}
-                          </span>
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
+                              {post.category}
+                            </span>
+                            {isNew(post.publishedAt) && (
+                              <span className="bg-brand-yellow text-brand-black font-display text-[9px] uppercase tracking-widest px-1.5 py-0.5 leading-none">
+                                New
+                              </span>
+                            )}
+                          </div>
                           <h2 className="font-display text-xl md:text-2xl uppercase text-brand-white leading-snug group-hover:text-brand-yellow transition-colors line-clamp-3 flex-1">
                             {post.title}
                           </h2>

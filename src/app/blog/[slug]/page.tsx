@@ -44,9 +44,13 @@ export async function generateMetadata({
   // Check static posts first
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
+    // Truncate excerpt to ~155 chars for meta description (Google shows ~155-160)
+    const metaDescription = staticPost.excerpt.length > 155
+      ? staticPost.excerpt.slice(0, 152) + "…"
+      : staticPost.excerpt;
     const base = withCustomOg(buildMetadata({
       title: staticPost.title,
-      description: staticPost.excerpt,
+      description: metaDescription,
       path: `/blog/${staticPost.slug}`,
       type: "article",
     }));
