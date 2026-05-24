@@ -1,39 +1,21 @@
-"use client";
 import { Episode } from "@/types/episode";
 import Image from "next/image";
 import Link from "next/link";
 import { Play } from "lucide-react";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
 
 export function EpisodeCard({ episode }: { episode: Episode }) {
-  const [hovered, setHovered] = useState(false);
-
   return (
-    <Link href={`/episodes/${episode.id}`} aria-label={`Watch ${episode.title}`}>
-      <div
-        className={cn(
-          "group relative bg-[#222222] border border-brand-white/10 overflow-hidden transition-all duration-300",
-          hovered && "border-brand-yellow/60 -translate-y-1 shadow-2xl shadow-brand-yellow/10"
-        )}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
+    <Link href={`/episodes/${episode.id}`} aria-label={`Watch ${episode.title}`} className="group">
+      <div className="relative bg-[#222222] border border-brand-white/10 overflow-hidden transition-all duration-300 group-hover:border-brand-yellow/60 group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-brand-yellow/10">
         <div className="relative aspect-video overflow-hidden">
           <Image
             src={episode.thumbnail || "/placeholder-thumb.jpg"}
             alt={episode.title}
             fill
-            className={cn(
-              "object-cover transition-transform duration-500",
-              hovered && "scale-105"
-            )}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
-          <div className={cn(
-            "absolute inset-0 bg-brand-black/60 flex items-center justify-center transition-opacity duration-300",
-            hovered ? "opacity-100" : "opacity-0"
-          )}>
+          <div className="absolute inset-0 bg-brand-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="w-16 h-16 rounded-full bg-brand-yellow flex items-center justify-center">
               <Play size={24} className="text-brand-black ml-1" fill="currentColor" />
             </div>

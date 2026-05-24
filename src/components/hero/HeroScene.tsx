@@ -21,25 +21,26 @@ export function HeroScene() {
   );
 }
 
-function HeroSceneFallback() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    left: `${(i * 17 + 5) % 100}%`,
-    top: `${(i * 23 + 10) % 100}%`,
-    delay: `${(i * 0.3) % 6}s`,
-    duration: `${4 + (i % 4)}s`,
-  }));
+// Reduced to 8 particles (was 20) and 6 grid lines (was 10) to lower layout/paint cost
+const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  left: `${(i * 23 + 5) % 100}%`,
+  top: `${(i * 31 + 10) % 100}%`,
+  delay: `${(i * 0.5) % 4}s`,
+  duration: `${5 + (i % 3)}s`,
+}));
 
+function HeroSceneFallback() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-[#050a00]">
-      {Array.from({ length: 10 }, (_, i) => (
+      {Array.from({ length: 6 }, (_, i) => (
         <div
           key={i}
           className="absolute left-0 right-0 border-t border-brand-yellow/10"
-          style={{ top: `${10 + i * 9}%` }}
+          style={{ top: `${12 + i * 14}%` }}
         />
       ))}
-      {particles.map((p) => (
+      {PARTICLES.map((p) => (
         <div
           key={p.id}
           className="absolute w-2 h-3 bg-brand-yellow/30 animate-float"
