@@ -65,11 +65,24 @@ export default async function BlogPage({
     })),
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://talkinflag.com/blog" },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
@@ -149,13 +162,6 @@ export default async function BlogPage({
             ) : (
               <div className="py-20 text-center border border-brand-white/5 bg-[#0a0a0a]">
                 <p className="text-brand-white/40 text-sm">No posts in this category yet.</p>
-                <button
-                  onClick={undefined}
-                  className="mt-4 text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline"
-                  aria-label="View all posts"
-                >
-                  {/* Cleared by client filter */}
-                </button>
                 <Link
                   href="/blog"
                   className="block mt-4 text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline"
