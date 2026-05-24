@@ -75,11 +75,16 @@ export async function generateMetadata({
     ? `${name} — ${desc}. Ranked flag football player profile on Talkin Flag.`
     : `${name} — flag football player profile on Talkin Flag.`;
 
-  return buildMetadata({
+  // Let opengraph-image.tsx handle the OG image (player-specific card with name + position + ranking)
+  const base = buildMetadata({
     title: `${name} | Talkin Flag Players`,
     description,
     path: `/players/${id}`,
   });
+  // Remove the generic /og?title= image so opengraph-image.tsx takes precedence
+  if (base.openGraph) delete (base.openGraph as Record<string, unknown>).images;
+  if (base.twitter) delete (base.twitter as Record<string, unknown>).images;
+  return base;
 }
 
 // ---------------------------------------------------------------------------
