@@ -151,6 +151,33 @@ export default async function BlogPostPage({
               All Episodes →
             </Link>
           </div>
+
+          {/* Newsletter inline CTA */}
+          <div className="mt-10 bg-[#111111] border border-brand-yellow/15 p-8 text-center">
+            <p className="font-display text-xs uppercase tracking-[0.3em] text-brand-yellow mb-2">Stay in the Game</p>
+            <p className="font-display text-2xl uppercase text-brand-white mb-2">
+              Weekly Flag Football News
+            </p>
+            <p className="text-brand-white/50 text-sm mb-6">
+              Episodes, player rankings, events, and stories from around the world.
+            </p>
+            <Link
+              href="/#newsletter"
+              className="inline-flex items-center gap-2 border border-brand-yellow/40 text-brand-yellow font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-brand-yellow hover:text-brand-black transition-colors"
+            >
+              Subscribe Free →
+            </Link>
+          </div>
+
+          {/* Back to blog */}
+          <div className="mt-8 text-center">
+            <Link
+              href="/blog"
+              className="text-brand-white/40 font-display text-xs uppercase tracking-widest hover:text-brand-yellow transition-colors"
+            >
+              ← Back to Blog
+            </Link>
+          </div>
         </div>
       </div>
     );
