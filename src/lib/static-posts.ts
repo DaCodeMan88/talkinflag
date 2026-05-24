@@ -185,6 +185,61 @@ This isn't weakness. It's the same logic that drives every other aspect of athle
 The players who will represent their countries at LA 2028 won't just be the most physically gifted athletes in the field. They'll be the ones who spent years training every dimension of their performance — including the one that happens between the ears.`,
     isStatic: true,
   },
+  {
+    slug: "flag-football-positions-guide",
+    title: "Flag Football Positions Explained: Roles, Skills, and What Coaches Look For",
+    author: "Talkin Flag",
+    publishedAt: "2025-12-05T00:00:00Z",
+    category: "Coaching",
+    excerpt:
+      "Whether you're a player figuring out your best fit or a coach building a roster, understanding what each position demands changes everything. Here's the complete breakdown of every flag football position.",
+    body: `Flag football may look simpler than tackle on the surface, but the positional demands are every bit as specific — and in some ways, more demanding. Without pads and blocking schemes to hide mismatches, every position on the field requires a precise skill set. Understanding what each role demands is the foundation of every successful flag football player and coaching staff.
+
+**Quarterback (QB)**
+
+The quarterback is the most scrutinized position in flag football, and for good reason. The QB is responsible for reading defenses pre-snap, making the right decision with the ball under pressure, and executing with accuracy — all without a pocket or an offensive line to protect them.
+
+Elite QBs at the national and international level share several traits: exceptional field vision, the ability to process coverage quickly, arm talent across all distances, and composure when the defense brings pressure. At the youth and high school level, a QB's mobility matters enormously. At the elite level, processing speed is what separates good from great.
+
+**Wide Receiver (WR)**
+
+The WR is the most physically explosive position in flag football. Great receivers combine route precision, release quickness at the line, and the ability to make contested catches. Unlike tackle football, flag football WRs rarely have the benefit of physical separation — they must create it through footwork, leverage, and timing.
+
+At the elite level, WRs who can run every route in the tree — not just vertical — are the most valuable. The ability to win from the slot versus the boundary, to adjust to off-timing throws, and to break tackles (in a flag context, to extend plays) are all separating factors.
+
+**Center (C)**
+
+The center is the quarterback's primary receiver and the engine of the short passing game. In flag football, the center snaps the ball and immediately becomes an eligible receiver. Elite centers are precise route runners with excellent hands and the quickness to get open in tight windows underneath.
+
+At the national level, the center position has become increasingly specialized. The timing between QB and center — both on the snap and in the receiving game — is one of the most rehearsed aspects of elite flag offense.
+
+**Rusher**
+
+The rusher is unique to flag football: a pass rusher who attacks the QB after a designated wait or snap count. Great rushers combine first-step quickness, hand technique to defeat blockers, and the closing speed to finish plays. On defense, the rusher often doubles as a linebacker in coverage when not rushing.
+
+For athletes transitioning from tackle football, the rusher position is often where defensive linemen and linebackers find their flag football home. The combination of physicality and anticipation required makes it one of the most technical defensive positions in the sport.
+
+**Defensive Back (DB)**
+
+Defensive backs in flag football face one of the most demanding jobs in sports: covering elite wide receivers with no physical contact allowed, in a pure man-coverage environment. DBs must combine anticipation, hip fluidity, and closing speed with the ability to pull flags in the open field.
+
+At the international level, DB play is where games are won and lost. The ability to trail elite receivers without giving up separation requires elite athleticism and, just as importantly, advanced technique. The best DBs study route trees obsessively — knowing what an offense wants to do is as valuable as the physical tools to stop it.
+
+**Linebacker (LB)**
+
+The linebacker reads offenses, drops into zone coverage, and attacks the line of scrimmage as needed. In flag football, the LB is often the defensive quarterback — responsible for calling coverages, disguising looks, and communicating assignments.
+
+Great LBs combine football IQ with physical tools. The ability to read a screen pass, sink into a hook zone, and still attack the QB when the rusher fails are all in the LB's job description. At elite levels, the linebacker is frequently the smartest defensive player on the field.
+
+**Building Your Roster**
+
+The best flag football teams are built around positional depth, not just stars. A great QB means nothing if there are no WRs who can separate. A dominant rusher is less impactful without DBs who can hold coverage long enough for the rush to arrive.
+
+When evaluating players for each position, start with the specific demands of that role — not just overall athleticism. A player who is a good overall athlete but struggles to process the game quickly will never be an elite QB. A receiver who can't separate at the top of routes will never be a weapon at the national level.
+
+For a database of verified, ranked flag football players at every position, visit the Talkin Flag player rankings.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {
