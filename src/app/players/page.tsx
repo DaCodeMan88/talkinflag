@@ -100,7 +100,10 @@ export default async function PlayersPage({
           </div>
         ) : (
           <>
-            <RankingsTable players={players.slice(0, 20)} />
+            {/* Only show rankings table for players that actually have a national rank */}
+            {players.some((p) => p.ranking_national != null) && (
+              <RankingsTable players={players.filter((p) => p.ranking_national != null)} />
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {players.map((player) => (
                 <PlayerCard key={player.id} player={player} />

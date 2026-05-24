@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Player } from "@/types/player";
 
 function isSafeUrl(url: string | null | undefined): boolean {
@@ -9,19 +10,26 @@ export function PlayerCard({ player }: { player: Player }) {
   const levelLabel = player.level?.replaceAll("_", " ");
 
   return (
-    <article className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors p-5">
-      <div className="flex items-start justify-between gap-2 mb-3">
+    <article className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors p-5 group relative">
+      {/* Clickable overlay for the entire card */}
+      <Link
+        href={`/players/${player.id}`}
+        className="absolute inset-0 z-0"
+        aria-label={`View ${name}'s profile`}
+      />
+
+      <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
         <div>
           {player.ranking_national && (
             <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
               #{player.ranking_national}
             </span>
           )}
-          <h3 className="font-display text-lg uppercase text-brand-white leading-tight mt-0.5">{name}</h3>
+          <h3 className="font-display text-lg uppercase text-brand-white leading-tight mt-0.5 group-hover:text-brand-yellow transition-colors">{name}</h3>
         </div>
         {player.is_verified && (
           <span className="shrink-0 bg-brand-yellow text-brand-black font-display text-xs px-2 py-0.5 uppercase tracking-widest">
-            Verified
+            ✓
           </span>
         )}
       </div>
@@ -46,7 +54,7 @@ export function PlayerCard({ player }: { player: Player }) {
         <p className="text-brand-white/40 text-xs">{player.country}</p>
       )}
 
-      <div className="flex items-center gap-3 mt-3">
+      <div className="flex items-center gap-3 mt-3 relative z-10">
         {isSafeUrl(player.highlight_url) && (
           <a
             href={player.highlight_url!}
@@ -68,6 +76,11 @@ export function PlayerCard({ player }: { player: Player }) {
           >
             {player.instagram}
           </a>
+        )}
+        {!player.highlight_url && !player.instagram && (
+          <span className="text-brand-white/30 text-xs font-display uppercase tracking-widest">
+            View Profile →
+          </span>
         )}
       </div>
     </article>
