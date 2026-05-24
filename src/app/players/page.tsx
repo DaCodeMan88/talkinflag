@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase";
 import { PlayersFilter } from "@/components/players/PlayersFilter";
 import { buildMetadata } from "@/lib/seo";
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Player } from "@/types/player";
 
 export const revalidate = 300;
@@ -58,7 +59,13 @@ export default async function PlayersPage() {
             </Link>
           </div>
         ) : (
-          <PlayersFilter players={playerList} />
+          <Suspense fallback={
+            <div className="text-brand-white/40 text-sm py-8 text-center font-display uppercase tracking-widest">
+              Loading players…
+            </div>
+          }>
+            <PlayersFilter players={playerList} />
+          </Suspense>
         )}
       </div>
     </div>

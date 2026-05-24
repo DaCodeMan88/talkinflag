@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import type { Player } from "@/types/player";
 import { buildMetadata } from "@/lib/seo";
+import { PlayerCard } from "@/components/players/PlayerCard";
 
 export const revalidate = 300;
 
@@ -100,6 +101,20 @@ export default async function PlayerDetailPage({
     .single() as { data: Player | null };
 
   if (!player) notFound();
+
+  // Fetch similar players (same position, excluding current player)
+  const { data: similar } = player.position
+    ? await supabase
+        .from("players")
+        .select("id, first_name, last_name, position, level, school_or_team, country, ranking_national, is_verified, highlight_url, instagram")
+        .eq("is_verified", true)
+        .eq("position", player.position)
+        .neq("id", id)
+        .order("ranking_national", { ascending: true, nullsFirst: false })
+        .limit(4) as { data: Player[] | null }
+    : { data: null };
+
+  const similarPlayers = similar ?? [];
 
   const fullName = `${player.first_name} ${player.last_name}`;
   const location = [player.city, player.state, player.country]
@@ -301,6 +316,28 @@ export default async function PlayerDetailPage({
             )}
           </div>
         </div>
+
+        {/* Similar players */}
+        {similarPlayers.length > 0 && (
+          <div className="mt-16 pt-10 border-t border-brand-white/10">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-lg uppercase text-brand-white">
+                Other {player.position} Players
+              </h2>
+              <Link
+                href={`/players?position=${player.position}`}
+                className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline"
+              >
+                See All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {similarPlayers.map((p) => (
+                <PlayerCard key={p.id} player={p} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

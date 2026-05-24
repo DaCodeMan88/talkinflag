@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { PlayerCard } from "./PlayerCard";
 import { RankingsTable } from "./RankingsTable";
@@ -19,9 +20,11 @@ interface PlayersFilterProps {
 }
 
 export function PlayersFilter({ players }: PlayersFilterProps) {
-  const [query, setQuery] = useState("");
-  const [position, setPosition] = useState("");
-  const [level, setLevel] = useState("");
+  const searchParams = useSearchParams();
+  // Allow URL params to seed the initial filter state (e.g. ?position=QB from player detail pages)
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [position, setPosition] = useState(searchParams.get("position") ?? "");
+  const [level, setLevel] = useState(searchParams.get("level") ?? "");
 
   const filtered = useMemo(() => {
     let result = players;
