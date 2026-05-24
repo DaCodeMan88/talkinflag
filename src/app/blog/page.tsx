@@ -6,11 +6,19 @@ import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
-export const metadata = buildMetadata({
-  title: "Blog | Talkin Flag — Flag Football News",
-  description: "Insights, analysis, and stories from the world of flag football.",
-  path: "/blog",
-});
+export const metadata = {
+  ...buildMetadata({
+    title: "Blog | Talkin Flag — Flag Football News",
+    description: "Insights, analysis, and stories from the world of flag football.",
+    path: "/blog",
+  }),
+  alternates: {
+    canonical: "https://talkinflag.com/blog",
+    types: {
+      "application/rss+xml": "https://talkinflag.com/blog/feed.xml",
+    },
+  },
+};
 
 export default async function BlogPage() {
   const posts = await getAllPosts();

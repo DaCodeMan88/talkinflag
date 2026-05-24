@@ -138,6 +138,53 @@ With flag football officially at LA 2028, national programs around the world are
 The window is open. The question is whether you're prepared to walk through it.`,
     isStatic: true,
   },
+  {
+    slug: "mental-performance-flag-football",
+    title: "The Mental Game: How Elite Flag Football Players Train Their Minds",
+    author: "Talkin Flag",
+    publishedAt: "2026-01-18T00:00:00Z",
+    category: "Mental Performance",
+    excerpt:
+      "The difference between a good flag football player and a great one often comes down to what happens between the ears. We've interviewed sport psychologists, Olympic-level coaches, and elite athletes — here's what they all agree on.",
+    body: `In almost every conversation we've had on Talkin Flag, the topic of mental performance comes up. Not always by name — sometimes it's disguised as "game IQ," "staying locked in," or "handling pressure" — but the underlying subject is always the same. The mental game is real, it's trainable, and most flag football players aren't training it.
+
+Here's what elite athletes and coaches have taught us.
+
+**Pressure is a skill, not a condition**
+
+The athletes who perform best at international tournaments, national championships, and Olympic qualifiers don't feel less pressure than everyone else. They've simply learned to interpret pressure as a signal of importance rather than a threat. When the stakes go up, their focus sharpens rather than scatters.
+
+This mental shift — from threat response to challenge response — is the foundation of elite performance psychology. It can be trained. It starts with awareness: noticing when you shift into threat mode, catching it, and consciously reframing the moment. The more you practice this, the faster it becomes automatic.
+
+**Routine is protection**
+
+Elite players build pre-snap, pre-play, and pre-game routines not because routines are comforting — but because routines narrow attention and eliminate distractions at the exact moment when distractions are most dangerous.
+
+Watch any elite quarterback before a snap. There is something happening in those two or three seconds before the ball moves. They're not guessing. They're resetting to a reliable internal state. That state is rehearsed. It doesn't happen accidentally.
+
+Your pre-play routine doesn't need to look like anyone else's. It needs to reliably bring you to your sharpest mental state. Build it, refine it, and protect it.
+
+**Film study is mental training**
+
+Most players think of film study as technical work — identifying tendencies, recognizing formations, understanding what the opponent does. That's true. But film study is also one of the most powerful mental performance tools available, because it trains anticipation.
+
+When you've seen a coverage rotation a hundred times on film, your brain processes it faster in a real game. Decision-making speed — which feels like instinct — is actually pattern recognition built through deliberate study. The athletes who seem to play one step ahead are usually the ones who studied one step ahead.
+
+**The reset is more important than the play**
+
+Every player makes mistakes. The separating factor between average and elite isn't the frequency of mistakes — it's the recovery time. Elite players develop a mental reset that wipes the last play and restores focus in seconds. Mediocre players carry bad plays forward, which turns one mistake into three.
+
+The reset can be a breath, a word, a physical gesture — anything that reliably signals to your nervous system that the last play is over and the next one is beginning. Practice it in training so it's available to you when it counts.
+
+**Talk to someone who specializes in this**
+
+The most consistent thing we've heard from elite flag football athletes across every country and level is simple: at some point, they stopped trying to figure out the mental game alone. They worked with a sports psychologist, a performance coach, or a mentor who understood the psychology of competition.
+
+This isn't weakness. It's the same logic that drives every other aspect of athletic development. Nobody tries to self-coach their footwork without feedback. The mental game deserves the same investment.
+
+The players who will represent their countries at LA 2028 won't just be the most physically gifted athletes in the field. They'll be the ones who spent years training every dimension of their performance — including the one that happens between the ears.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {
