@@ -35,7 +35,7 @@ export default async function BlogPage() {
         ) : (
           <>
             {/* Static editorial posts — shown until Sanity CMS has content */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {staticPosts.map((post) => (
                 <Link
                   key={post.slug}

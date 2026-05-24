@@ -88,6 +88,14 @@ export default async function PlayersPage({
           >
             Filter
           </button>
+          {(q || position || level) && (
+            <Link
+              href="/players"
+              className="text-brand-white/40 hover:text-brand-white font-display text-xs uppercase tracking-widest self-center transition-colors"
+            >
+              × Clear
+            </Link>
+          )}
         </form>
 
         {!players || players.length === 0 ? (
