@@ -3,6 +3,7 @@ import { getStaticPostBySlug, staticPosts } from "@/lib/static-posts";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -35,20 +36,22 @@ export async function generateMetadata({
   // Check static posts first
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
-    return {
-      title: `${staticPost.title} | Talkin Flag`,
+    return buildMetadata({
+      title: staticPost.title,
       description: staticPost.excerpt,
-    };
+      path: `/blog/${staticPost.slug}`,
+    });
   }
 
   // Fall through to Sanity
   if (sanityConfigured) {
     const post = await getPostBySlug(slug);
     if (post) {
-      return {
-        title: `${post.title} | Talkin Flag`,
-        description: post.excerpt || undefined,
-      };
+      return buildMetadata({
+        title: post.title,
+        description: post.excerpt || `${post.title} — Talkin Flag Blog`,
+        path: `/blog/${post.slug?.current ?? slug}`,
+      });
     }
   }
 
@@ -65,6 +68,9 @@ export default async function BlogPostPage({
   // ── Static post ──────────────────────────────────────────────────────────
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
+    // Other posts to surface at the bottom (exclude current)
+    const morePosts = staticPosts.filter((p) => p.slug !== slug).slice(0, 3);
+
     const paragraphs = staticPost.body
       .split("\n\n")
       .map((p) => p.trim())
@@ -185,15 +191,38 @@ export default async function BlogPostPage({
             </Link>
           </div>
 
-          {/* Back to blog */}
-          <div className="mt-8 text-center">
-            <Link
-              href="/blog"
-              className="text-brand-white/40 font-display text-xs uppercase tracking-widest hover:text-brand-yellow transition-colors"
-            >
-              ← Back to Blog
-            </Link>
-          </div>
+          {/* More from the blog */}
+          {morePosts.length > 0 && (
+            <div className="mt-14 pt-10 border-t border-brand-white/10">
+              <h2 className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-6">
+                More from the Blog
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {morePosts.map((p) => (
+                  <Link
+                    key={p.slug}
+                    href={`/blog/${p.slug}`}
+                    className="group block bg-[#111111] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors p-5"
+                  >
+                    <span className="text-brand-yellow font-display text-[10px] uppercase tracking-widest">
+                      {p.category}
+                    </span>
+                    <h3 className="font-display text-sm uppercase text-brand-white leading-snug mt-1 group-hover:text-brand-yellow transition-colors line-clamp-3">
+                      {p.title}
+                    </h3>
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-6 text-center">
+                <Link
+                  href="/blog"
+                  className="text-brand-white/40 font-display text-xs uppercase tracking-widest hover:text-brand-yellow transition-colors"
+                >
+                  ← All Posts
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
