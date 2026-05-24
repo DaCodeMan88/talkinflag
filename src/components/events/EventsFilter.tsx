@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { EventCard } from "./EventCard";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 interface Event {
   id: string;
@@ -41,6 +42,7 @@ function formatShortDate(dateStr: string) {
 
 export function EventsFilter({ events }: { events: Event[] }) {
   const [activeLevel, setActiveLevel] = useState<string>("all");
+  const [activeCountry, setActiveCountry] = useState<string>("");
 
   // Separate featured events (pinned at top regardless of filter)
   const featuredEvents = useMemo(
@@ -55,12 +57,20 @@ export function EventsFilter({ events }: { events: Event[] }) {
     return Array.from(levels).sort();
   }, [events]);
 
+  // Derive unique countries
+  const availableCountries = useMemo(() => {
+    const set = new Set<string>();
+    events.forEach((e) => { if (e.country) set.add(e.country); });
+    return Array.from(set).sort();
+  }, [events]);
+
   const filtered = useMemo(() => {
     // Exclude featured events from the main list (they appear in the pinned section)
-    const nonFeatured = events.filter((e) => !e.is_featured);
-    if (activeLevel === "all") return nonFeatured;
-    return nonFeatured.filter((e) => e.level === activeLevel);
-  }, [events, activeLevel]);
+    let result = events.filter((e) => !e.is_featured);
+    if (activeLevel !== "all") result = result.filter((e) => e.level === activeLevel);
+    if (activeCountry) result = result.filter((e) => e.country === activeCountry);
+    return result;
+  }, [events, activeLevel, activeCountry]);
 
   // Group filtered events by month
   const eventsByMonth = useMemo(() => {
@@ -175,11 +185,48 @@ export function EventsFilter({ events }: { events: Event[] }) {
         </div>
       )}
 
+      {/* Country filter — only shown when multiple countries in the list */}
+      {availableCountries.length > 1 && (
+        <div className="flex items-center gap-3 mb-6">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white/30" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+          <div className="relative">
+            <select
+              value={activeCountry}
+              onChange={(e) => setActiveCountry(e.target.value)}
+              aria-label="Filter by country"
+              className="appearance-none bg-[#111111] border border-brand-white/15 text-brand-white/70 pl-3 pr-8 py-1.5 text-xs font-display uppercase tracking-widest focus:border-brand-yellow focus:outline-none cursor-pointer"
+            >
+              <option value="">All Countries</option>
+              {availableCountries.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-brand-white/40">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true">
+                <path d="M0 0l5 6 5-6z" />
+              </svg>
+            </div>
+          </div>
+          {activeCountry && (
+            <button
+              onClick={() => setActiveCountry("")}
+              aria-label="Clear country filter"
+              className="text-brand-white/40 hover:text-brand-yellow transition-colors"
+            >
+              <X size={12} />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Empty state */}
       {eventsByMonth.length === 0 && (
         <div className="text-center py-12 border border-brand-white/10 bg-[#111111]">
           <p className="text-brand-white/40 text-sm">
-            No {activeLevel !== "all" ? (LEVEL_LABELS[activeLevel] || activeLevel) + " " : ""}events found.
+            No {activeLevel !== "all" ? (LEVEL_LABELS[activeLevel] || activeLevel) + " " : ""}
+            {activeCountry ? `events in ${activeCountry}` : "events"} found.
           </p>
           {activeLevel !== "all" && (
             <button
