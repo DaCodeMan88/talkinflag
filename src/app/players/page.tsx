@@ -1,15 +1,16 @@
 import { createServerClient } from "@/lib/supabase";
 import { PlayerCard } from "@/components/players/PlayerCard";
 import { RankingsTable } from "@/components/players/RankingsTable";
-import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 import type { Player } from "@/types/player";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Players | Talkin Flag — Flag Football Player Database",
-  description: "The global flag football player database. Search rankings, stats, and highlights.",
-};
+export const metadata = buildMetadata({
+  title: "Players | Talkin Flag — Flag Football Rankings",
+  description: "The global flag football player database. Rankings, stats, and highlights.",
+  path: "/players",
+});
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher"];
 const LEVELS = ["high_school", "college", "national", "pro"];

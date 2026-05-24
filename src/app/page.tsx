@@ -1,24 +1,39 @@
-import type { Metadata } from "next";
 import { Hero } from "@/components/hero/Hero";
 import { StatsBar } from "@/components/home/StatsBar";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import Link from "next/link";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Talkin Flag | The Global Flag Football Podcast",
   description:
     "Hosted by Ambra & Tika Marcucci of the Italian National Team. 39+ episodes with elite athletes, coaches, and founders building the future of flag football.",
-};
+});
 
 export default async function HomePage() {
   const episodes = await getEpisodes(4);
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "PodcastSeries",
+          "name": "Talkin Flag",
+          "description": "The global flag football podcast hosted by Ambra & Tika Marcucci of the Italian National Team.",
+          "url": "https://talkinflag.com",
+          "image": "https://talkinflag.com/og-image.png",
+          "author": [
+            { "@type": "Person", "name": "Ambra Marcucci" },
+            { "@type": "Person", "name": "Tika Marcucci" }
+          ]
+        }) }}
+      />
       <Hero />
       <StatsBar />
 

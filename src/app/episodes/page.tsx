@@ -1,13 +1,14 @@
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
-import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Episodes | Talkin Flag — The Flag Football Podcast",
   description: "39+ conversations with elite athletes, coaches, founders, and doctors shaping flag football worldwide.",
-};
+  path: "/episodes",
+});
 
 export default async function EpisodesPage() {
   const episodes = await getEpisodes(50);

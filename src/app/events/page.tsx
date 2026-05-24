@@ -1,14 +1,15 @@
 import { createServerClient } from "@/lib/supabase";
 import { EventCard } from "@/components/events/EventCard";
 import { GlobeSection } from "@/components/events/GlobeSection";
-import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "Events | Talkin Flag — Flag Football Calendar",
   description: "Worldwide flag football tournaments, national championships, World Games, and Olympic qualifiers.",
-};
+  path: "/events",
+});
 
 export default async function EventsPage() {
   const supabase = createServerClient();

@@ -1,13 +1,14 @@
 import { getAllPosts, sanityConfigured } from "@/lib/sanity";
 import { PostCard } from "@/components/blog/PostCard";
-import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Blog | Talkin Flag — Flag Football News & Analysis",
-  description: "Flag football news, player stories, training tips, and mental performance insights from the Talkin Flag team.",
-};
+export const metadata = buildMetadata({
+  title: "Blog | Talkin Flag — Flag Football News",
+  description: "Insights, analysis, and stories from the world of flag football.",
+  path: "/blog",
+});
 
 export default async function BlogPage() {
   const posts = await getAllPosts();

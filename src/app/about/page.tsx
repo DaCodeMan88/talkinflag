@@ -1,10 +1,11 @@
 import { HostCard } from "@/components/hosts/HostCard";
-import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: "About | Talkin Flag — Ambra & Tika Marcucci",
-  description: "Meet your hosts: Ambra & Tika Marcucci, twin sisters and members of the Italian National Flag Football Team.",
-};
+  description: "Hosted by Ambra & Tika Marcucci of the Italian National Flag Football Team. The story behind Talkin Flag.",
+  path: "/about",
+});
 
 const hosts = [
   {

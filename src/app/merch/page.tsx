@@ -1,13 +1,14 @@
 import { getProducts } from "@/lib/printful";
 import { ProductCard } from "@/components/merch/ProductCard";
-import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Merch | Talkin Flag — Rep the Flag Football Movement",
-  description: "Official Talkin Flag merchandise. Rep the global flag football movement.",
-};
+export const metadata = buildMetadata({
+  title: "Merch | Talkin Flag — Official Store",
+  description: "Official Talkin Flag merchandise. Rep the podcast.",
+  path: "/merch",
+});
 
 export default async function MerchPage() {
   const products = await getProducts();
