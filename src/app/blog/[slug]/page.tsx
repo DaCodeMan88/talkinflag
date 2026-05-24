@@ -104,6 +104,7 @@ export default async function BlogPostPage({
       "headline": staticPost.title,
       "description": staticPost.excerpt,
       "datePublished": staticPost.publishedAt,
+      "dateModified": staticPost.publishedAt, // updated when post is revised
       "author": { "@type": "Person", "name": staticPost.author },
       "publisher": {
         "@type": "Organization",

@@ -492,6 +492,61 @@ The sport is designed to be accessible. The equipment should support your perfor
 For more on positions and what each role demands physically, see the flag football positions guide.`,
     isStatic: true,
   },
+  {
+    slug: "international-flag-football-teams-to-watch-2028",
+    title: "The International Flag Football Programs Building Toward LA 2028",
+    author: "Talkin Flag",
+    publishedAt: "2025-07-14T00:00:00Z",
+    category: "International",
+    excerpt:
+      "The 2028 Olympics will be the first time flag football is played on the world's biggest stage. These are the national programs that have been building toward this moment — and the ones you'll want to watch.",
+    body: `When the IOC announced that flag football would be part of the Los Angeles 2028 Summer Olympics, the reaction from within the flag football community was something between vindication and urgency. Vindication, because those who had been building national programs for years knew this moment was coming. Urgency, because the path to an Olympic podium is short, and the competition is already fierce.
+
+Here's a look at the national programs that are shaping the Olympic era of flag football.
+
+**United States**
+
+The United States is the birthplace of American football and the country with the deepest flag football infrastructure. NFL FLAG programs run in thousands of communities. College programs are growing. The pipeline from youth leagues to national team competition is more developed in the US than anywhere else on earth.
+
+The American men's and women's programs enter the Olympic cycle as the teams every other country measures itself against. The talent depth is unmatched. But the gap between the US and the field is narrower than it has ever been — and the Olympic format, which rewards peak performance on a single day, means anything is possible.
+
+**Mexico**
+
+Mexico's flag football programs — particularly the women's game — have been among the most competitive in the Western Hemisphere for more than a decade. Mexican national teams have competed at IFAF World Championships at a level that surprised observers who expected a clear American dominance. The women's program in particular has developed players who can match up with anyone in the world.
+
+Mexico also benefits from a deep cultural connection to American football. The NFL has invested heavily in Mexico City, and that mainstream visibility has driven flag football participation across the country.
+
+**Italy**
+
+Italy's rise in flag football is the story this podcast knows best. The Italian national program — which includes our hosts Ambra and Tika Marcucci — has built one of the most tactically sophisticated programs in Europe. Italian coaches study the game with a level of detail typically reserved for professional sports. The athletes train year-round across regional programs before coming together for national camps.
+
+Italy's women's team has competed at World Championships as one of Europe's most consistent performers. The combination of high football IQ, athletic development, and elite coaching infrastructure makes Italy one of the most dangerous teams heading into the Olympic era — and one of the most compelling stories the Games could tell.
+
+**Canada**
+
+Canada has one of the most organized flag football ecosystems outside of the United States. Football Canada runs national programs for both men and women, and Canadian flag football has developed a distinct identity within the North American game. The proximity to the US creates natural competition at every level, producing players who are battle-tested against elite opponents.
+
+**Germany**
+
+Germany's American football culture has grown steadily over the past decade, and flag football has benefited from that infrastructure. The German national programs have been competitive at European Championships, and the country's sports science and athletic development resources give it an edge in preparation.
+
+**Japan**
+
+Japan's flag football program is one of the most interesting stories in the international game. Japanese athletes have embraced American football culture enthusiastically, and the discipline and precision that characterize Japanese athletics translate directly to flag football. Japan has been a consistent presence at IFAF World Championships and enters the Olympic cycle as a program capable of surprising the field.
+
+**Brazil**
+
+Brazil's athletic culture — built on decades of world-class performance in football, volleyball, and athletics — has begun producing flag football players of genuine quality. The Brazilian national program is growing rapidly, and the country's natural athleticism combined with its improving organizational structure makes Brazil a team to watch as the Olympic cycle progresses.
+
+**The 2028 Opportunity**
+
+What makes the LA 2028 Olympic tournament so compelling is that it will be the first time these programs compete on the world's biggest stage, in front of an audience that numbers in the billions. For players who have dedicated years to a sport that had no Olympic pathway, this is the moment everything was building toward.
+
+The Talkin Flag community spans every time zone and every continent. We've spoken with athletes, coaches, and administrators from dozens of countries who are building toward this moment. The competition will be fierce, the stories will be powerful, and the sport will never be the same.
+
+We'll be covering every step of the journey to LA 2028 on Talkin Flag. Follow along.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {

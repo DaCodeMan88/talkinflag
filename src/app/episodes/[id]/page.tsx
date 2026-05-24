@@ -23,12 +23,16 @@ export async function generateMetadata({
   const episode = episodes.find((e) => e.id === id);
   if (!episode) return { title: "Episode Not Found | Talkin Flag" };
 
-  return buildMetadata({
+  const base = buildMetadata({
     title: episode.guestName || episode.title,
     description: episode.description.slice(0, 160),
     image: episode.thumbnail,
     path: `/episodes/${id}`,
   });
+  // Let opengraph-image.tsx generate the branded OG card instead
+  if (base.openGraph) delete (base.openGraph as Record<string, unknown>).images;
+  if (base.twitter) delete (base.twitter as Record<string, unknown>).images;
+  return base;
 }
 
 export default async function EpisodePage({
