@@ -121,6 +121,16 @@ export default async function PlayerDetailPage({
     .filter(Boolean)
     .join(", ");
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+      { "@type": "ListItem", "position": 2, "name": "Players", "item": "https://talkinflag.com/players" },
+      { "@type": "ListItem", "position": 3, "name": fullName, "item": `https://talkinflag.com/players/${player.id}` },
+    ],
+  };
+
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -135,6 +145,10 @@ export default async function PlayerDetailPage({
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}

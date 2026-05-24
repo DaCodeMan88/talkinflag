@@ -76,6 +76,16 @@ export default async function BlogPostPage({
       .map((p) => p.trim())
       .filter(Boolean);
 
+    const breadcrumbJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://talkinflag.com/blog" },
+        { "@type": "ListItem", "position": 3, "name": staticPost.title, "item": `https://talkinflag.com/blog/${staticPost.slug}` },
+      ],
+    };
+
     const articleJsonLd = {
       "@context": "https://schema.org",
       "@type": "Article",
@@ -94,6 +104,10 @@ export default async function BlogPostPage({
 
     return (
       <div className="min-h-screen bg-brand-black pt-24 pb-20">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}

@@ -4,6 +4,7 @@ import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import { ShareButton } from "@/components/episodes/ShareButton";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -22,25 +23,12 @@ export async function generateMetadata({
   const episode = episodes.find((e) => e.id === id);
   if (!episode) return { title: "Episode Not Found | Talkin Flag" };
 
-  const title = `${episode.guestName || episode.title} | Talkin Flag`;
-  const description = episode.description.slice(0, 160);
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [{ url: episode.thumbnail, width: 480, height: 360, alt: episode.title }],
-      type: "video.other",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [episode.thumbnail],
-    },
-  };
+  return buildMetadata({
+    title: episode.guestName || episode.title,
+    description: episode.description.slice(0, 160),
+    image: episode.thumbnail,
+    path: `/episodes/${id}`,
+  });
 }
 
 export default async function EpisodePage({
@@ -69,6 +57,17 @@ export default async function EpisodePage({
     `https://talkinflag.com/episodes/${id}`
   )}`;
 
+  // JSON-LD: BreadcrumbList
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+      { "@type": "ListItem", "position": 2, "name": "Episodes", "item": "https://talkinflag.com/episodes" },
+      { "@type": "ListItem", "position": 3, "name": episode.guestName || episode.title, "item": `https://talkinflag.com/episodes/${id}` },
+    ],
+  };
+
   // JSON-LD for podcast episode
   const jsonLd = {
     "@context": "https://schema.org",
@@ -96,6 +95,10 @@ export default async function EpisodePage({
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
