@@ -16,6 +16,7 @@ export const metadata = buildMetadata({
   title: "Talkin Flag | The Global Flag Football Podcast",
   description:
     "Hosted by Ambra & Tika Marcucci of the Italian National Team. 39+ episodes with elite athletes, coaches, and founders building the future of flag football.",
+  path: "/",
 });
 
 export default async function HomePage() {
