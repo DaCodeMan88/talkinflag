@@ -4,13 +4,14 @@ import type { Episode } from "@/types/episode";
 
 interface HeroProps {
   latestEpisode?: Episode;
+  episodeCount?: number;
 }
 
-export function Hero({ latestEpisode }: HeroProps) {
+export function Hero({ latestEpisode, episodeCount }: HeroProps) {
   return (
     <section className="relative min-h-screen overflow-hidden" aria-label="Hero">
       <HeroScene />
-      <HeroContent latestEpisode={latestEpisode} />
+      <HeroContent latestEpisode={latestEpisode} episodeCount={episodeCount} />
     </section>
   );
 }

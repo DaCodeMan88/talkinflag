@@ -12,9 +12,11 @@ const fadeIn = (delay: number): React.CSSProperties => ({
 
 interface HeroContentProps {
   latestEpisode?: Episode;
+  episodeCount?: number;
 }
 
-export function HeroContent({ latestEpisode }: HeroContentProps) {
+export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
+  const countLabel = episodeCount ? `${episodeCount}+` : "39+";
   // Build the latest episode label — use dynamic data if available
   const latestLabel = latestEpisode
     ? [
@@ -58,7 +60,7 @@ export function HeroContent({ latestEpisode }: HeroContentProps) {
         style={fadeIn(0.65)}
         className="mt-6 text-lg md:text-xl text-brand-white/70 max-w-2xl leading-relaxed"
       >
-        The global flag football podcast. 39+ episodes with elite athletes, coaches, and{" "}
+        The global flag football podcast. {countLabel} episodes with elite athletes, coaches, and{" "}
         founders — hosted by{" "}
         <span className="text-brand-yellow font-semibold">Ambra & Tika Marcucci</span>{" "}
         of the <span className="text-brand-yellow">Italian National Team 🇮🇹</span>.
@@ -67,7 +69,7 @@ export function HeroContent({ latestEpisode }: HeroContentProps) {
       {/* Tag badges */}
       <div style={fadeIn(0.85)} className="flex flex-wrap justify-center gap-3 mt-6">
         {[
-          "39+ Episodes",
+          `${countLabel} Episodes`,
           "Global Guests",
           "Mental Performance",
           "Women's Flag Football",

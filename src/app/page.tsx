@@ -42,7 +42,7 @@ export default async function HomePage() {
           ]
         }) }}
       />
-      <Hero latestEpisode={episodes[0]} />
+      <Hero latestEpisode={episodes[0]} episodeCount={episodes.length} />
       <StatsBar episodeCount={episodes.length} />
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">
