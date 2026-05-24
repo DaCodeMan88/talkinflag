@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,10 @@ const navLinks = [
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  // Close mobile menu on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -42,15 +47,24 @@ export function Nav() {
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="font-display text-sm tracking-widest uppercase text-brand-white/70 hover:text-brand-yellow transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "font-display text-sm tracking-widest uppercase transition-colors relative",
+                    isActive
+                      ? "text-brand-yellow after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-px after:bg-brand-yellow"
+                      : "text-brand-white/70 hover:text-brand-yellow"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -78,20 +92,25 @@ export function Nav() {
       {/* Mobile menu */}
       {open && (
         <div id="mobile-menu" className="md:hidden bg-brand-black border-t border-brand-yellow/20 px-4 py-6 space-y-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="block font-display text-xl uppercase tracking-widest text-brand-white hover:text-brand-yellow"
-              onClick={() => setOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "block font-display text-xl uppercase tracking-widest transition-colors",
+                  isActive ? "text-brand-yellow" : "text-brand-white hover:text-brand-yellow"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <Link
             href="/players/submit"
             className="block text-center font-display uppercase tracking-wider text-sm bg-brand-yellow text-brand-black px-6 py-3 mt-4 hover:bg-yellow-400 transition-colors"
-            onClick={() => setOpen(false)}
           >
             Submit Player Profile
           </Link>
