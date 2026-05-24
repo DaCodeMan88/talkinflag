@@ -2,6 +2,8 @@ import { Hero } from "@/components/hero/Hero";
 import { StatsBar } from "@/components/home/StatsBar";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { ListenOn } from "@/components/home/ListenOn";
+import { EventsTeaser } from "@/components/home/EventsTeaser";
+import { PlayersSpotlight } from "@/components/home/PlayersSpotlight";
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import Link from "next/link";
@@ -71,6 +73,8 @@ export default async function HomePage() {
       </section>
 
       <ListenOn />
+      <EventsTeaser />
+      <PlayersSpotlight />
       <NewsletterSignup />
     </>
   );
