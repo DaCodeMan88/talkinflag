@@ -42,15 +42,18 @@ export default async function BlogPage({
     new Set(staticPosts.map((p) => p.category))
   ).sort();
 
-  // Filter static posts by category if one is selected
-  const filteredPosts = activeCategory
-    ? staticPosts.filter((p) => p.category === activeCategory)
-    : staticPosts;
-
-  // Sort by date descending for ItemList JSON-LD
-  const sortedForSchema = [...staticPosts].sort(
+  // Sort all posts by date descending (newest first)
+  const sortedPosts = [...staticPosts].sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
+
+  // Filter by category if one is selected (preserving date order)
+  const filteredPosts = activeCategory
+    ? sortedPosts.filter((p) => p.category === activeCategory)
+    : sortedPosts;
+
+  // Alias for ItemList JSON-LD
+  const sortedForSchema = sortedPosts;
 
   const itemListJsonLd = {
     "@context": "https://schema.org",
