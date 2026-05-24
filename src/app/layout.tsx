@@ -31,6 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@TalkinFlagShow",
+    creator: "@TalkinFlagShow",
     title: "Talkin Flag",
     description: "The global hub for flag football — podcast, players, rankings, events.",
     images: ["/og?title=The+Global+Flag+Football+Podcast"],

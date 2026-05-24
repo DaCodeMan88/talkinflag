@@ -36,6 +36,8 @@ export function buildMetadata({
     },
     twitter: {
       card: "summary_large_image",
+      site: "@TalkinFlagShow",
+      creator: "@TalkinFlagShow",
       title: fullTitle,
       description,
       images: [ogImage],
