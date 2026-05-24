@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { EpisodeCard } from "./EpisodeCard";
 import type { Episode } from "@/types/episode";
@@ -9,7 +10,8 @@ interface EpisodeSearchProps {
 }
 
 export function EpisodeSearch({ episodes }: EpisodeSearchProps) {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
 
   const filtered = useMemo(() => {
     if (!query.trim()) return episodes;

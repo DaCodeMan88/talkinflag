@@ -3,6 +3,7 @@ import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
 import { EpisodeSearch } from "@/components/episodes/EpisodeSearch";
 import { buildMetadata } from "@/lib/seo";
+import { Suspense } from "react";
 
 export const revalidate = 3600;
 
@@ -73,8 +74,15 @@ export default async function EpisodesPage() {
           </div>
         )}
 
-        {/* Client-side search — filters across all loaded episodes (excluding featured) */}
-        <EpisodeSearch episodes={episodes.slice(1)} />
+        {/* Client-side search — filters across all loaded episodes (excluding featured).
+            Wrapped in Suspense because EpisodeSearch uses useSearchParams(). */}
+        <Suspense fallback={
+          <div className="text-brand-white/40 text-sm py-8 text-center font-display uppercase tracking-widest">
+            Loading episodes…
+          </div>
+        }>
+          <EpisodeSearch episodes={episodes.slice(1)} />
+        </Suspense>
       </div>
     </div>
   );
