@@ -1,5 +1,6 @@
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
+import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
 import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -29,14 +30,10 @@ export default async function EpisodesPage() {
           <div className="mb-12">
             <p className="font-display text-xs text-brand-yellow uppercase tracking-widest mb-4">Latest Episode</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#222222] border border-brand-yellow/30 p-6">
+              {/* YouTubeFacade: shows thumbnail until user clicks — avoids youtube.com
+                  third-party scripts loading on page init, significantly improves LCP */}
               <div className="relative aspect-video">
-                <iframe
-                  src={`https://www.youtube.com/embed/${episodes[0].id}?rel=0&modestbranding=1`}
-                  className="absolute inset-0 w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title={episodes[0].title}
-                />
+                <YouTubeFacade videoId={episodes[0].id} title={episodes[0].title} />
               </div>
               <div className="flex flex-col justify-center">
                 {episodes[0].episodeNumber && (
