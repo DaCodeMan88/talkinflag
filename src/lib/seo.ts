@@ -21,6 +21,11 @@ export function buildMetadata({
     title: fullTitle,
     description,
     metadataBase: new URL(siteUrl),
+    ...(path && {
+      alternates: {
+        canonical: `${siteUrl}${path}`,
+      },
+    }),
     openGraph: {
       title: fullTitle,
       description,

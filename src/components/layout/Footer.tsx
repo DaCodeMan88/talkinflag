@@ -5,6 +5,7 @@ const socials = [
   { label: "Instagram", href: "https://instagram.com/talkinflagshow", external: true },
   { label: "YouTube", href: "https://youtube.com/@thetalkinballsnetwork", external: true },
   { label: "Spotify", href: "https://open.spotify.com/search/Talkin%20Flag", external: true },
+  { label: "X", href: "https://x.com/TalkinFlagShow", external: true },
 ];
 
 const mediaLinks = [
@@ -20,6 +21,7 @@ const platformLinks = [
   { label: "Merch", href: "/merch" },
   { label: "Recruit", href: "/recruit" },
   { label: "Submit Profile", href: "/players/submit" },
+  { label: "Submit Event", href: "/events/submit" },
 ];
 
 export function Footer() {
