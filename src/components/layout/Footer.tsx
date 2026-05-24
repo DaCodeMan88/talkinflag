@@ -2,9 +2,24 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 
 const socials = [
-  { label: "Instagram", href: "https://instagram.com/talkinflagshow" },
-  { label: "YouTube", href: "https://youtube.com/@thetalkinballsnetwork" },
-  { label: "Spotify", href: "#" },
+  { label: "Instagram", href: "https://instagram.com/talkinflagshow", external: true },
+  { label: "YouTube", href: "https://youtube.com/@thetalkinballsnetwork", external: true },
+  { label: "Spotify", href: "https://open.spotify.com/search/Talkin%20Flag", external: true },
+];
+
+const mediaLinks = [
+  { label: "Episodes", href: "/episodes" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+  { label: "Network", href: "https://youtube.com/@thetalkinballsnetwork", external: true },
+];
+
+const platformLinks = [
+  { label: "Players", href: "/players" },
+  { label: "Events", href: "/events" },
+  { label: "Merch", href: "/merch" },
+  { label: "Recruit", href: "/recruit" },
+  { label: "Submit Profile", href: "/players/submit" },
 ];
 
 export function Footer() {
@@ -21,8 +36,8 @@ export function Footer() {
             <div className="flex gap-4 mt-6">
               {socials.map((s) => (
                 <Link key={s.label} href={s.href}
-                  target={s.href.startsWith("http") ? "_blank" : undefined}
-                  rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-brand-white/60 hover:text-brand-yellow text-sm font-display uppercase tracking-widest transition-colors">
                   {s.label}
                 </Link>
@@ -32,19 +47,21 @@ export function Footer() {
           <div>
             {/* h3 maintains correct heading hierarchy: h1 (hero) → h2 (sections) → h3 (footer) */}
             <h3 className="font-display uppercase tracking-widest text-brand-yellow mb-4 text-sm">Media</h3>
-            {["Episodes", "Blog", "Guests", "Network"].map((item) => (
-              <Link key={item} href={`/${item.toLowerCase()}`}
+            {mediaLinks.map((link) => (
+              <Link key={link.label} href={link.href}
+                target={"external" in link && link.external ? "_blank" : undefined}
+                rel={"external" in link && link.external ? "noopener noreferrer" : undefined}
                 className="block text-brand-white/60 hover:text-brand-white text-sm py-1 transition-colors">
-                {item}
+                {link.label}
               </Link>
             ))}
           </div>
           <div>
             <h3 className="font-display uppercase tracking-widest text-brand-yellow mb-4 text-sm">Platform</h3>
-            {["Players", "Rankings", "Events", "Merch", "Recruit"].map((item) => (
-              <Link key={item} href={`/${item.toLowerCase()}`}
+            {platformLinks.map((link) => (
+              <Link key={link.label} href={link.href}
                 className="block text-brand-white/60 hover:text-brand-white text-sm py-1 transition-colors">
-                {item}
+                {link.label}
               </Link>
             ))}
           </div>
