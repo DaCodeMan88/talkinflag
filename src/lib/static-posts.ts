@@ -299,6 +299,65 @@ Run these drills at game speed. Compete every rep. And remember — the teams th
 For a database of coaches and players at every level, visit the Talkin Flag player rankings.`,
     isStatic: true,
   },
+  {
+    slug: "how-to-play-flag-football",
+    title: "How to Play Flag Football: Rules, Positions, and Everything You Need to Know",
+    author: "Talkin Flag",
+    publishedAt: "2025-10-08T00:00:00Z",
+    category: "Beginner Guide",
+    excerpt:
+      "New to flag football? This is the complete guide — from the basic rules and field setup to positions, scoring, and what makes the sport different from tackle football.",
+    body: `Flag football is one of the fastest-growing sports in the world, and for good reason. It's fast, it's accessible, and it delivers the thrill of American football without the barriers of equipment or contact. Here's everything you need to know to get started.
+
+**What Is Flag Football?**
+
+Flag football is a non-contact version of American football in which players wear flags (fabric strips attached at the hips) instead of pads and helmets. The goal is the same as tackle football: advance the ball down the field and score touchdowns. The difference is that instead of tackling, the defense removes the ball carrier's flag to stop the play.
+
+The result is a game that rewards speed, route running, and playmaking over physicality alone.
+
+**The Field**
+
+A standard flag football field is smaller than a tackle football field. Most organized adult and competitive leagues play on a field that is approximately 70 yards long and 30 yards wide, divided into end zones at each end. Youth leagues often play on even smaller fields.
+
+Unlike tackle football, there is no line of scrimmage in the traditional sense. Most formats use a scrimmage line where the center snaps the ball to begin each play.
+
+**The Basic Rules**
+
+The offense has a set number of plays — typically four downs — to advance from one zone to the next. If they advance successfully, they get a new set of downs. If they don't, possession turns over.
+
+The quarterback snaps the ball from the center and must throw it. In most formats, the QB cannot run past the line of scrimmage — all gains on the ground must come from other ball carriers taking a handoff or jet sweep.
+
+There is no blocking in the traditional sense. In most rule sets, players cannot hold, grab, or push defenders. Flag guarding — using your hands or arms to protect your flag from being pulled — is also illegal and results in a penalty.
+
+When a player's flag is pulled, the play ends at that spot. If the flag falls off naturally during play, the ball carrier is down when one hand touches them below the neck.
+
+**Scoring**
+
+Touchdowns are worth 6 points, exactly as in tackle football. Most leagues offer a point-after-touchdown (PAT) attempt from a short distance — either 1 point for a running play or 2 points for a pass completion. Some formats include safety rules (2 points if the defense downs the offense in their own end zone) and field goals (3 points), though these vary by league.
+
+**Positions**
+
+Every team has a small number of players on the field at once — typically five to seven per side depending on the format. The core positions are:
+
+**Quarterback** — Takes the snap, reads the defense, and distributes the ball by pass or handoff.
+
+**Wide Receivers** — Run routes and catch passes. In flag football, WRs are often the most explosive athletes on the field.
+
+**Center** — Snaps the ball to the QB and becomes an eligible receiver. The timing between QB and center is one of the most important relationships in flag football.
+
+**Rushers** — The defensive player assigned to rush the QB. Most formats require a designated wait (a 5- or 7-yard rush line) before the rusher can attack.
+
+**Defensive Backs** — Cover receivers and attempt to intercept passes or pull flags.
+
+**The Olympic Era**
+
+Flag football was officially added to the Los Angeles 2028 Summer Olympics program, marking a turning point for the sport globally. National programs around the world are now actively building rosters, and the talent level at the elite level has never been higher.
+
+If you're just discovering the sport now, you're entering at exactly the right moment. The sport is growing, the community is welcoming, and the path from beginner to competitive player has never been more clearly defined.
+
+To follow the game at the highest level, explore episodes of the Talkin Flag podcast and the global player database.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {
