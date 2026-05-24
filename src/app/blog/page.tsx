@@ -37,10 +37,13 @@ export default async function BlogPage({
   const posts = await getAllPosts();
   const hasSanityPosts = posts.length > 0;
 
-  // Derive unique categories from static posts
-  const categories = Array.from(
-    new Set(staticPosts.map((p) => p.category))
-  ).sort();
+  // Derive unique categories with counts, sorted by count descending (most popular first)
+  const categoryCounts = staticPosts.reduce<Record<string, number>>((acc, p) => {
+    acc[p.category] = (acc[p.category] ?? 0) + 1;
+    return acc;
+  }, {});
+  const categories = Array.from(new Set(staticPosts.map((p) => p.category)))
+    .sort((a, b) => (categoryCounts[b] ?? 0) - (categoryCounts[a] ?? 0));
 
   // Sort all posts by date descending (newest first)
   const sortedPosts = [...staticPosts].sort(
@@ -113,7 +116,12 @@ export default async function BlogPage({
                 </div>
               }
             >
-              <BlogCategoryFilter categories={categories} current={activeCategory} />
+              <BlogCategoryFilter
+                categories={categories}
+                current={activeCategory}
+                counts={categoryCounts}
+                total={staticPosts.length}
+              />
             </Suspense>
 
             {/* Post count */}

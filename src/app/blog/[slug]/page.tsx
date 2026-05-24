@@ -326,6 +326,20 @@ export default async function BlogPostPage({
             </Link>
           </div>
 
+          {/* Back to top */}
+          <div className="mt-14 text-center">
+            <a
+              href="#"
+              className="inline-flex items-center gap-2 text-brand-white/30 hover:text-brand-yellow text-xs font-display uppercase tracking-widest transition-colors"
+              aria-label="Back to top"
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 12V4M4 8l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Back to top
+            </a>
+          </div>
+
           {/* More from the blog */}
           {morePosts.length > 0 && (
             <div className="mt-14 pt-10 border-t border-brand-white/10">
