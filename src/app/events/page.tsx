@@ -1,7 +1,7 @@
 import { createServerClient } from "@/lib/supabase";
 import { EventCard } from "@/components/events/EventCard";
+import { GlobeSection } from "@/components/events/GlobeSection";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 
 export const revalidate = 3600;
 
@@ -9,12 +9,6 @@ export const metadata: Metadata = {
   title: "Events | Talkin Flag — Flag Football Calendar",
   description: "Worldwide flag football tournaments, national championships, World Games, and Olympic qualifiers.",
 };
-
-// Lazy load the globe (WebGL — client only)
-const GuestGlobe = dynamic(
-  () => import("@/components/map/GuestGlobe").then((m) => ({ default: m.GuestGlobe })),
-  { ssr: false }
-);
 
 export default async function EventsPage() {
   const supabase = createServerClient();
@@ -37,7 +31,7 @@ export default async function EventsPage() {
         <div className="mb-16 bg-[#111111] border border-brand-yellow/20 p-8">
           <h2 className="font-display text-2xl uppercase text-brand-yellow mb-1">Global Flag Football Community</h2>
           <p className="text-brand-white/60 text-sm mb-6">Countries represented on Talkin Flag</p>
-          <GuestGlobe />
+          <GlobeSection />
         </div>
 
         {/* Events list */}
