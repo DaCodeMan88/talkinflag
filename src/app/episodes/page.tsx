@@ -15,8 +15,25 @@ export const metadata = buildMetadata({
 export default async function EpisodesPage() {
   const episodes = await getEpisodes(50);
 
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Talkin Flag Episodes",
+    "url": "https://talkinflag.com/episodes",
+    "itemListElement": episodes.map((ep, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": ep.guestName ? `${ep.guestName} — ${ep.title}` : ep.title,
+      "url": `https://talkinflag.com/episodes/${ep.id}`,
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white">

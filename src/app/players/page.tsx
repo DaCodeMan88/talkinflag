@@ -25,8 +25,31 @@ export default async function PlayersPage() {
 
   const playerList = players ?? [];
 
+  // Only include ranked players in the ItemList to keep the JSON-LD focused
+  const rankedPlayers = playerList.filter((p) => p.ranking_national != null).slice(0, 50);
+  const itemListJsonLd = rankedPlayers.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Talkin Flag Flag Football Player Rankings",
+        "url": "https://talkinflag.com/players",
+        "itemListElement": rankedPlayers.map((p, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": `${p.first_name} ${p.last_name}${p.position ? ` (${p.position})` : ""}`,
+          "url": `https://talkinflag.com/players/${p.id}`,
+        })),
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
           <div className="flex items-start justify-between gap-4">
