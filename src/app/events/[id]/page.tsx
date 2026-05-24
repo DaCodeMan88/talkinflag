@@ -138,6 +138,25 @@ export default async function EventDetailPage({
 
   if (!event) notFound();
 
+  // Fetch upcoming events to show as "More Events" (same country or same level, excluding current)
+  const today = new Date().toISOString().split("T")[0];
+  let moreQuery = supabase
+    .from("events")
+    .select("id, title, start_date, end_date, city, country, level, event_type, website_url, is_featured")
+    .gte("start_date", today)
+    .neq("id", id)
+    .order("start_date", { ascending: true });
+
+  // Prefer same country or same level
+  if (event.country) {
+    moreQuery = moreQuery.or(`country.eq.${event.country},level.eq.${event.level}`);
+  } else if (event.level) {
+    moreQuery = moreQuery.eq("level", event.level);
+  }
+
+  const { data: moreEventsRaw } = await moreQuery.limit(3) as { data: EventRow[] | null };
+  const moreEvents = moreEventsRaw ?? [];
+
   const location = [event.city, event.country].filter(Boolean).join(", ");
   const levelLabel = event.level ? (LEVEL_LABELS[event.level] ?? event.level.replaceAll("_", " ")) : null;
   const dateRange = formatDateRange(event.start_date, event.end_date);
@@ -301,8 +320,58 @@ export default async function EventDetailPage({
           </div>
         </div>
 
+        {/* More upcoming events */}
+        {moreEvents.length > 0 && (
+          <div className="mt-16 pt-10 border-t border-brand-white/10">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-lg uppercase text-brand-white">
+                More Upcoming Events
+              </h2>
+              <Link
+                href="/events"
+                className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline"
+              >
+                Full Calendar →
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {moreEvents.map((e) => {
+                const eLoc = [e.city, e.country].filter(Boolean).join(", ");
+                const eLevel = e.level ? (LEVEL_LABELS[e.level] ?? e.level.replaceAll("_", " ")) : null;
+                const eDate = new Date(e.start_date + "T12:00:00Z").toLocaleDateString("en-US", {
+                  month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
+                });
+                return (
+                  <Link
+                    key={e.id}
+                    href={`/events/${e.id}`}
+                    className="flex items-center gap-4 py-4 border-b border-brand-white/5 group hover:bg-brand-white/2 -mx-2 px-2 transition-colors"
+                    aria-label={`View details for ${e.title}`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                        {eLevel && (
+                          <span className="font-display text-[10px] uppercase tracking-widest text-brand-yellow">
+                            {eLevel}
+                          </span>
+                        )}
+                        <span className="text-brand-white/40 text-xs">{eDate}</span>
+                      </div>
+                      <h3 className="font-display text-sm uppercase text-brand-white leading-tight truncate group-hover:text-brand-yellow transition-colors">
+                        {e.title}
+                      </h3>
+                      {eLoc && <p className="text-brand-white/30 text-xs mt-0.5">{eLoc}</p>}
+                    </div>
+                    <span className="shrink-0 text-brand-yellow text-sm opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">→</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Footer CTA */}
-        <div className="border-t border-brand-white/10 pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="mt-10 border-t border-brand-white/10 pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-1">
               Know of another event?
