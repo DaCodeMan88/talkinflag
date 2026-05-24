@@ -22,6 +22,13 @@ export const metadata: Metadata = {
   title: "Talkin Flag | The Global Flag Football Podcast",
   description: "Hosted by Ambra & Tika Marcucci of the Italian National Team. 39+ episodes with elite athletes, coaches, and founders building the future of flag football.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://talkinflag.com"),
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: "https://talkinflag.com/blog/feed.xml", title: "Talkin Flag Blog RSS Feed" },
+      ],
+    },
+  },
   openGraph: {
     title: "Talkin Flag",
     description: "The global hub for flag football — podcast, players, rankings, events.",

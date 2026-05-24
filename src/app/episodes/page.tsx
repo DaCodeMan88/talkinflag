@@ -29,11 +29,39 @@ export default async function EpisodesPage() {
     })),
   };
 
+  const podcastSeriesJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "PodcastSeries",
+    "name": "Talkin Flag",
+    "description": "The global flag football podcast hosted by Ambra & Tika Marcucci of the Italian National Team. Conversations with elite athletes, coaches, founders, and doctors shaping the sport worldwide.",
+    "url": "https://talkinflag.com/episodes",
+    "image": "https://talkinflag.com/og-image.png",
+    "inLanguage": "en",
+    "numberOfEpisodes": episodes.length,
+    "author": [
+      { "@type": "Person", "name": "Ambra Marcucci", "sameAs": "https://instagram.com/ambramarcu" },
+      { "@type": "Person", "name": "Tika Marcucci", "sameAs": "https://instagram.com/tikamarcu" },
+    ],
+    "sameAs": [
+      "https://youtube.com/@thetalkinballsnetwork",
+      "https://instagram.com/talkinflagshow",
+    ],
+    "publisher": {
+      "@type": "Organization",
+      "name": "Talkin Flag",
+      "url": "https://talkinflag.com",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(podcastSeriesJsonLd) }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
