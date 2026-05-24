@@ -90,6 +90,19 @@ export default async function BlogPostPage({
     const wordCount = staticPost.body.trim().split(/\s+/).length;
     const readingMinutes = Math.max(1, Math.round(wordCount / 200));
 
+    // Extract section headings for Table of Contents (posts with 4+ headings get a TOC)
+    function slugifyHeading(text: string): string {
+      return text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
+    }
+    const headings = staticPost.body
+      .split("\n\n")
+      .map((b) => b.trim())
+      .filter(Boolean)
+      .flatMap((block) => {
+        const m = block.match(/^\*\*(.+?)\*\*$/);
+        return m ? [{ text: m[1], id: slugifyHeading(m[1]) }] : [];
+      });
+
     const faqJsonLd = staticPost.faqItems?.length
       ? {
           "@context": "https://schema.org",
@@ -121,8 +134,12 @@ export default async function BlogPostPage({
       "headline": staticPost.title,
       "description": staticPost.excerpt,
       "datePublished": staticPost.publishedAt,
-      "dateModified": staticPost.publishedAt, // updated when post is revised
-      "author": { "@type": "Person", "name": staticPost.author },
+      "dateModified": staticPost.publishedAt,
+      "author": {
+        "@type": "Person",
+        "name": staticPost.author,
+        "url": "https://talkinflag.com/about",
+      },
       "publisher": {
         "@type": "Organization",
         "name": "Talkin Flag",
@@ -133,7 +150,9 @@ export default async function BlogPostPage({
         },
       },
       "url": `https://talkinflag.com/blog/${staticPost.slug}`,
+      "mainEntityOfPage": `https://talkinflag.com/blog/${staticPost.slug}`,
       "articleSection": staticPost.category,
+      "wordCount": wordCount,
       // Custom edge-rendered OG image (opengraph-image.tsx)
       "image": {
         "@type": "ImageObject",
@@ -229,6 +248,30 @@ export default async function BlogPostPage({
           <p className="text-brand-white/80 text-lg leading-relaxed mb-10 border-l-2 border-brand-yellow pl-5">
             {staticPost.excerpt}
           </p>
+
+          {/* Table of Contents — shown for posts with 4+ sections */}
+          {headings.length >= 4 && (
+            <nav
+              aria-label="Table of contents"
+              className="mb-10 bg-[#111111] border border-brand-white/10 p-5"
+            >
+              <p className="font-display text-[10px] uppercase tracking-[0.3em] text-brand-yellow mb-3">
+                In This Article
+              </p>
+              <ol className="space-y-2">
+                {headings.map((h) => (
+                  <li key={h.id}>
+                    <a
+                      href={`#${h.id}`}
+                      className="text-brand-white/60 text-sm hover:text-brand-yellow transition-colors leading-snug"
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
 
           {/* Body */}
           <RichText body={staticPost.body} />

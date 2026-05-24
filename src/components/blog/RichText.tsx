@@ -3,7 +3,7 @@
  * Handles the minimal formatting used in staticPosts:
  *  - **bold text** inline
  *  - [link text](url) inline links
- *  - A standalone paragraph that IS just **heading** → renders as <h3>
+ *  - A standalone paragraph that IS just **heading** → renders as <h3> with anchor ID
  *  - Blocks whose lines all start with "- " → renders as <ul>
  *  - Regular paragraphs
  *
@@ -11,6 +11,15 @@
  */
 
 import type { ReactNode } from "react";
+
+/** Slugify a heading string for use as an anchor ID. */
+function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
 
 /** Split a string on **bold** and [link](url) markers. */
 function renderInline(text: string): ReactNode {
@@ -57,12 +66,18 @@ export function RichText({ body, className = "" }: RichTextProps) {
   return (
     <div className={`space-y-5 ${className}`}>
       {blocks.map((block, i) => {
-        // Standalone **heading** paragraph → render as section heading
+        // Standalone **heading** paragraph → render as section heading with anchor
         const headingMatch = block.match(/^\*\*(.+?)\*\*$/);
         if (headingMatch) {
+          const headingText = headingMatch[1];
+          const headingId = slugifyHeading(headingText);
           return (
-            <h3 key={i} className="font-display text-base uppercase tracking-wide text-brand-white pt-2">
-              {headingMatch[1]}
+            <h3
+              key={i}
+              id={headingId}
+              className="font-display text-base uppercase tracking-wide text-brand-white pt-2 scroll-mt-24"
+            >
+              {headingText}
             </h3>
           );
         }
