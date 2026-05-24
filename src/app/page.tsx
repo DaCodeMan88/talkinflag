@@ -9,6 +9,7 @@ import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { Suspense } from "react";
 
 export const revalidate = 3600;
 
@@ -113,8 +114,34 @@ export default async function HomePage() {
       </section>
 
       <ListenOn />
-      <EventsTeaser />
-      <PlayersSpotlight />
+      {/* Suspense allows EventsTeaser & PlayersSpotlight to stream independently
+          so the hero, episodes, and ListenOn sections appear before Supabase resolves */}
+      <Suspense fallback={
+        <div className="bg-[#0a0a0a] border-t border-brand-white/5 py-20 px-6">
+          <div className="max-w-7xl mx-auto space-y-4">
+            <div className="h-12 w-64 bg-brand-white/5 animate-pulse rounded-sm" />
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-16 bg-brand-white/5 animate-pulse rounded-sm" />
+            ))}
+          </div>
+        </div>
+      }>
+        <EventsTeaser />
+      </Suspense>
+      <Suspense fallback={
+        <div className="bg-brand-black border-t border-brand-white/5 py-20 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="h-12 w-48 bg-brand-white/5 animate-pulse rounded-sm mb-8" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-40 bg-brand-white/5 animate-pulse rounded-sm" />
+              ))}
+            </div>
+          </div>
+        </div>
+      }>
+        <PlayersSpotlight />
+      </Suspense>
       <NewsletterSignup />
     </>
   );
