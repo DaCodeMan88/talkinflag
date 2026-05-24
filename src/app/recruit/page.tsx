@@ -1,5 +1,10 @@
+import { createServerClient } from "@/lib/supabase";
+import { PlayerCard } from "@/components/players/PlayerCard";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
+import type { Player } from "@/types/player";
+
+export const revalidate = 300;
 
 export const metadata = buildMetadata({
   title: "Recruit Players | Talkin Flag — Find Elite Flag Football Talent",
@@ -8,12 +13,33 @@ export const metadata = buildMetadata({
   path: "/recruit",
 });
 
-export default function RecruitPage() {
+export default async function RecruitPage() {
+  const supabase = createServerClient();
+
+  // Fetch top-ranked verified players for the showcase
+  const { data: topPlayers } = await supabase
+    .from("players")
+    .select("*")
+    .eq("is_verified", true)
+    .not("ranking_national", "is", null)
+    .order("ranking_national", { ascending: true })
+    .limit(8) as { data: Player[] | null };
+
+  // Fallback: if no ranked players, show any verified players
+  const { data: fallbackPlayers } = !topPlayers?.length
+    ? await supabase
+        .from("players")
+        .select("*")
+        .eq("is_verified", true)
+        .limit(8) as { data: Player[] | null }
+    : { data: null };
+
+  const showcase = topPlayers?.length ? topPlayers : (fallbackPlayers ?? []);
+
   return (
     <div className="min-h-screen bg-brand-black">
       {/* Hero */}
       <section className="pt-32 pb-24 px-4 relative overflow-hidden">
-        {/* Background accent */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-yellow/5 rounded-full blur-3xl" />
         </div>
@@ -37,7 +63,7 @@ export default function RecruitPage() {
             href="/players"
             className="inline-flex items-center gap-3 bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-8 py-4 hover:bg-yellow-400 transition-colors"
           >
-            Browse Player Database
+            Browse Full Database
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -76,6 +102,40 @@ export default function RecruitPage() {
         </div>
       </section>
 
+      {/* Top Players Showcase */}
+      {showcase.length > 0 && (
+        <section className="py-20 px-4 border-t border-brand-white/10 bg-[#0a0a0a]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <p className="font-display text-brand-yellow text-xs uppercase tracking-[0.3em] mb-2">
+                  Currently Listed
+                </p>
+                <h2 className="font-display text-3xl md:text-4xl uppercase text-brand-white">
+                  {topPlayers?.length ? "Top Ranked Players" : "Featured Players"}
+                </h2>
+              </div>
+              <Link
+                href="/players"
+                className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline hidden md:block"
+              >
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {showcase.map((player) => (
+                <PlayerCard key={player.id} player={player} />
+              ))}
+            </div>
+            <div className="mt-8 text-center md:hidden">
+              <Link href="/players" className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline">
+                View All Players →
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Stats strip */}
       <section className="py-14 px-4 bg-brand-yellow">
         <div className="max-w-5xl mx-auto grid grid-cols-3 gap-8 text-center">
@@ -103,7 +163,7 @@ export default function RecruitPage() {
           </h2>
           <p className="text-brand-white/60 mb-8 max-w-lg mx-auto leading-relaxed">
             Submit your player profile and get in front of college coaches, national
-            team selectors, and scouts worldwide. It's completely free.
+            team selectors, and scouts worldwide. It&apos;s completely free.
           </p>
           <Link
             href="/players/submit"
