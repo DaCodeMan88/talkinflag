@@ -111,11 +111,15 @@ export async function generateMetadata({
       .filter(Boolean)
       .join(" · ");
 
-  return buildMetadata({
+  // Let opengraph-image.tsx handle the OG image (event-specific card with title + date + location)
+  const base = buildMetadata({
     title: event.title,
     description,
     path: `/events/${id}`,
   });
+  if (base.openGraph) delete (base.openGraph as Record<string, unknown>).images;
+  if (base.twitter) delete (base.twitter as Record<string, unknown>).images;
+  return base;
 }
 
 // ---------------------------------------------------------------------------
