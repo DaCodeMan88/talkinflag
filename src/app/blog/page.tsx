@@ -47,8 +47,30 @@ export default async function BlogPage({
     ? staticPosts.filter((p) => p.category === activeCategory)
     : staticPosts;
 
+  // Sort by date descending for ItemList JSON-LD
+  const sortedForSchema = [...staticPosts].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Talkin Flag Blog — Flag Football News & Analysis",
+    "url": "https://talkinflag.com/blog",
+    "itemListElement": sortedForSchema.map((p, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": p.title,
+      "url": `https://talkinflag.com/blog/${p.slug}`,
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
           <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white">Blog</h1>

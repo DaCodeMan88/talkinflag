@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { Search, X, Globe } from "lucide-react";
 import { PlayerCard } from "./PlayerCard";
 import { RankingsTable } from "./RankingsTable";
 import Link from "next/link";
@@ -9,9 +9,11 @@ import type { Player } from "@/types/player";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS: { value: string; label: string }[] = [
+  { value: "youth", label: "Youth" },
   { value: "high_school", label: "High School" },
   { value: "college", label: "College" },
   { value: "national", label: "National" },
+  { value: "international", label: "International" },
   { value: "pro", label: "Pro" },
 ];
 
@@ -25,6 +27,14 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [position, setPosition] = useState(searchParams.get("position") ?? "");
   const [level, setLevel] = useState(searchParams.get("level") ?? "");
+  const [country, setCountry] = useState(searchParams.get("country") ?? "");
+
+  // Derive unique countries from the player list (sorted, non-null)
+  const countries = useMemo(() => {
+    const set = new Set<string>();
+    players.forEach((p) => { if (p.country) set.add(p.country); });
+    return Array.from(set).sort();
+  }, [players]);
 
   const filtered = useMemo(() => {
     let result = players;
@@ -52,20 +62,26 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
       result = result.filter((p) => p.level === level);
     }
 
+    // Country filter
+    if (country) {
+      result = result.filter((p) => p.country === country);
+    }
+
     return result;
-  }, [players, query, position, level]);
+  }, [players, query, position, level, country]);
 
   const rankedFiltered = useMemo(
     () => filtered.filter((p) => p.ranking_national != null),
     [filtered]
   );
 
-  const hasAnyFilter = query.trim() !== "" || position !== "" || level !== "";
+  const hasAnyFilter = query.trim() !== "" || position !== "" || level !== "" || country !== "";
 
   function clearAll() {
     setQuery("");
     setPosition("");
     setLevel("");
+    setCountry("");
   }
 
   return (
@@ -147,6 +163,39 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             ))}
           </div>
         </div>
+        {/* Country filter — only shown when multiple countries present */}
+        {countries.length > 1 && (
+          <div className="flex items-center gap-3">
+            <Globe size={14} className="text-brand-white/30 shrink-0" aria-hidden="true" />
+            <div className="relative">
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                aria-label="Filter by country"
+                className="appearance-none bg-[#111111] border border-brand-white/15 text-brand-white/70 pl-3 pr-8 py-1.5 text-xs font-display uppercase tracking-widest focus:border-brand-yellow focus:outline-none cursor-pointer"
+              >
+                <option value="">All Countries</option>
+                {countries.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-brand-white/40">
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true">
+                  <path d="M0 0l5 6 5-6z" />
+                </svg>
+              </div>
+            </div>
+            {country && (
+              <button
+                onClick={() => setCountry("")}
+                aria-label="Clear country filter"
+                className="text-brand-white/40 hover:text-brand-yellow transition-colors"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Results summary */}
