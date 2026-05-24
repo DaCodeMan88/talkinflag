@@ -40,6 +40,7 @@ export async function generateMetadata({
       title: staticPost.title,
       description: staticPost.excerpt,
       path: `/blog/${staticPost.slug}`,
+      type: "article",
     });
   }
 
@@ -51,6 +52,7 @@ export async function generateMetadata({
         title: post.title,
         description: post.excerpt || `${post.title} — Talkin Flag Blog`,
         path: `/blog/${post.slug?.current ?? slug}`,
+        type: "article",
       });
     }
   }

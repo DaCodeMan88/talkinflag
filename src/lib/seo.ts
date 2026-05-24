@@ -7,11 +7,13 @@ export function buildMetadata({
   description,
   image,
   path = "",
+  type = "website",
 }: {
   title: string;
   description: string;
   image?: string;
   path?: string;
+  type?: "website" | "article";
 }): Metadata {
   const fullTitle = title.includes("Talkin Flag") ? title : `${title} | Talkin Flag`;
   const pageTitle = encodeURIComponent(fullTitle.replace(" | Talkin Flag", "").replace("Talkin Flag — ", "").replace("Talkin Flag | ", ""));
@@ -32,7 +34,7 @@ export function buildMetadata({
       url: `${siteUrl}${path}`,
       siteName: "Talkin Flag",
       images: [{ url: ogImage, width: 1200, height: 630 }],
-      type: "website",
+      type,
     },
     twitter: {
       card: "summary_large_image",
