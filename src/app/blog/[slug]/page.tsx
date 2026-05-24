@@ -44,12 +44,21 @@ export async function generateMetadata({
   // Check static posts first
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
-    return withCustomOg(buildMetadata({
+    const base = withCustomOg(buildMetadata({
       title: staticPost.title,
       description: staticPost.excerpt,
       path: `/blog/${staticPost.slug}`,
       type: "article",
     }));
+    // Enrich Open Graph with article-specific metadata
+    if (base.openGraph) {
+      (base.openGraph as Record<string, unknown>).publishedTime = staticPost.publishedAt;
+      (base.openGraph as Record<string, unknown>).modifiedTime = staticPost.publishedAt;
+      (base.openGraph as Record<string, unknown>).section = staticPost.category;
+      (base.openGraph as Record<string, unknown>).authors = [staticPost.author];
+      (base.openGraph as Record<string, unknown>).tags = [staticPost.category, "flag football"];
+    }
+    return base;
   }
 
   // Fall through to Sanity
