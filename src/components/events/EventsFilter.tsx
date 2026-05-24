@@ -92,9 +92,15 @@ export function EventsFilter({ events }: { events: Event[] }) {
               return (
                 <div
                   key={event.id}
-                  className="bg-[#111111] border border-brand-yellow/40 p-6 flex flex-col"
+                  className="relative bg-[#111111] border border-brand-yellow/40 p-6 flex flex-col group hover:border-brand-yellow/70 transition-colors"
                 >
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                  {/* Full-card internal link */}
+                  <Link
+                    href={`/events/${event.id}`}
+                    className="absolute inset-0 z-0"
+                    aria-label={`View details for ${event.title}`}
+                  />
+                  <div className="flex items-center gap-2 flex-wrap mb-2 relative z-10">
                     <span className="bg-brand-yellow text-brand-black font-display text-[10px] px-2 py-0.5 uppercase tracking-widest">
                       Featured
                     </span>
@@ -104,24 +110,30 @@ export function EventsFilter({ events }: { events: Event[] }) {
                       </span>
                     )}
                   </div>
-                  <h4 className="font-display text-lg uppercase text-brand-white leading-tight mb-2 flex-1">
+                  <h4 className="font-display text-lg uppercase text-brand-white leading-tight mb-2 flex-1 relative z-10 group-hover:text-brand-yellow transition-colors">
                     {event.title}
                   </h4>
-                  <p className="text-brand-white/60 text-sm mb-1">{formatShortDate(event.start_date)}</p>
+                  <p className="text-brand-white/60 text-sm mb-1 relative z-10">{formatShortDate(event.start_date)}</p>
                   {location && (
-                    <p className="text-brand-white/40 text-xs mb-4">{location}</p>
+                    <p className="text-brand-white/40 text-xs mb-4 relative z-10">{location}</p>
                   )}
-                  {event.website_url && (
-                    <a
-                      href={event.website_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="self-start text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline mt-auto"
-                      aria-label={`Details for ${event.title}`}
-                    >
-                      Details ↗
-                    </a>
-                  )}
+                  <div className="flex items-center gap-3 mt-auto relative z-10">
+                    <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
+                      View Details →
+                    </span>
+                    {event.website_url && (
+                      <a
+                        href={event.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-white/40 font-display text-xs uppercase tracking-widest hover:text-brand-white transition-colors"
+                        aria-label={`Official website for ${event.title}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Site ↗
+                      </a>
+                    )}
+                  </div>
                 </div>
               );
             })}

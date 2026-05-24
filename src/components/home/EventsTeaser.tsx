@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase";
 import Link from "next/link";
+// Each row is now a link to the internal /events/[id] detail page
 
 interface TeaserEvent {
   id: string;
@@ -60,9 +61,11 @@ export async function EventsTeaser() {
             const levelLabel = event.level?.replace(/_/g, " ").toUpperCase();
 
             return (
-              <div
+              <Link
                 key={event.id}
+                href={`/events/${event.id}`}
                 className="flex items-center gap-6 py-5 group hover:bg-brand-white/2 -mx-4 px-4 transition-colors"
+                aria-label={`View details for ${event.title}`}
               >
                 {/* Date badge */}
                 <div className="shrink-0 w-14 text-center">
@@ -100,19 +103,14 @@ export async function EventsTeaser() {
                   )}
                 </div>
 
-                {/* External link */}
-                {event.website_url && (
-                  <a
-                    href={event.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline"
-                    aria-label={`Details for ${event.title}`}
-                  >
-                    Details ↗
-                  </a>
-                )}
-              </div>
+                {/* Arrow indicator */}
+                <span
+                  className="shrink-0 text-brand-yellow font-display text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </Link>
             );
           })}
         </div>

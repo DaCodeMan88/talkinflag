@@ -63,15 +63,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // ── Player profile pages ──────────────────────────────────────────────────
+  // ── Player + Event pages (both from Supabase) ─────────────────────────────
   let playerPages: MetadataRoute.Sitemap = [];
+  let eventPages: MetadataRoute.Sitemap = [];
   try {
     const supabase = createServerClient();
-    const { data: players } = await supabase
-      .from("players")
-      .select("id, updated_at")
-      .eq("is_verified", true) as { data: Pick<Player, "id" | "updated_at">[] | null };
+    const today = new Date().toISOString().split("T")[0];
 
+    const [playersResult, eventsResult] = await Promise.all([
+      supabase.from("players").select("id, updated_at").eq("is_verified", true),
+      supabase.from("events").select("id, start_date").gte("start_date", today),
+    ]);
+    const players = playersResult.data as Pick<Player, "id" | "updated_at">[] | null;
+    const events = eventsResult.data as { id: string; start_date: string }[] | null;
+
+    // The parallel awaits already happened above; just read the data
     if (players) {
       playerPages = players.map((p) => ({
         url: `${BASE_URL}/players/${p.id}`,
@@ -80,9 +86,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       }));
     }
+
+    if (events) {
+      eventPages = events.map((e) => ({
+        url: `${BASE_URL}/events/${e.id}`,
+        lastModified: new Date(e.start_date),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    }
   } catch {
     // Supabase unavailable
   }
 
-  return [...staticPages, ...episodePages, ...blogPages, ...playerPages];
+  return [...staticPages, ...episodePages, ...blogPages, ...playerPages, ...eventPages];
 }
