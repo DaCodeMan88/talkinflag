@@ -32,6 +32,23 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Talkin Flag",
+          "url": "https://talkinflag.com",
+          "logo": "https://talkinflag.com/og-image.png",
+          "description": "The global flag football podcast hosted by Ambra & Tika Marcucci of the Italian National Team.",
+          "foundingDate": "2023",
+          "sameAs": [
+            "https://instagram.com/talkinflagshow",
+            "https://youtube.com/@thetalkinballsnetwork",
+            "https://x.com/TalkinFlagShow",
+          ],
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
           "@type": "WebSite",
           "url": "https://talkinflag.com",
           "name": "Talkin Flag",
