@@ -1,9 +1,5 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -11,6 +7,13 @@ interface ScrollRevealProps {
   delay?: number;
   className?: string;
 }
+
+const animationName: Record<string, string> = {
+  up: "revealUp",
+  left: "revealLeft",
+  right: "revealRight",
+  scale: "revealScale",
+};
 
 export function ScrollReveal({
   children, direction = "up", delay = 0, className = "",
@@ -21,31 +24,20 @@ export function ScrollReveal({
     const el = ref.current;
     if (!el) return;
 
-    const from: gsap.TweenVars = {
-      opacity: 0,
-      duration: 0.8,
-      delay,
-      ease: "power3.out",
-    };
+    // Start hidden
+    el.style.opacity = "0";
 
-    if (direction === "up") from.y = 50;
-    if (direction === "left") from.x = -50;
-    if (direction === "right") from.x = 50;
-    if (direction === "scale") from.scale = 0.9;
-
-    const anim = gsap.from(el, {
-      ...from,
-      scrollTrigger: {
-        trigger: el,
-        start: "top 85%",
-        toggleActions: "play none none none",
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        el.style.animation = `${animationName[direction]} 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}s both`;
       },
-    });
+      { threshold: 0.15 }
+    );
 
-    return () => {
-      anim.kill();
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [direction, delay]);
 
   return <div ref={ref} className={className}>{children}</div>;
