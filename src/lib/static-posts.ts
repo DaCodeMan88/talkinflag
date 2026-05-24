@@ -547,6 +547,75 @@ The Talkin Flag community spans every time zone and every continent. We've spoke
 We'll be covering every step of the journey to LA 2028 on Talkin Flag. Follow along.`,
     isStatic: true,
   },
+  {
+    slug: "how-to-coach-flag-football",
+    title: "How to Coach Flag Football: Building a Program from the Ground Up",
+    author: "Talkin Flag",
+    publishedAt: "2025-06-30T00:00:00Z",
+    category: "Coaching",
+    excerpt:
+      "Whether you're coaching a youth league for the first time or building a competitive club program, the same principles apply. Here's how to build something that lasts.",
+    body: `Coaching flag football is one of the most rewarding things you can do in sport. The game is fast, accessible, and it rewards the kind of coaching that actually changes athletes — not just tactically, but as competitors and teammates.
+
+But building a program is also hard. Here's a framework for doing it right.
+
+**Start With Culture, Not Plays**
+
+The most common mistake first-time coaches make is spending the majority of their early sessions on the playbook. That's backwards. Before you teach a single route or coverage scheme, you need to establish the culture of your program.
+
+What does it look like to be a part of your team? How do players treat each other? What are the standards for effort, preparation, and accountability? These aren't soft questions — they determine whether your program survives its first difficult moment. And every program has difficult moments.
+
+Establish culture early, reinforce it consistently, and protect it fiercely. The playbook is a tool. Culture is the foundation.
+
+**Build Your Practice Structure Before Your First Session**
+
+Every practice should have a written plan before you arrive on the field. The plan doesn't need to be elaborate — a simple 60-90 minute practice can run with four or five structured segments:
+
+1. **Warm-up (10 min)**: Dynamic movement, activation, routes without defense
+2. **Individual drills (15 min)**: Position-specific work. QBs throwing accuracy. WRs running releases. DBs working hip fluidity
+3. **Group work (15-20 min)**: Route combinations, coverage assignments, timing
+4. **Team period (20-25 min)**: Controlled scrimmage or situational work
+5. **Conditioning and close (10 min)**: Competitive finishing drill, team talk
+
+The structure matters more than the specific content. Athletes who know what to expect arrive mentally prepared. Coaches who know what they're doing don't waste practice time. Disorganized practice creates disorganized players.
+
+**Teach the Game, Not the Plays**
+
+There's a difference between coaching plays and coaching the game. Teaching plays means your players know what to do in specific situations you've drilled. Teaching the game means your players understand why — why this route stresses this coverage, why we're attacking this side of the field, why we need to be patient here.
+
+Players who understand the game make better decisions. They can adjust when the play breaks down. They can solve problems on the field that you never covered in practice. Players who only know plays stop thinking the moment something unexpected happens.
+
+In your film sessions and practice huddles, always explain the why. Take the extra 90 seconds to connect the drill to the game concept. It compounds over time in ways you can't quantify.
+
+**Develop Your QB Relationship First**
+
+Your quarterback is your program's most important relationship. Not because the position is more important than others — it isn't — but because the QB is the decision-maker. The clarity, trust, and alignment you build with your QB directly shapes how every other player experiences the offense.
+
+In your earliest sessions, spend significant one-on-one time with your QB understanding how they think, what they're confident in, and where they need to grow. The better you understand them, the better you can design an offense that makes them successful — rather than an offense that exists in theory but breaks down under your QB's actual decision-making patterns.
+
+**Establish a Scouting Process**
+
+As your team competes, you'll learn more from watching film than from any playbook. After every game, watch the film with a specific set of questions: What did our defense do on every scoring drive? What route combinations produced our best completions? What situations caused us to stall?
+
+These questions produce actionable information that directly feeds your next practice. Teams that scout their own film improve faster than teams that rely on instinct alone. Even at the youth and recreational level, reviewing even brief phone footage from games will accelerate development dramatically.
+
+**Evaluate Talent Honestly**
+
+One of the hardest parts of coaching is deploying players in roles that match their actual abilities — not their perceived abilities or their potential. A WR who cannot consistently separate against man coverage should not be your primary read in a close game, regardless of their work ethic or effort.
+
+Evaluate what you see, not what you hope to see. Then build your scheme around what you actually have. The best coaching decisions come from honest assessment, not wishful thinking.
+
+**The Long Game**
+
+Programs don't become great in one season. They become great through consistent improvement across multiple seasons — through the culture you establish, the habits you build, and the players you develop over time.
+
+If you're coaching flag football at any level, you have an opportunity to build something meaningful. The sport is growing faster than any other in the world, and the coaches who build programs with genuine care and intention are the ones who will shape what flag football looks like at the highest levels.
+
+Build something you're proud of. The wins will follow.
+
+For player development resources, visit the Talkin Flag player database. To explore episodes on coaching and elite performance, browse the podcast.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {

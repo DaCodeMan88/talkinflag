@@ -5,9 +5,19 @@ function isSafeUrl(url: string | null | undefined): boolean {
   return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
 }
 
+/** Convert ISO 3166-1 alpha-2 country code to flag emoji */
+function countryFlag(code: string | null | undefined): string {
+  if (!code || code.length !== 2) return "";
+  const offset = 127397; // 0x1F1E6 - 0x41
+  return Array.from(code.toUpperCase())
+    .map((c) => String.fromCodePoint(c.charCodeAt(0) + offset))
+    .join("");
+}
+
 export function PlayerCard({ player }: { player: Player }) {
   const name = `${player.first_name} ${player.last_name}`;
   const levelLabel = player.level?.replaceAll("_", " ");
+  const flag = countryFlag(player.country_code);
 
   return (
     <article className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors p-5 group relative">
@@ -51,7 +61,10 @@ export function PlayerCard({ player }: { player: Player }) {
         <p className="text-brand-white/60 text-xs mb-1">{player.school_or_team}</p>
       )}
       {player.country && (
-        <p className="text-brand-white/40 text-xs">{player.country}</p>
+        <p className="text-brand-white/40 text-xs">
+          {flag && <span className="mr-1" aria-hidden="true">{flag}</span>}
+          {player.country}
+        </p>
       )}
 
       <div className="flex items-center gap-3 mt-3 relative z-10">
