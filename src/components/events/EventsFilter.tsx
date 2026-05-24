@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { EventCard } from "./EventCard";
+import Link from "next/link";
 
 interface Event {
   id: string;
@@ -31,8 +32,21 @@ function getMonthKey(dateStr: string): string {
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 }
 
+function formatShortDate(dateStr: string) {
+  const d = new Date(dateStr + "T12:00:00Z");
+  return d.toLocaleDateString("en-US", {
+    month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
+  });
+}
+
 export function EventsFilter({ events }: { events: Event[] }) {
   const [activeLevel, setActiveLevel] = useState<string>("all");
+
+  // Separate featured events (pinned at top regardless of filter)
+  const featuredEvents = useMemo(
+    () => events.filter((e) => e.is_featured),
+    [events]
+  );
 
   // Derive unique levels present in the events list
   const availableLevels = useMemo(() => {
@@ -42,8 +56,10 @@ export function EventsFilter({ events }: { events: Event[] }) {
   }, [events]);
 
   const filtered = useMemo(() => {
-    if (activeLevel === "all") return events;
-    return events.filter((e) => e.level === activeLevel);
+    // Exclude featured events from the main list (they appear in the pinned section)
+    const nonFeatured = events.filter((e) => !e.is_featured);
+    if (activeLevel === "all") return nonFeatured;
+    return nonFeatured.filter((e) => e.level === activeLevel);
   }, [events, activeLevel]);
 
   // Group filtered events by month
@@ -60,7 +76,61 @@ export function EventsFilter({ events }: { events: Event[] }) {
 
   return (
     <div>
+      {/* Featured / Marquee events — pinned at top */}
+      {featuredEvents.length > 0 && (
+        <div className="mb-10">
+          <div className="flex items-center gap-4 mb-4">
+            <h3 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
+              Marquee Events
+            </h3>
+            <div className="flex-1 h-px bg-brand-yellow/30" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {featuredEvents.map((event) => {
+              const location = [event.city, event.country].filter(Boolean).join(", ");
+              const levelLabel = event.level?.replace(/_/g, " ").toUpperCase();
+              return (
+                <div
+                  key={event.id}
+                  className="bg-[#111111] border border-brand-yellow/40 p-6 flex flex-col"
+                >
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                    <span className="bg-brand-yellow text-brand-black font-display text-[10px] px-2 py-0.5 uppercase tracking-widest">
+                      Featured
+                    </span>
+                    {levelLabel && (
+                      <span className="text-brand-yellow font-display text-[10px] uppercase tracking-widest">
+                        {levelLabel}
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="font-display text-lg uppercase text-brand-white leading-tight mb-2 flex-1">
+                    {event.title}
+                  </h4>
+                  <p className="text-brand-white/60 text-sm mb-1">{formatShortDate(event.start_date)}</p>
+                  {location && (
+                    <p className="text-brand-white/40 text-xs mb-4">{location}</p>
+                  )}
+                  {event.website_url && (
+                    <a
+                      href={event.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="self-start text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline mt-auto"
+                      aria-label={`Details for ${event.title}`}
+                    >
+                      Details ↗
+                    </a>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Level filter tabs — only shown when multiple levels exist */}
+      {/* Derive levels from non-featured events only */}
       {availableLevels.length > 1 && (
         <div className="flex flex-wrap gap-2 mb-8">
           <button
@@ -71,10 +141,11 @@ export function EventsFilter({ events }: { events: Event[] }) {
                 : "border-brand-white/20 text-brand-white/60 hover:border-brand-yellow/40 hover:text-brand-yellow"
             }`}
           >
-            All ({events.length})
+            All Other Events ({events.filter((e) => !e.is_featured).length})
           </button>
           {availableLevels.map((level) => {
-            const count = events.filter((e) => e.level === level).length;
+            const count = events.filter((e) => e.level === level && !e.is_featured).length;
+            if (count === 0) return null;
             return (
               <button
                 key={level}
