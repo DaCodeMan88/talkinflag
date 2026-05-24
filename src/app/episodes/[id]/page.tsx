@@ -69,8 +69,37 @@ export default async function EpisodePage({
     `https://talkinflag.com/episodes/${id}`
   )}`;
 
+  // JSON-LD for podcast episode
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "PodcastEpisode",
+    "name": episode.title,
+    "description": episode.description.slice(0, 500),
+    "url": `https://talkinflag.com/episodes/${id}`,
+    "datePublished": episode.publishedAt,
+    "associatedMedia": {
+      "@type": "MediaObject",
+      "contentUrl": episode.youtubeUrl,
+      "embedUrl": `https://www.youtube.com/embed/${episode.id}`,
+    },
+    "thumbnailUrl": episode.thumbnail,
+    "partOfSeries": {
+      "@type": "PodcastSeries",
+      "name": "Talkin Flag",
+      "url": "https://talkinflag.com",
+    },
+    ...(episode.episodeNumber && { "episodeNumber": episode.episodeNumber }),
+    ...(episode.guestName && {
+      "actor": { "@type": "Person", "name": episode.guestName },
+    }),
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Back navigation */}

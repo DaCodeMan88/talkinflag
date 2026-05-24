@@ -1,5 +1,6 @@
-// Latest Talkin Flag episode video ID — update as new episodes drop
-const FEATURED_VIDEO_ID = "y3O9mtBkpD8";
+import { getEpisodes } from "@/lib/youtube";
+
+const FALLBACK_VIDEO_ID = "y3O9mtBkpD8";
 
 const PLATFORMS = [
   {
@@ -24,7 +25,14 @@ const PLATFORMS = [
   },
 ];
 
-export function SubscribePanel() {
+export async function SubscribePanel() {
+  let videoId = FALLBACK_VIDEO_ID;
+  try {
+    const episodes = await getEpisodes(1);
+    if (episodes[0]?.id) videoId = episodes[0].id;
+  } catch {
+    // Fall back to hardcoded ID
+  }
   return (
     <section className="relative bg-brand-black pb-24 px-6">
       {/* Seamless continuation — no abrupt edge since the hero already fades to black */}
@@ -43,7 +51,7 @@ export function SubscribePanel() {
         {/* YouTube embed */}
         <div className="relative w-full aspect-video bg-[#0a0a0a] overflow-hidden border border-brand-white/5">
           <iframe
-            src={`https://www.youtube.com/embed/${FEATURED_VIDEO_ID}?rel=0&modestbranding=1&color=white`}
+            src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&color=white`}
             title="Talkin Flag Podcast — Latest Episode"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
