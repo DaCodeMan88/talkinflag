@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 // Lazy load the globe (WebGL — client only)
 const GuestGlobe = dynamic(
-  () => import("@/components/map/GuestGlobe").then((m) => m.GuestGlobe),
-  { ssr: false, loading: () => <div className="w-full h-[400px] bg-[#050a00] animate-pulse" /> }
+  () => import("@/components/map/GuestGlobe").then((m) => ({ default: m.GuestGlobe })),
+  { ssr: false }
 );
 
 export default async function EventsPage() {
