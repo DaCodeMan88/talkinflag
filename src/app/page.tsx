@@ -4,6 +4,7 @@ import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { ListenOn } from "@/components/home/ListenOn";
 import { EventsTeaser } from "@/components/home/EventsTeaser";
 import { PlayersSpotlight } from "@/components/home/PlayersSpotlight";
+import { BlogTeaser } from "@/components/home/BlogTeaser";
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import Link from "next/link";
@@ -142,6 +143,7 @@ export default async function HomePage() {
       }>
         <PlayersSpotlight />
       </Suspense>
+      <BlogTeaser />
       <NewsletterSignup />
     </>
   );
