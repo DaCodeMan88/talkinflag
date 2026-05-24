@@ -34,27 +34,34 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
+  // Helper: remove generic OG image so opengraph-image.tsx takes precedence
+  function withCustomOg(meta: Awaited<ReturnType<typeof buildMetadata>>) {
+    if (meta.openGraph) delete (meta.openGraph as Record<string, unknown>).images;
+    if (meta.twitter) delete (meta.twitter as Record<string, unknown>).images;
+    return meta;
+  }
+
   // Check static posts first
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
-    return buildMetadata({
+    return withCustomOg(buildMetadata({
       title: staticPost.title,
       description: staticPost.excerpt,
       path: `/blog/${staticPost.slug}`,
       type: "article",
-    });
+    }));
   }
 
   // Fall through to Sanity
   if (sanityConfigured) {
     const post = await getPostBySlug(slug);
     if (post) {
-      return buildMetadata({
+      return withCustomOg(buildMetadata({
         title: post.title,
         description: post.excerpt || `${post.title} — Talkin Flag Blog`,
         path: `/blog/${post.slug?.current ?? slug}`,
         type: "article",
-      });
+      }));
     }
   }
 
