@@ -6,6 +6,11 @@
  * To write posts in Sanity Studio, go to https://sanity.io/manage → talkinflag project.
  */
 
+export interface FaqItem {
+  q: string;
+  a: string;
+}
+
 export interface StaticPost {
   slug: string;
   title: string;
@@ -14,6 +19,7 @@ export interface StaticPost {
   category: string;
   excerpt: string;
   body: string; // Plain text / simple markdown-like paragraphs
+  faqItems?: FaqItem[]; // Optional FAQ for FAQPage JSON-LD structured data
   isStatic: true;
 }
 
@@ -356,6 +362,28 @@ Flag football was officially added to the Los Angeles 2028 Summer Olympics progr
 If you're just discovering the sport now, you're entering at exactly the right moment. The sport is growing, the community is welcoming, and the path from beginner to competitive player has never been more clearly defined.
 
 To follow the game at the highest level, explore [episodes of the Talkin Flag podcast](/episodes) and the [global player database](/players).`,
+    faqItems: [
+      {
+        q: "How many players are on a flag football team?",
+        a: "Most flag football formats play 5-on-5 or 7-on-7, depending on the league and age group. Competitive adult leagues typically use 5 or 7 players per side. Youth leagues often play 5-on-5 on smaller fields.",
+      },
+      {
+        q: "Can you run the ball in flag football?",
+        a: "Yes, but in most formats the quarterback cannot run past the line of scrimmage — they must hand the ball off or throw it. Other players can run the ball freely after receiving a handoff or direct snap.",
+      },
+      {
+        q: "What counts as a tackle in flag football?",
+        a: "Instead of tackling, defenders pull a fabric flag from the ball carrier's belt. The play ends where the flag is pulled. If the flag falls off naturally, one hand touch below the neck ends the play.",
+      },
+      {
+        q: "Is flag football an Olympic sport?",
+        a: "Yes. Flag football was officially added to the LA 2028 Summer Olympics program, making it a full Olympic medal sport for the first time.",
+      },
+      {
+        q: "What is flag guarding?",
+        a: "Flag guarding is when a ball carrier uses their hands, arms, or the ball to block a defender from pulling their flag. It is illegal in all standard flag football formats and results in a penalty.",
+      },
+    ],
     isStatic: true,
   },
   {
@@ -490,6 +518,24 @@ If you're competing at the club, national, or international level, invest in lig
 The sport is designed to be accessible. The equipment should support your performance, not burden it.
 
 For more on positions and what each role demands physically, see the flag football positions guide.`,
+    faqItems: [
+      {
+        q: "What equipment do you need to play flag football?",
+        a: "The three essentials are a flag belt, athletic cleats, and a football. Most leagues provide or require specific flag belts. You do not need pads, helmets, or any protective equipment.",
+      },
+      {
+        q: "What kind of cleats are best for flag football?",
+        a: "Lightweight skill-position cleats (low-cut or mid-cut) are best. Avoid heavy lineman cleats. If your league plays on artificial turf, dedicated turf shoes are recommended over molded cleats.",
+      },
+      {
+        q: "Do you need gloves to play flag football?",
+        a: "Gloves are not required but they help with catching, especially in wet conditions. Receiver gloves with sticky palms are popular with wide receivers and defensive backs. Quarterbacks typically do not wear receiver gloves.",
+      },
+      {
+        q: "How much does flag football equipment cost?",
+        a: "Starting out, you can get everything you need — cleats, a flag belt, and a ball — for under $100. Competitive-level gear including performance cleats and gloves typically runs $150–$300.",
+      },
+    ],
     isStatic: true,
   },
   {
@@ -763,6 +809,28 @@ Focus on flag pulls, not the ball carrier. New defenders often watch the ball in
 Have fun. Flag football is designed to be accessible and enjoyable. The skill development comes with reps, and every game teaches you something new.
 
 Welcome to the sport.`,
+    faqItems: [
+      {
+        q: "How many downs do you get in flag football?",
+        a: "In most formats, the offense gets four downs to advance the ball from one zone to the next. If they succeed, they receive a new set of four downs. Failing to advance results in a turnover.",
+      },
+      {
+        q: "Can the quarterback run in flag football?",
+        a: "In most rule sets, the quarterback cannot run past the line of scrimmage. They must hand off to another player or throw the ball. Other players can run freely after receiving a handoff.",
+      },
+      {
+        q: "What are the penalties in flag football?",
+        a: "Common penalties include flag guarding (protecting your flag with your hands), pass interference, illegal contact, false starts, and rushing violations. Most penalties result in a loss of yards or automatic first down.",
+      },
+      {
+        q: "How many points is a touchdown in flag football?",
+        a: "A touchdown is worth 6 points. After scoring, teams attempt a point-after-touchdown — typically 1 point for a run and 2 points for a pass from a short distance.",
+      },
+      {
+        q: "What is a blitz in flag football?",
+        a: "A blitz is when additional defensive players rush the quarterback beyond the standard single rusher. Most leagues regulate when and how many players can blitz to keep the game balanced.",
+      },
+    ],
     isStatic: true,
   },
   {
@@ -830,6 +898,24 @@ For ages 14+: tackle football is developmentally appropriate for players who wan
 There's no wrong answer — only the best fit for your child's goals, your family's situation, and your honest assessment of what matters most.
 
 At Talkin Flag, we believe both sports have a place. We also believe flag football has earned its recognition as a complete, elite-level sport. The LA 2028 Olympics will prove that to the world.`,
+    faqItems: [
+      {
+        q: "Is flag football safer than tackle football?",
+        a: "Flag football eliminates tackling, blocking, and most physical contact, resulting in significantly fewer concussions and collision-related injuries. It is widely considered safer, particularly for young players.",
+      },
+      {
+        q: "Does playing flag football help develop tackle football skills?",
+        a: "Yes. Flag football develops route running, passing accuracy, catching, reading defenses, and football IQ without the complexity of blocking schemes. Many NFL coaches and scouts recommend flag football for skill development in younger players.",
+      },
+      {
+        q: "Is flag football an Olympic sport?",
+        a: "Yes. Flag football was officially added to the LA 2028 Summer Olympics, making it an Olympic medal sport for the first time.",
+      },
+      {
+        q: "How much does flag football cost compared to tackle football?",
+        a: "Flag football is significantly less expensive. A full flag setup costs under $100. Tackle football requires helmets, shoulder pads, pants, and other protective gear that can cost $500–$1,000+, plus league fees.",
+      },
+    ],
     isStatic: true,
   },
   {
@@ -1043,6 +1129,28 @@ But for the kids who do love the game and want to pursue it, flag football build
 The most important thing is that your child enjoys the experience. Fun is the foundation of long-term participation in any sport. When kids love the game, the development follows naturally.
 
 Welcome to the flag football family.`,
+    faqItems: [
+      {
+        q: "What age can kids start playing flag football?",
+        a: "Many youth leagues accept players as young as 5 years old. NFL FLAG programs typically start at age 6. Most organized youth programs offer age-based divisions from 6U through 14U and beyond.",
+      },
+      {
+        q: "Is flag football safe for kids?",
+        a: "Yes. Flag football is designed for youth participation. It removes tackling, which is the primary source of contact injuries in football. Children are not required to wear pads or helmets in most flag programs.",
+      },
+      {
+        q: "What equipment does a child need for flag football?",
+        a: "Most youth leagues provide flag belts and jerseys. Families typically need to purchase athletic cleats appropriate for the playing surface. Some leagues provide all equipment — check with your local program.",
+      },
+      {
+        q: "How do I find a youth flag football league near me?",
+        a: "Search for NFL FLAG programs in your area, contact your local parks and recreation department, or check with local schools and YMCAs. You can also search the Talkin Flag events calendar for organized tournaments and leagues.",
+      },
+      {
+        q: "How long is a youth flag football season?",
+        a: "Youth flag football seasons typically run 8–12 weeks, often in spring and fall. Tournament events can be single-day competitions. Some leagues run year-round in warmer climates.",
+      },
+    ],
     isStatic: true,
   },
   {
@@ -1181,6 +1289,217 @@ Flag football isn't just a US sport anymore. With the LA 2028 Olympics approachi
 For international players looking to connect with the global community, the [Talkin Flag podcast](/episodes) and player database have been building connections between the flag football world since our founding. We've talked to players and coaches from Italy, Costa Rica, Sri Lanka, Nigeria, Sweden, and dozens of other countries — and every one of them found their community by starting exactly where you are: looking for a league and taking the first step.
 
 Find your league. Join your team. Welcome to flag football.`,
+    faqItems: [
+      {
+        q: "How do I find a flag football league near me?",
+        a: "The fastest way is to search for NFL FLAG programs in your area, check your local parks and recreation department, or contact your nearest YMCA. You can also search Google for 'flag football league [your city]' or browse the Talkin Flag events calendar.",
+      },
+      {
+        q: "How do I find flag football leagues internationally?",
+        a: "Contact your national flag football federation — IFAF maintains a directory of all member federations. You can also search for national flag football associations on social media and connect through the Talkin Flag community.",
+      },
+      {
+        q: "Is flag football available year-round?",
+        a: "In many regions, yes. Indoor flag football leagues run during winter months, and outdoor recreational leagues often run spring and fall seasons. Tournament events happen throughout the year.",
+      },
+    ],
+    isStatic: true,
+  },
+  {
+    slug: "flag-football-film-study-guide",
+    title: "How to Study Film in Flag Football: What to Watch and Why It Matters",
+    author: "Talkin Flag",
+    publishedAt: "2026-05-20T00:00:00Z",
+    category: "Resources",
+    excerpt:
+      "Film study isn't just for NFL quarterbacks. At every level of flag football, watching game film separates players who grow from players who plateau. Here's how to actually do it.",
+    body: `In flag football, every rep you take on the field is valuable. But there's a second practice session that most recreational and even competitive players skip entirely: watching film.
+
+Film study — reviewing recorded games and individual play sequences — is one of the highest-return activities available to any flag football player or coach. And thanks to smartphone cameras, virtually every competitive game is being recorded. The footage is there. The question is whether you're using it.
+
+**Why Film Study Works**
+
+The human brain processes live game situations in real time, which means your attention is always on the present moment. You don't have the luxury of replaying a route break, rewinding a coverage rotation, or slowing down a receiver's release.
+
+Film does all of that. When you watch yourself play, you see things that are invisible in the moment: your alignment before the snap, how much cushion you're giving receivers, whether your quarterback is telegraphing throws, whether your routes are converting at the stem or getting rerouted.
+
+Elite players at the national and international level typically spend more time watching film than they spend in individual drills. The physical reps build the muscle memory. The film study builds the mental framework.
+
+**What Offensive Players Should Watch**
+
+For quarterbacks, the primary questions are: Where is the defense showing pressure pre-snap? What is their coverage rotation? Are you holding the ball too long on specific routes?
+
+Watch your footwork in the pocket, especially on timing throws. Elite QBs are delivering the ball before the receiver finishes their break — they're throwing to a spot, not reacting to where the receiver ends up. If you're consistently waiting, you'll see it immediately on film.
+
+For receivers, watch how you're releasing off the line. Are defenders making contact that's disrupting your routes? Are you selling your routes — making the curl look like a post, the out look like an in — or running robotic patterns that tip the coverage?
+
+Track how often you're open vs. contested. If you're getting a lot of contested catches rather than separation, that's a scheme or route-running problem that film can diagnose.
+
+**What Defensive Players Should Watch**
+
+For defensive backs, film reveals alignment tendencies that get exploited. Are you consistently giving inside leverage on an outside receiver, leaving a back shoulder throw open? Are you biting on double moves at a predictable point in the route?
+
+For teams running zone coverage, watch where the holes in your zone appear. Every zone has soft spots. Film tells you where the offense found them and whether your rotation to fill those spots is happening at the right time.
+
+Pay attention to the quarterback's eyes. Elite QBs manipulate safeties with their gaze. Watch what happens before the throw — you'll find patterns that are invisible at game speed.
+
+**How to Structure a Film Session**
+
+Don't just press play and watch passively. Structured film review produces far better results.
+
+Start with the full-game cut at normal speed to get a fresh look at rhythm and tendencies. Then slow down individual plays that either went well or went wrong.
+
+For plays that went wrong: What was the pre-snap read? What happened at the moment of the break or the snap? Where was the error in the sequence?
+
+For plays that went well: Can you identify why they worked? Was it scheme, execution, or a defensive mistake? Understanding why good things happen is just as important as diagnosing failures.
+
+Take notes. Even brief notes about specific tendencies — "their QB holds on seam routes" or "their outside receiver releases hard inside every third play" — become the vocabulary of your game planning.
+
+**Tools for Recording and Reviewing**
+
+Any smartphone with a good camera can produce usable game film. The key is placement: a camera positioned at the end zone looking down the field captures full-route development; a sideline angle captures spacing and coverage rotations.
+
+For editing, tools like Hudl, Krossover, or even the YouTube clip editor are sufficient for most competitive programs. If you're reviewing solo, slow-motion video playback in your camera roll is often enough.
+
+**Building the Habit**
+
+The players who improve fastest at any level are the ones who treat every game as both a competitive event and a learning session. Film is the bridge between those two things.
+
+Start small: after your next game, review just three plays. One that worked. One that didn't. One that surprised you. Do that consistently and the habit builds naturally.
+
+The game rewards preparation. Film is how preparation happens.`,
+    isStatic: true,
+  },
+  {
+    slug: "visualization-mental-prep-flag-football",
+    title: "Visualization and Mental Preparation for Flag Football: What Elite Athletes Actually Do",
+    author: "Talkin Flag",
+    publishedAt: "2026-05-12T00:00:00Z",
+    category: "Mental Performance",
+    excerpt:
+      "The physical preparation for flag football gets all the attention. But the mental side — visualization, pre-game routines, and managing pressure moments — is what separates good players from great ones.",
+    body: `In the Talkin Flag podcast archives, one topic surfaces in almost every conversation with national team athletes and elite coaches: the mental game. Not motivation. Not mindset posters. The actual craft of mental preparation — visualization routines, pressure management, and the cognitive skills that show up when it matters most.
+
+Here's what that actually looks like in practice.
+
+**Visualization: The Mechanic Behind the Mindset**
+
+Visualization isn't daydreaming about winning. It's a specific practice — running pre-programmed mental simulations of game situations before they happen.
+
+Research on motor learning consistently shows that mental rehearsal activates the same neural pathways as physical practice. When you vividly imagine running a route, your brain partially reinforces the muscle memory as if you had physically run it. At the elite level, athletes use this as a tool to extend their effective practice time.
+
+For flag football players, visualization works best when it's specific, sensory, and action-focused.
+
+Specific: Don't visualize "playing well." Visualize the third-and-long route from the left slot, the timing of your release off the bump, the exact footwork pattern on the out route, the catch at the back of the end zone. The more precise the mental image, the more useful the rehearsal.
+
+Sensory: Add the sensations — the feel of the turf, the sound of the crowd, the weight of the ball in your hands. Multisensory visualization produces better outcomes than purely visual imagery.
+
+Action-focused: Visualize the process, not the outcome. "I catch the ball in the end zone" is outcome visualization and doesn't build motor skill. "I run a precise route, feel my feet plant on the out, extend my hands early, and secure the catch" is process visualization that builds the neural pattern.
+
+**Building a Pre-Game Routine**
+
+Elite athletes across all sports use pre-game routines not to calm nerves, but to direct mental energy toward performance-relevant focus.
+
+A pre-game routine for flag football might include physical activation (dynamic warm-up, sprints, hand-eye drills), mental activation (brief visualization of the first 3-5 plays you expect to run), and attentional cue (a phrase or action that signals game focus is beginning).
+
+The specific contents matter less than the consistency. A routine that you repeat identically before every game trains your nervous system to reach a specific activation state on cue. Over time, the routine becomes a trigger.
+
+The mistake many players make is confusing a superstition with a routine. Wearing the same socks isn't a performance routine. Working through the same physical-mental preparation sequence that prepares you to execute is.
+
+**Managing Pressure in High-Stakes Moments**
+
+The 4th-and-goal at the end of a close championship game. The one-on-one flag pull that ends the tournament. These moments feel different — your heart rate spikes, your attention narrows, your hands tighten.
+
+This is the arousal-performance relationship, and understanding it is the key to performing under pressure.
+
+Moderate arousal (elevated heart rate, heightened attention) typically improves performance on motor tasks. Extreme arousal (panic, catastrophic thinking) degrades it. The goal isn't to eliminate nerves — it's to keep arousal in the productive zone.
+
+Tactical breathing is the most evidence-backed tool for managing acute pressure. Box breathing (inhale 4 counts, hold 4 counts, exhale 4 counts, hold 4 counts) slows heart rate and shifts the nervous system toward a more controlled activation state. It works in 60 seconds or less.
+
+Attentional focus shifting is the second tool. Under pressure, attention often drifts to outcome ("what if we lose") or evaluation ("everyone is watching"). Deliberately shifting focus back to process ("my assignment on this play is...") keeps the brain in execution mode.
+
+**What Self-Talk Actually Does**
+
+Every athlete has a running internal dialogue. Most of it happens automatically and outside of awareness. The research on self-talk shows that instructional self-talk ("plant the foot, release early") improves execution of technical skills. Motivational self-talk ("I've got this") improves performance on tasks requiring effort and intensity.
+
+The practical application: develop a short library of instructional cues for the technical parts of your game that you want to reinforce under pressure. Instead of thinking "don't drop it," you think "hands first, secure." The brain responds to direction, not prohibition.
+
+**Developing These Skills**
+
+Mental skills are exactly that — skills. They're developed through deliberate practice, not absorbed through reading about them.
+
+Start with visualization: 5 minutes before your next practice, mentally rehearse 2-3 plays you expect to run. Be specific. Use all your senses. Do this consistently for four weeks and track whether you notice a difference in your comfort and execution on those plays.
+
+The players who develop these habits early are the ones who perform when it counts.
+
+For more on building a complete training program, explore the [flag football conditioning guide](/blog/flag-football-conditioning-fitness-guide) and the [mental performance archives](/blog/mental-performance-flag-football) from the Talkin Flag podcast.`,
+    isStatic: true,
+  },
+  {
+    slug: "flag-football-recruiting-what-scouts-want",
+    title: "What Flag Football Scouts Actually Look for: Inside the Evaluation Process",
+    author: "Talkin Flag",
+    publishedAt: "2026-05-06T00:00:00Z",
+    category: "Recruiting",
+    excerpt:
+      "Building a great highlight reel is only the start. Here's what coaches and scouts at the college, national, and international levels are actually evaluating when they look at a flag football player — and what most players get wrong.",
+    body: `When coaches and scouts at the national and international level talk about evaluating flag football players, a consistent gap emerges: players optimize for things that look good on highlight reels while coaches prioritize things that don't show up in clips at all.
+
+Understanding what scouts actually care about changes how you prepare, what you practice, and how you present yourself to the programs you want to play for.
+
+**The Gap Between Highlight Reels and Evaluation**
+
+A highlight reel shows your best plays: the deep catch, the contested interception, the flag pull that ended a drive. These moments are impressive, and they're necessary to get initial attention.
+
+But coaches at the elite level — national program directors, international tournament coaches, college flag coordinators — watch film differently than fans. They're looking for what happens around the highlights.
+
+How do you react after a dropped ball? How hard do you run routes when the ball clearly isn't coming to you? What does your body language look like when the defense has you covered tight? These moments, repeated across a full game, tell coaches far more about a player's character and coachability than any single play.
+
+The first filter coaches apply is: does this player compete on every play?
+
+**Position-Specific Evaluation Criteria**
+
+**Quarterbacks**
+
+At the elite level, QB evaluation centers on pre-snap processing and decision accuracy. Coaches are watching where the QB's eyes go before the snap and whether their foot-drop-release timing is consistent across different route depths.
+
+The specific errors that eliminate QBs from national team consideration: forcing throws into coverage (turnover risk), holding the ball past the rhythm of the route (losing timing), inconsistent footwork that affects accuracy under pressure, and poor communication with receivers on adjustments.
+
+What separates top QBs: the ability to manipulate zone coverage with eye movement before committing to a throw, rhythm delivery that matches route timing rather than reaction-based throwing, and consistent accuracy on difficult throws (back shoulder, low and away, in traffic).
+
+**Wide Receivers**
+
+Route precision is the first filter. At international competition, corners are faster and coverage is tighter than most domestic leagues. Receivers who win at the national level do so with route precision — not just speed.
+
+Coaches watch the stem, the plant, and the break. Are your routes on the same landmarks every time? Does your out route finish at the same depth regardless of the down situation? Do defenders get information from your release technique?
+
+Second filter: separation rate on contested routes. How often do you create clean separation vs. making contested catches? Elite WRs convert their routes to clean looks at a much higher rate.
+
+**Defensive Backs**
+
+Transition hips. This is what separates DBs more than any other single attribute in flag football. How quickly can you flip from backpedal to break, or from inside leverage to outside leverage, without losing balance or ground?
+
+Coaches also watch eye discipline. DBs who watch the quarterback's eyes instead of the receiver's hips are vulnerable to pump fakes and route combinations. At the national level, QBs are specifically trained to manipulate DBs with their gaze.
+
+Flag-pulling technique rounds out the evaluation. How reliable is your flag pull when the ball carrier has space vs. when you're pulling from behind? Coaches track missed flag pulls as a specific metric.
+
+**The Non-Athletic Criteria That Eliminate Players**
+
+The players who get invited to national combines and then don't make the team are almost always eliminated on non-athletic criteria.
+
+Coachability: Do you make the same mistake twice? When a coach gives correction, does it show up in your next rep? Players who argue with corrections or deflect responsibility for errors are cut regardless of athletic ability.
+
+Scheme retention: National programs run complex offensive and defensive systems. The ability to learn and execute schemes correctly — not just athletically but assignmentally — is required. Coaches run mental aptitude evaluations specifically to identify this.
+
+Practice habits: How hard do you compete in non-game situations? In combines and evaluation camps, coaches are watching practice intensity as a proxy for competitive mindset.
+
+**Building Your Profile for Evaluation**
+
+The most effective recruitment profile includes: a short (2-3 minute) highlight cut, full-game film from at least two recent tournaments, measurables (40 time, vertical, position-specific drills), and documented competition history with statistics if available.
+
+The Talkin Flag [player database](/players) allows you to create a profile that's visible to coaches and scouts actively looking for talent. Verified profiles get priority visibility.
+
+For more on the path from competitive player to national team consideration, see the [flag football recruiting guide](/blog/flag-football-recruiting-guide-2026) and the [USA national team overview](/blog/usa-flag-football-national-team).`,
     isStatic: true,
   },
 ];

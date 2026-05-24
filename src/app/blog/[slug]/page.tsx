@@ -78,8 +78,10 @@ export default async function BlogPostPage({
   // ── Static post ──────────────────────────────────────────────────────────
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
-    // Prefer same-category posts; fall back to others to fill 3 slots
-    const otherPosts = staticPosts.filter((p) => p.slug !== slug);
+    // Prefer same-category posts sorted by date desc; fall back to others to fill 3 slots
+    const otherPosts = staticPosts
+      .filter((p) => p.slug !== slug)
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
     const sameCategory = otherPosts.filter((p) => p.category === staticPost.category);
     const different = otherPosts.filter((p) => p.category !== staticPost.category);
     const morePosts = [...sameCategory, ...different].slice(0, 3);
@@ -87,6 +89,21 @@ export default async function BlogPostPage({
     // Estimated reading time (~200 wpm average)
     const wordCount = staticPost.body.trim().split(/\s+/).length;
     const readingMinutes = Math.max(1, Math.round(wordCount / 200));
+
+    const faqJsonLd = staticPost.faqItems?.length
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": staticPost.faqItems.map((item) => ({
+            "@type": "Question",
+            "name": item.q,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": item.a,
+            },
+          })),
+        }
+      : null;
 
     const breadcrumbJsonLd = {
       "@context": "https://schema.org",
@@ -136,6 +153,12 @@ export default async function BlogPostPage({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
         />
+        {faqJsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          />
+        )}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Back link */}
@@ -209,6 +232,25 @@ export default async function BlogPostPage({
 
           {/* Body */}
           <RichText body={staticPost.body} />
+
+          {/* FAQ section (if present) */}
+          {staticPost.faqItems && staticPost.faqItems.length > 0 && (
+            <div className="mt-14 pt-10 border-t border-brand-white/10">
+              <h2 className="font-display text-2xl uppercase text-brand-white mb-8">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-6">
+                {staticPost.faqItems.map((item, i) => (
+                  <div key={i} className="border-l-2 border-brand-yellow/30 pl-5">
+                    <h3 className="font-display text-base uppercase text-brand-yellow mb-2">
+                      {item.q}
+                    </h3>
+                    <p className="text-brand-white/70 text-sm leading-relaxed">{item.a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Footer CTA */}
           <div className="mt-16 pt-10 border-t border-brand-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
