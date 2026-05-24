@@ -244,6 +244,24 @@ The best flag football teams are built around positional depth, not just stars. 
 When evaluating players for each position, start with the specific demands of that role — not just overall athleticism. A player who is a good overall athlete but struggles to process the game quickly will never be an elite QB. A receiver who can't separate at the top of routes will never be a weapon at the national level.
 
 For a database of verified, ranked flag football players at every position, visit the [Talkin Flag player rankings](/players).`,
+    faqItems: [
+      {
+        q: "What positions are in flag football?",
+        a: "The core positions in flag football are Quarterback (QB), Wide Receiver (WR), Center (C), Defensive Back (DB), Linebacker (LB), and Rusher. Some leagues also include Utility players who can play multiple roles.",
+      },
+      {
+        q: "How many players are on a flag football team?",
+        a: "Most competitive formats play 5-on-5 or 7-on-7. The number of active positions depends on format — 5v5 typically involves QB, WR (3), and Center on offense; 7v7 adds more WR and offensive options.",
+      },
+      {
+        q: "What is the hardest position in flag football?",
+        a: "Quarterback is widely considered the most demanding position, requiring pre-snap reads, timing delivery, and decision-making under pressure. At the elite level, DB play is physically and mentally demanding due to man coverage without contact.",
+      },
+      {
+        q: "Can a flag football center run routes?",
+        a: "Yes. After snapping the ball, the center becomes an eligible receiver and can run routes. Center-to-QB timing is critical in flag football, especially on screen passes and quick outlets.",
+      },
+    ],
     isStatic: true,
   },
   {
@@ -660,6 +678,24 @@ If you're coaching flag football at any level, you have an opportunity to build 
 Build something you're proud of. The wins will follow.
 
 For player development resources, visit the [Talkin Flag player database](/players). To explore episodes on coaching and elite performance, [browse the podcast](/episodes).`,
+    faqItems: [
+      {
+        q: "How do I start coaching flag football?",
+        a: "Begin by understanding the rules and basic formations, then establish a consistent practice structure. USA Football and NFL FLAG offer official coaching resources and certifications. Focus on teaching fundamentals before adding complex schemes.",
+      },
+      {
+        q: "How many players should be on a flag football roster?",
+        a: "For 5v5 leagues, a roster of 8–10 players allows for substitutions while keeping everyone engaged. For 7v7, 12–14 players works well. Avoid large rosters that reduce individual playing time.",
+      },
+      {
+        q: "What makes a good flag football offense?",
+        a: "A good flag football offense builds around your QB's strengths, uses spacing to stress zone coverage, and has 2-3 reliable route combinations the team can execute under pressure. Simplicity and execution beat complexity every time.",
+      },
+      {
+        q: "How do you manage a flag football team?",
+        a: "Establish consistent practice habits, communicate roles and expectations clearly, and build team culture around effort and process rather than just results. Regular film review and honest talent evaluation are the hallmarks of improving programs.",
+      },
+    ],
     isStatic: true,
   },
   {
