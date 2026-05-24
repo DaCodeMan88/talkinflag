@@ -4,9 +4,11 @@ import Link from "next/link";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS = [
+  { value: "youth", label: "Youth" },
   { value: "high_school", label: "High School" },
   { value: "college", label: "College" },
   { value: "national", label: "National" },
+  { value: "international", label: "International" },
   { value: "pro", label: "Pro" },
 ];
 
