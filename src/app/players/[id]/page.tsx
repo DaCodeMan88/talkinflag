@@ -126,6 +126,14 @@ export default async function PlayerDetailPage({
     .filter(Boolean)
     .join(", ");
 
+  // Country flag emoji from ISO 3166-1 alpha-2 code
+  function countryFlag(code: string | null | undefined): string {
+    if (!code || code.length !== 2) return "";
+    const offset = 127397;
+    return Array.from(code.toUpperCase()).map((c) => String.fromCodePoint(c.charCodeAt(0) + offset)).join("");
+  }
+  const flag = countryFlag(player.country_code);
+
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -182,6 +190,11 @@ export default async function PlayerDetailPage({
             {player.level && (
               <span className="border border-brand-white/30 text-brand-white/70 text-sm px-3 py-1 uppercase tracking-wide">
                 {formatLevel(player.level)}
+              </span>
+            )}
+            {flag && (
+              <span className="text-2xl" aria-label={player.country ?? "Country"} title={player.country ?? undefined}>
+                {flag}
               </span>
             )}
             {player.is_verified && (
