@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState("");
@@ -24,6 +25,7 @@ export function NewsletterSignup() {
 
   return (
     <section className="bg-[#111111] py-20 px-6" aria-label="Newsletter signup">
+      <ScrollReveal direction="up">
       <div className="max-w-xl mx-auto text-center">
         <h2 className="font-display text-4xl md:text-5xl uppercase text-brand-white">
           Stay in the Game
@@ -57,6 +59,7 @@ export function NewsletterSignup() {
           </form>
         )}
       </div>
+      </ScrollReveal>
     </section>
   );
 }

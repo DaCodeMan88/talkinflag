@@ -5,6 +5,7 @@ import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const revalidate = 3600;
 
@@ -39,6 +40,7 @@ export default async function HomePage() {
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">
         <div className="max-w-7xl mx-auto">
+          <ScrollReveal direction="up">
           <div className="flex items-end justify-between mb-10">
             <h2 className="font-display text-4xl md:text-6xl uppercase text-brand-white">
               Latest Episodes
@@ -55,6 +57,7 @@ export default async function HomePage() {
               <EpisodeCard key={ep.id} episode={ep} />
             ))}
           </div>
+          </ScrollReveal>
           <div className="mt-6 text-center md:hidden">
             <Link
               href="/episodes"
