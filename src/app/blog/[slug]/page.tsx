@@ -1,13 +1,28 @@
 import { getAllPosts, getPostBySlug, sanityConfigured } from "@/lib/sanity";
+import { getStaticPostBySlug, staticPosts } from "@/lib/static-posts";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  if (!sanityConfigured) return [];
-  const posts = await getAllPosts();
-  return posts.map((post) => ({ slug: post.slug.current }));
+  const params: { slug: string }[] = [];
+
+  // Always include static posts
+  staticPosts.forEach((p) => params.push({ slug: p.slug }));
+
+  // Add Sanity posts if configured
+  if (sanityConfigured) {
+    const posts = await getAllPosts();
+    posts.forEach((p) => {
+      if (!params.find((x) => x.slug === p.slug.current)) {
+        params.push({ slug: p.slug.current });
+      }
+    });
+  }
+
+  return params;
 }
 
 export async function generateMetadata({
@@ -16,12 +31,28 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
-  if (!post) return {};
-  return {
-    title: `${post.title} | Talkin Flag`,
-    description: post.excerpt || undefined,
-  };
+
+  // Check static posts first
+  const staticPost = getStaticPostBySlug(slug);
+  if (staticPost) {
+    return {
+      title: `${staticPost.title} | Talkin Flag`,
+      description: staticPost.excerpt,
+    };
+  }
+
+  // Fall through to Sanity
+  if (sanityConfigured) {
+    const post = await getPostBySlug(slug);
+    if (post) {
+      return {
+        title: `${post.title} | Talkin Flag`,
+        description: post.excerpt || undefined,
+      };
+    }
+  }
+
+  return { title: "Post Not Found | Talkin Flag" };
 }
 
 export default async function BlogPostPage({
@@ -30,6 +61,82 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
+  // ── Static post ──────────────────────────────────────────────────────────
+  const staticPost = getStaticPostBySlug(slug);
+  if (staticPost) {
+    const paragraphs = staticPost.body
+      .split("\n\n")
+      .map((p) => p.trim())
+      .filter(Boolean);
+
+    return (
+      <div className="min-h-screen bg-brand-black pt-24 pb-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Back link */}
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-brand-white/50 hover:text-brand-yellow text-sm mb-10 transition-colors group"
+          >
+            <span className="transition-transform group-hover:-translate-x-1" aria-hidden="true">←</span>
+            All Posts
+          </Link>
+
+          {/* Category */}
+          <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
+            {staticPost.category}
+          </span>
+
+          {/* Title */}
+          <h1 className="font-display text-3xl md:text-5xl uppercase text-brand-white mt-2 leading-tight">
+            {staticPost.title}
+          </h1>
+
+          {/* Meta */}
+          <div className="flex items-center gap-4 mt-4 mb-10 text-brand-white/40 text-xs">
+            <span>{staticPost.author}</span>
+            <span aria-hidden="true">·</span>
+            <time dateTime={staticPost.publishedAt}>
+              {new Date(staticPost.publishedAt).toLocaleDateString("en-US", {
+                month: "long", day: "numeric", year: "numeric",
+              })}
+            </time>
+          </div>
+
+          {/* Excerpt / pull quote */}
+          <p className="text-brand-white/80 text-lg leading-relaxed mb-10 border-l-2 border-brand-yellow pl-5">
+            {staticPost.excerpt}
+          </p>
+
+          {/* Body */}
+          <div className="space-y-5">
+            {paragraphs.map((para, i) => (
+              <p key={i} className="text-brand-white/70 leading-relaxed">
+                {para}
+              </p>
+            ))}
+          </div>
+
+          {/* Footer CTA */}
+          <div className="mt-16 pt-10 border-t border-brand-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div>
+              <p className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-1">Listen Now</p>
+              <p className="text-brand-white/60 text-sm">Explore the episodes that inspired this story.</p>
+            </div>
+            <Link
+              href="/episodes"
+              className="shrink-0 inline-flex items-center gap-2 bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-yellow-400 transition-colors"
+            >
+              All Episodes →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Sanity post ──────────────────────────────────────────────────────────
   if (!sanityConfigured) notFound();
 
   const post = await getPostBySlug(slug);
@@ -38,6 +145,15 @@ export default async function BlogPostPage({
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-2 text-brand-white/50 hover:text-brand-yellow text-sm mb-10 transition-colors group"
+        >
+          <span className="transition-transform group-hover:-translate-x-1" aria-hidden="true">←</span>
+          All Posts
+        </Link>
+
         {post.category && (
           <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
             {post.category}
@@ -48,7 +164,7 @@ export default async function BlogPostPage({
         </h1>
         <div className="flex items-center gap-4 mt-4 mb-10 text-brand-white/40 text-xs">
           <span>{post.author || "Talkin Flag"}</span>
-          <span>·</span>
+          <span aria-hidden="true">·</span>
           <time dateTime={post.publishedAt}>
             {new Date(post.publishedAt).toLocaleDateString("en-US", {
               month: "long", day: "numeric", year: "numeric",
@@ -57,17 +173,15 @@ export default async function BlogPostPage({
         </div>
 
         {post.excerpt && (
-          <p className="text-brand-white/70 text-lg leading-relaxed mb-8 border-l-2 border-brand-yellow pl-4">
+          <p className="text-brand-white/80 text-lg leading-relaxed mb-10 border-l-2 border-brand-yellow pl-5">
             {post.excerpt}
           </p>
         )}
 
-        <div className="prose prose-invert prose-yellow max-w-none text-brand-white/80">
-          <p className="text-brand-white/60 text-sm italic">
-            Full article rendering requires Sanity portable text renderer.
-            Install @portabletext/react to render rich content.
-          </p>
-        </div>
+        {/* Portable text body — install @portabletext/react when needed */}
+        <p className="text-brand-white/60 text-sm italic">
+          Rich content rendering coming soon.
+        </p>
       </div>
     </div>
   );
