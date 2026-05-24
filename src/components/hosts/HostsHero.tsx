@@ -62,31 +62,35 @@ export function HostsHero() {
       </div>
 
       {/* Three-column layout: bio | image | bio */}
-      <div className="flex items-stretch justify-center w-full max-w-5xl px-4 mx-auto flex-1 min-h-0">
+      <div className="flex items-start justify-center w-full max-w-5xl px-4 mx-auto">
         {/* Left bio — Ambra */}
-        <div className="hidden lg:block w-44 xl:w-52 pr-5 pt-4 overflow-hidden">
+        <div
+          className="hidden lg:flex flex-col w-44 xl:w-52 pr-5 overflow-hidden self-stretch"
+          style={{ minHeight: 560 }}
+        >
           <BioColumn name="Ambra" bio={HOSTS[0].bio} />
         </div>
 
-        {/* Center: full photoshoot thumbnail */}
-        <div className="relative flex-shrink-0 w-full max-w-[320px] sm:max-w-[360px] md:max-w-[400px]">
-          {/* aspect matches hosts-hero.jpg (1080×1725) */}
-          <div className="relative w-full" style={{ aspectRatio: "1080 / 1725" }}>
-            <Image
-              src="/hosts-hero.jpg"
-              alt="Ambra & Tika Marcucci — Talkin Flag hosts, Italian National Flag Football Team"
-              fill
-              priority
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 60vw, 400px"
-              className="object-cover"
-            />
-          </div>
-          {/* Fade image into the next section */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand-black via-brand-black/60 to-transparent" />
+        {/* Center: full photoshoot thumbnail (natural dimensions) */}
+        <div className="relative flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px]">
+          <Image
+            src="/hosts-hero.jpg"
+            alt="Ambra & Tika Marcucci — Talkin Flag hosts, Italian National Flag Football Team"
+            width={1080}
+            height={1725}
+            priority
+            sizes="(max-width: 640px) 85vw, (max-width: 1024px) 55vw, 380px"
+            className="w-full h-auto block"
+          />
+          {/* Fade image into the section below */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand-black via-brand-black/50 to-transparent" />
         </div>
 
         {/* Right bio — Tika */}
-        <div className="hidden lg:block w-44 xl:w-52 pl-5 pt-4 overflow-hidden">
+        <div
+          className="hidden lg:flex flex-col w-44 xl:w-52 pl-5 overflow-hidden self-stretch"
+          style={{ minHeight: 560 }}
+        >
           <BioColumn name="Tika" bio={HOSTS[1].bio} />
         </div>
       </div>
