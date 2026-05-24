@@ -11,6 +11,7 @@ interface Event {
   end_date?: string | null;
   city?: string | null;
   country?: string | null;
+  country_code?: string | null;
   level?: string | null;
   event_type?: string | null;
   website_url?: string | null;
