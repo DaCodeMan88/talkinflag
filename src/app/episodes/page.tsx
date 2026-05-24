@@ -1,6 +1,7 @@
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
+import { EpisodeSearch } from "@/components/episodes/EpisodeSearch";
 import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -55,11 +56,8 @@ export default async function EpisodesPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {episodes.slice(1).map((episode) => (
-            <EpisodeCard key={episode.id} episode={episode} />
-          ))}
-        </div>
+        {/* Client-side search — filters across all loaded episodes (excluding featured) */}
+        <EpisodeSearch episodes={episodes.slice(1)} />
       </div>
     </div>
   );
