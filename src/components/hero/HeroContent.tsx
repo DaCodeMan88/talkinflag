@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Play, ChevronDown } from "lucide-react";
+import type { Episode } from "@/types/episode";
 // Note: Button is used for the CTA links only; the Watch → link is a plain <Link>
 
 // CSS-driven entrance animation — no GSAP dependency
@@ -9,7 +10,25 @@ const fadeIn = (delay: number): React.CSSProperties => ({
   animation: `heroFadeUp 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s both`,
 });
 
-export function HeroContent() {
+interface HeroContentProps {
+  latestEpisode?: Episode;
+}
+
+export function HeroContent({ latestEpisode }: HeroContentProps) {
+  // Build the latest episode label — use dynamic data if available
+  const latestLabel = latestEpisode
+    ? [
+        latestEpisode.episodeNumber ? `Episode ${latestEpisode.episodeNumber}` : null,
+        latestEpisode.guestName || latestEpisode.title,
+      ]
+        .filter(Boolean)
+        .join(" — ")
+    : "Episode 39 — Phil Cutler: Adria Bowl 2026 Champion";
+
+  const latestHref = latestEpisode ? `/episodes/${latestEpisode.id}` : "/episodes";
+  const latestAriaLabel = latestEpisode
+    ? `Watch ${latestLabel}`
+    : "Watch Episode 39 — Phil Cutler: Adria Bowl 2026 Champion";
   return (
     <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 pt-20">
       {/* Badge */}
@@ -79,17 +98,20 @@ export function HeroContent() {
       </div>
 
       {/* Latest episode strip */}
-      <div style={fadeIn(1.2)} className="mt-16 flex items-center gap-3 border border-brand-yellow/20 px-6 py-3 rounded-sm bg-brand-black/60 backdrop-blur-sm">
-        <span className="text-xs font-display uppercase tracking-widest text-brand-yellow">
+      <div style={fadeIn(1.2)} className="mt-16 flex items-center gap-3 border border-brand-yellow/20 px-6 py-3 rounded-sm bg-brand-black/60 backdrop-blur-sm max-w-full overflow-hidden">
+        <span className="text-xs font-display uppercase tracking-widest text-brand-yellow shrink-0">
           Latest
         </span>
-        <span className="w-px h-4 bg-brand-yellow/30" />
-        <span className="text-sm text-brand-white/80">
-          Episode 39 — Phil Cutler: Adria Bowl 2026 Champion
+        <span className="w-px h-4 bg-brand-yellow/30 shrink-0" />
+        <span className="text-sm text-brand-white/80 truncate">
+          {latestLabel}
         </span>
         {/* min-h-[44px] ensures WCAG 2.5.5 touch target size */}
-        <Link href="/episodes" aria-label="Watch Episode 39 — Phil Cutler: Adria Bowl 2026 Champion"
-          className="inline-flex items-center min-h-[44px] text-brand-yellow font-display text-sm uppercase tracking-widest hover:opacity-80 transition-opacity">
+        <Link
+          href={latestHref}
+          aria-label={latestAriaLabel}
+          className="inline-flex items-center min-h-[44px] shrink-0 text-brand-yellow font-display text-sm uppercase tracking-widest hover:opacity-80 transition-opacity"
+        >
           Watch →
         </Link>
       </div>

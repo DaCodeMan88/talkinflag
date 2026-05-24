@@ -36,7 +36,7 @@ export default async function HomePage() {
           ]
         }) }}
       />
-      <Hero />
+      <Hero latestEpisode={episodes[0]} />
       <StatsBar />
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">

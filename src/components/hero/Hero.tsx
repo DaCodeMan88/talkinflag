@@ -1,11 +1,16 @@
 import { HeroScene } from "./HeroScene";
 import { HeroContent } from "./HeroContent";
+import type { Episode } from "@/types/episode";
 
-export function Hero() {
+interface HeroProps {
+  latestEpisode?: Episode;
+}
+
+export function Hero({ latestEpisode }: HeroProps) {
   return (
     <section className="relative min-h-screen overflow-hidden" aria-label="Hero">
       <HeroScene />
-      <HeroContent />
+      <HeroContent latestEpisode={latestEpisode} />
     </section>
   );
 }
