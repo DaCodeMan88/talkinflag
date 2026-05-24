@@ -36,8 +36,21 @@ export default async function RecruitPage() {
 
   const showcase = topPlayers?.length ? topPlayers : (fallbackPlayers ?? []);
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+      { "@type": "ListItem", "position": 2, "name": "Recruit", "item": "https://talkinflag.com/recruit" },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-brand-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Hero */}
       <section className="pt-32 pb-24 px-4 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">

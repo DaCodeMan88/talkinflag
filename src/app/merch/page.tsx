@@ -10,11 +10,24 @@ export const metadata = buildMetadata({
   path: "/merch",
 });
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+    { "@type": "ListItem", "position": 2, "name": "Merch", "item": "https://talkinflag.com/merch" },
+  ],
+};
+
 export default async function MerchPage() {
   const products = await getProducts();
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white">Merch</h1>
