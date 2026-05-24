@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import { RichText } from "@/components/blog/RichText";
 
 export const revalidate = 300;
 
@@ -73,10 +74,7 @@ export default async function BlogPostPage({
     // Other posts to surface at the bottom (exclude current)
     const morePosts = staticPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
-    const paragraphs = staticPost.body
-      .split("\n\n")
-      .map((p) => p.trim())
-      .filter(Boolean);
+    // paragraphs variable removed — RichText handles splitting internally
 
     const breadcrumbJsonLd = {
       "@context": "https://schema.org",
@@ -168,13 +166,7 @@ export default async function BlogPostPage({
           </p>
 
           {/* Body */}
-          <div className="space-y-5">
-            {paragraphs.map((para, i) => (
-              <p key={i} className="text-brand-white/70 leading-relaxed">
-                {para}
-              </p>
-            ))}
-          </div>
+          <RichText body={staticPost.body} />
 
           {/* Footer CTA */}
           <div className="mt-16 pt-10 border-t border-brand-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
