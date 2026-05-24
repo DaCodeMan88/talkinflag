@@ -1,6 +1,7 @@
 import { Hero } from "@/components/hero/Hero";
 import { StatsBar } from "@/components/home/StatsBar";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
+import { ListenOn } from "@/components/home/ListenOn";
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import Link from "next/link";
@@ -69,6 +70,7 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <ListenOn />
       <NewsletterSignup />
     </>
   );
