@@ -30,7 +30,8 @@ export function Footer() {
             </div>
           </div>
           <div>
-            <h4 className="font-display uppercase tracking-widest text-brand-yellow mb-4 text-sm">Media</h4>
+            {/* h3 maintains correct heading hierarchy: h1 (hero) → h2 (sections) → h3 (footer) */}
+            <h3 className="font-display uppercase tracking-widest text-brand-yellow mb-4 text-sm">Media</h3>
             {["Episodes", "Blog", "Guests", "Network"].map((item) => (
               <Link key={item} href={`/${item.toLowerCase()}`}
                 className="block text-brand-white/60 hover:text-brand-white text-sm py-1 transition-colors">
@@ -39,7 +40,7 @@ export function Footer() {
             ))}
           </div>
           <div>
-            <h4 className="font-display uppercase tracking-widest text-brand-yellow mb-4 text-sm">Platform</h4>
+            <h3 className="font-display uppercase tracking-widest text-brand-yellow mb-4 text-sm">Platform</h3>
             {["Players", "Rankings", "Events", "Merch", "Recruit"].map((item) => (
               <Link key={item} href={`/${item.toLowerCase()}`}
                 className="block text-brand-white/60 hover:text-brand-white text-sm py-1 transition-colors">
@@ -48,11 +49,12 @@ export function Footer() {
             ))}
           </div>
         </div>
+        {/* white/55 on #111111 bg = ~5.5:1 contrast ratio, meeting WCAG AA */}
         <div className="border-t border-brand-yellow/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-brand-white/40 text-xs">
+          <p className="text-brand-white/55 text-xs">
             © {new Date().getFullYear()} Talkin Flag | The Talkin Balls Network
           </p>
-          <p className="text-brand-white/40 text-xs">
+          <p className="text-brand-white/55 text-xs">
             Hosted by <span className="text-brand-yellow">Ambra & Tika Marcucci</span> · Italian National Team 🇮🇹
           </p>
         </div>
