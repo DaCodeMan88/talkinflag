@@ -24,7 +24,7 @@ export function NewsletterSignup() {
   }
 
   return (
-    <section className="bg-[#111111] py-20 px-6" aria-label="Newsletter signup">
+    <section id="newsletter" className="bg-[#111111] py-20 px-6" aria-label="Newsletter signup">
       <ScrollReveal direction="up">
       <div className="max-w-xl mx-auto text-center">
         <h2 className="font-display text-4xl md:text-5xl uppercase text-brand-white">
