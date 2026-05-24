@@ -78,8 +78,11 @@ export default async function BlogPostPage({
   // ── Static post ──────────────────────────────────────────────────────────
   const staticPost = getStaticPostBySlug(slug);
   if (staticPost) {
-    // Other posts to surface at the bottom (exclude current)
-    const morePosts = staticPosts.filter((p) => p.slug !== slug).slice(0, 3);
+    // Prefer same-category posts; fall back to others to fill 3 slots
+    const otherPosts = staticPosts.filter((p) => p.slug !== slug);
+    const sameCategory = otherPosts.filter((p) => p.category === staticPost.category);
+    const different = otherPosts.filter((p) => p.category !== staticPost.category);
+    const morePosts = [...sameCategory, ...different].slice(0, 3);
 
     // Estimated reading time (~200 wpm average)
     const wordCount = staticPost.body.trim().split(/\s+/).length;
