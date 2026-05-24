@@ -93,6 +93,51 @@ For those who haven't paid attention to international flag football: start now. 
 Italy isn't coming. Italy is already here.`,
     isStatic: true,
   },
+  {
+    slug: "flag-football-recruiting-guide-2026",
+    title: "How to Get Recruited in Flag Football: The Complete 2026 Guide",
+    author: "Talkin Flag",
+    publishedAt: "2026-02-10T00:00:00Z",
+    category: "Recruiting",
+    excerpt:
+      "The flag football recruiting landscape is changing fast. With the Olympics on the horizon and college programs multiplying, here's exactly what coaches look for — and how to get in front of them.",
+    body: `Flag football recruiting is no longer a rumor or a distant possibility. It is happening right now — at the college level, at the national team level, and increasingly at the professional level. If you're a serious flag football player in 2026 and you're not thinking about how to get in front of coaches, you are already behind.
+
+Here's everything you need to know.
+
+**Build a highlight reel — and make it short**
+
+The first thing any serious recruiter will ask you for is footage. Not a two-hour compilation of every play you've ever made. A focused, three-to-five minute highlight reel that shows your specific skill set within the first thirty seconds.
+
+If you're a QB, leads with your arm talent and decision-making. If you're a route runner, leads with releases, separations, and catches in traffic. If you play defense, leads with your best coverage reps and any pick sixes or big plays.
+
+Upload it to YouTube (unlisted is fine) and have the link ready everywhere — your player profile, your email, your DMs. The coach who can't find your film in thirty seconds will move on to someone else.
+
+**Create a player profile online**
+
+The Talkin Flag player database is one of the places college coaches and national team selectors are increasingly checking when they want to find flag football talent. Submit your profile with accurate position, level, school or club, and your highlight reel link.
+
+Think of it as your flag football resume. It doesn't get you recruited on its own — but it keeps you discoverable when a coach is looking for exactly your position at exactly your level.
+
+**Attend the right tournaments**
+
+Coaches recruit heavily at high-visibility events. The NFL FLAG national championships. IFAF-sanctioned international tournaments. College showcase events that have emerged specifically to surface talent for programs.
+
+If you're serious about getting recruited at the college level, you need to be competing at tournaments where college coaches show up. Research which events in your region have a track record of player development and coach attendance.
+
+**Reach out directly — it works**
+
+Email coaches directly. This sounds obvious but most players don't do it. Find the contact for flag football coaches at schools you're interested in, write a three-sentence email with your highlights link and key stats, and send it. Follow up once if you don't hear back.
+
+At the national team level, find out who manages the selection process for your country's program. Attend national camps. Introduce yourself to staff. Be the player who is impossible to overlook because you made sure they knew you existed.
+
+**The Olympic pipeline is real**
+
+With flag football officially at LA 2028, national programs around the world are actively building rosters and talent pipelines. This is the single biggest recruiting opportunity the sport has ever seen. Athletes who would have had no pathway to elite competition two years ago now have a direct route to representing their country on the Olympic stage.
+
+The window is open. The question is whether you're prepared to walk through it.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {

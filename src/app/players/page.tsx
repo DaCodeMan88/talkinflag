@@ -1,6 +1,5 @@
 import { createServerClient } from "@/lib/supabase";
-import { PlayerCard } from "@/components/players/PlayerCard";
-import { RankingsTable } from "@/components/players/RankingsTable";
+import { PlayersFilter } from "@/components/players/PlayersFilter";
 import { buildMetadata } from "@/lib/seo";
 import Link from "next/link";
 import type { Player } from "@/types/player";
@@ -13,28 +12,17 @@ export const metadata = buildMetadata({
   path: "/players",
 });
 
-const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher"];
-const LEVELS = ["high_school", "college", "national", "pro"];
-
-export default async function PlayersPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ position?: string; level?: string; q?: string }>;
-}) {
-  const { position, level, q } = await searchParams;
+export default async function PlayersPage() {
   const supabase = createServerClient();
 
-  let query = supabase
+  const { data: players } = await supabase
     .from("players")
     .select("*")
     .eq("is_verified", true)
-    .order("ranking_national", { ascending: true, nullsFirst: false });
+    .order("ranking_national", { ascending: true, nullsFirst: false })
+    .limit(200) as { data: Player[] | null };
 
-  if (position) query = query.eq("position", position);
-  if (level) query = query.eq("level", level);
-  if (q) query = query.or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%`);
-
-  const { data: players } = await query.limit(100) as { data: Player[] | null };
+  const playerList = players ?? [];
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
@@ -54,81 +42,23 @@ export default async function PlayersPage({
           </div>
         </div>
 
-        {/* Filter bar */}
-        <form className="flex flex-wrap gap-3 mb-10" role="search" aria-label="Filter players">
-          <label className="sr-only" htmlFor="player-search">Search by name</label>
-          <input
-            id="player-search"
-            name="q"
-            defaultValue={q}
-            placeholder="Search player..."
-            className="bg-[#222222] border border-brand-white/20 text-brand-white px-4 py-2 text-sm focus:border-brand-yellow focus:outline-none"
-          />
-          <select
-            name="position"
-            defaultValue={position}
-            className="bg-[#222222] border border-brand-white/20 text-brand-white px-4 py-2 text-sm focus:border-brand-yellow focus:outline-none"
-            aria-label="Filter by position"
-          >
-            <option value="">All Positions</option>
-            {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-          </select>
-          <select
-            name="level"
-            defaultValue={level}
-            className="bg-[#222222] border border-brand-white/20 text-brand-white px-4 py-2 text-sm"
-            aria-label="Filter by level"
-          >
-            <option value="">All Levels</option>
-            {LEVELS.map((l) => <option key={l} value={l}>{l.replaceAll("_", " ")}</option>)}
-          </select>
-          <button
-            type="submit"
-            className="bg-brand-yellow text-brand-black px-6 py-2 font-display uppercase text-sm tracking-widest hover:bg-yellow-400 transition-colors"
-          >
-            Filter
-          </button>
-          {(q || position || level) && (
-            <Link
-              href="/players"
-              className="text-brand-white/40 hover:text-brand-white font-display text-xs uppercase tracking-widest self-center transition-colors"
-            >
-              × Clear
-            </Link>
-          )}
-        </form>
-
-        {!players || players.length === 0 ? (
+        {playerList.length === 0 ? (
           <div className="text-center py-20 border border-brand-yellow/20 bg-[#111111]">
             <p className="font-display text-2xl uppercase text-brand-yellow mb-3">
-              {q || position || level ? "No Players Found" : "Player Database Coming Soon"}
+              Player Database Coming Soon
             </p>
             <p className="text-brand-white/60 text-sm max-w-md mx-auto">
-              {q || position || level
-                ? "Try different search criteria."
-                : "The Talkin Flag player database is being built. Submit your profile to be listed."}
+              The Talkin Flag player database is being built. Submit your profile to be the first listed.
             </p>
-            {!q && !position && !level && (
-              <a
-                href="/players/submit"
-                className="inline-block mt-6 bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-yellow-400 transition-colors"
-              >
-                Submit Your Profile
-              </a>
-            )}
+            <Link
+              href="/players/submit"
+              className="inline-block mt-6 bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-yellow-400 transition-colors"
+            >
+              Submit Your Profile
+            </Link>
           </div>
         ) : (
-          <>
-            {/* Only show rankings table for players that actually have a national rank */}
-            {players.some((p) => p.ranking_national != null) && (
-              <RankingsTable players={players.filter((p) => p.ranking_national != null)} />
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {players.map((player) => (
-                <PlayerCard key={player.id} player={player} />
-              ))}
-            </div>
-          </>
+          <PlayersFilter players={playerList} />
         )}
       </div>
     </div>
