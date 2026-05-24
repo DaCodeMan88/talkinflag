@@ -22,6 +22,8 @@ export function HostCard({ host }: { host: Host }) {
             src={host.image}
             alt={host.name}
             fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover object-top"
             onError={() => setImgError(true)}
           />
