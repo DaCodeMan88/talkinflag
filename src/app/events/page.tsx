@@ -2,6 +2,7 @@ import { createServerClient } from "@/lib/supabase";
 import { EventCard } from "@/components/events/EventCard";
 import { GlobeSection } from "@/components/events/GlobeSection";
 import { buildMetadata } from "@/lib/seo";
+import Link from "next/link";
 
 export const revalidate = 3600;
 
@@ -24,8 +25,18 @@ export default async function EventsPage() {
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
-          <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white">Events</h1>
-          <p className="mt-3 text-brand-white/60">Worldwide flag football tournaments, world games, and Olympic qualifiers.</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white">Events</h1>
+              <p className="mt-3 text-brand-white/60">Worldwide flag football tournaments, world games, and Olympic qualifiers.</p>
+            </div>
+            <Link
+              href="/events/submit"
+              className="shrink-0 inline-flex items-center gap-2 border border-brand-yellow/40 text-brand-yellow font-display text-xs uppercase tracking-widest px-4 py-2 hover:bg-brand-yellow hover:text-brand-black transition-colors mt-2"
+            >
+              + Submit Event
+            </Link>
+          </div>
         </div>
 
         {/* 3D Guest Globe */}
