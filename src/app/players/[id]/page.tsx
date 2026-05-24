@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { Player } from "@/types/player";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -69,12 +70,15 @@ export async function generateMetadata({
     .filter(Boolean)
     .join(" · ");
 
-  return {
+  const description = desc
+    ? `${name} — ${desc}. Ranked flag football player profile on Talkin Flag.`
+    : `${name} — flag football player profile on Talkin Flag.`;
+
+  return buildMetadata({
     title: `${name} | Talkin Flag Players`,
-    description: desc
-      ? `${name} — ${desc}. Ranked flag football player profile on Talkin Flag.`
-      : `${name} — flag football player profile on Talkin Flag.`,
-  };
+    description,
+    path: `/players/${id}`,
+  });
 }
 
 // ---------------------------------------------------------------------------

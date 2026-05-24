@@ -19,7 +19,11 @@ export const metadata = buildMetadata({
 });
 
 export default async function HomePage() {
-  const episodes = await getEpisodes(4);
+  // Fetch 50 so we can show an accurate live episode count in StatsBar
+  const episodes = await getEpisodes(50);
+
+  // Show 4 on the homepage grid; the rest feed the episode count in StatsBar
+  const featuredEpisodes = episodes.slice(0, 4);
 
   return (
     <>
@@ -39,7 +43,7 @@ export default async function HomePage() {
         }) }}
       />
       <Hero latestEpisode={episodes[0]} />
-      <StatsBar />
+      <StatsBar episodeCount={episodes.length} />
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">
         <div className="max-w-7xl mx-auto">
@@ -56,7 +60,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {episodes.map((ep) => (
+            {featuredEpisodes.map((ep) => (
               <EpisodeCard key={ep.id} episode={ep} />
             ))}
           </div>

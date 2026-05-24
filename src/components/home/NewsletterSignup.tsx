@@ -38,23 +38,27 @@ export function NewsletterSignup() {
             You&apos;re in. Welcome to the community.
           </p>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-8 flex gap-3 max-w-sm mx-auto" aria-label="Newsletter signup form">
-            <label htmlFor="newsletter-email" className="sr-only">Email address</label>
-            <input
-              id="newsletter-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              className="flex-1 bg-brand-black border border-brand-white/20 text-brand-white px-4 py-3 text-sm focus:border-brand-yellow focus:outline-none"
-              required
-              aria-required="true"
-            />
-            <Button type="submit" disabled={status === "loading"}>
-              {status === "loading" ? "..." : "Join"}
-            </Button>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-3" aria-label="Newsletter signup form">
+            <div className="flex gap-3 max-w-sm mx-auto">
+              <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+              <input
+                id="newsletter-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="flex-1 bg-brand-black border border-brand-white/20 text-brand-white px-4 py-3 text-sm focus:border-brand-yellow focus:outline-none"
+                required
+                aria-required="true"
+              />
+              <Button type="submit" disabled={status === "loading"}>
+                {status === "loading" ? "…" : "Join"}
+              </Button>
+            </div>
             {status === "error" && (
-              <p className="sr-only" role="alert">Something went wrong. Please try again.</p>
+              <p className="text-red-400 text-sm text-center" role="alert">
+                Something went wrong. Please try again.
+              </p>
             )}
           </form>
         )}

@@ -1,13 +1,19 @@
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-const stats = [
-  { value: "39+", label: "Episodes" },
-  { value: "25+", label: "Countries Represented" },
-  { value: "2", label: "Italian National Team Hosts" },
-  { value: "#1", label: "Flag Football Podcast" },
-];
+interface StatsBarProps {
+  episodeCount?: number;
+}
 
-export function StatsBar() {
+export function StatsBar({ episodeCount }: StatsBarProps) {
+  const episodeLabel = episodeCount ? `${episodeCount}+` : "39+";
+
+  const stats = [
+    { value: episodeLabel, label: "Episodes" },
+    { value: "25+", label: "Countries Represented" },
+    { value: "2", label: "Italian National Team Hosts" },
+    { value: "#1", label: "Flag Football Podcast" },
+  ];
+
   return (
     <section className="bg-brand-yellow py-6" aria-label="Podcast statistics">
       <div className="max-w-7xl mx-auto px-6">
