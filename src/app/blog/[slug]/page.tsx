@@ -74,7 +74,9 @@ export default async function BlogPostPage({
     // Other posts to surface at the bottom (exclude current)
     const morePosts = staticPosts.filter((p) => p.slug !== slug).slice(0, 3);
 
-    // paragraphs variable removed — RichText handles splitting internally
+    // Estimated reading time (~200 wpm average)
+    const wordCount = staticPost.body.trim().split(/\s+/).length;
+    const readingMinutes = Math.max(1, Math.round(wordCount / 200));
 
     const breadcrumbJsonLd = {
       "@context": "https://schema.org",
@@ -143,6 +145,8 @@ export default async function BlogPostPage({
                   month: "long", day: "numeric", year: "numeric",
                 })}
               </time>
+              <span aria-hidden="true">·</span>
+              <span>{readingMinutes} min read</span>
             </div>
             <a
               href={`https://x.com/intent/tweet?text=${encodeURIComponent(
