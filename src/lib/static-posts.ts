@@ -115,7 +115,7 @@ Upload it to YouTube (unlisted is fine) and have the link ready everywhere — y
 
 **Create a player profile online**
 
-The Talkin Flag player database is one of the places college coaches and national team selectors are increasingly checking when they want to find flag football talent. Submit your profile with accurate position, level, school or club, and your highlight reel link.
+The [Talkin Flag player database](/players) is one of the places college coaches and national team selectors are increasingly checking when they want to find flag football talent. [Submit your profile](/players/submit) with accurate position, level, school or club, and your highlight reel link.
 
 Think of it as your flag football resume. It doesn't get you recruited on its own — but it keeps you discoverable when a coach is looking for exactly your position at exactly your level.
 
@@ -237,7 +237,7 @@ The best flag football teams are built around positional depth, not just stars. 
 
 When evaluating players for each position, start with the specific demands of that role — not just overall athleticism. A player who is a good overall athlete but struggles to process the game quickly will never be an elite QB. A receiver who can't separate at the top of routes will never be a weapon at the national level.
 
-For a database of verified, ranked flag football players at every position, visit the Talkin Flag player rankings.`,
+For a database of verified, ranked flag football players at every position, visit the [Talkin Flag player rankings](/players).`,
     isStatic: true,
   },
   {
@@ -296,7 +296,7 @@ Every drill listed here has one thing in common: they're designed to build habit
 
 Run these drills at game speed. Compete every rep. And remember — the teams that win at the national and international level aren't necessarily the most talented. They're the teams that practiced the right things the most times.
 
-For a database of coaches and players at every level, visit the Talkin Flag player rankings.`,
+For a database of coaches and players at every level, visit the [Talkin Flag player rankings](/players).`,
     isStatic: true,
   },
   {
@@ -355,7 +355,7 @@ Flag football was officially added to the Los Angeles 2028 Summer Olympics progr
 
 If you're just discovering the sport now, you're entering at exactly the right moment. The sport is growing, the community is welcoming, and the path from beginner to competitive player has never been more clearly defined.
 
-To follow the game at the highest level, explore episodes of the Talkin Flag podcast and the global player database.`,
+To follow the game at the highest level, explore [episodes of the Talkin Flag podcast](/episodes) and the [global player database](/players).`,
     isStatic: true,
   },
   {
@@ -416,7 +416,7 @@ Great offensive football — at every level — comes down to this: everyone on 
 
 That's not glamorous. But it's what wins games.
 
-For a breakdown of specific positions and what they require, see the flag football positions guide. For player profiles by position, visit the Talkin Flag database.`,
+For a breakdown of specific positions and what they require, see the [flag football positions guide](/blog/flag-football-positions-guide). For player profiles by position, visit the [Talkin Flag database](/players).`,
     isStatic: true,
   },
   {
@@ -613,7 +613,7 @@ If you're coaching flag football at any level, you have an opportunity to build 
 
 Build something you're proud of. The wins will follow.
 
-For player development resources, visit the Talkin Flag player database. To explore episodes on coaching and elite performance, browse the podcast.`,
+For player development resources, visit the [Talkin Flag player database](/players). To explore episodes on coaching and elite performance, [browse the podcast](/episodes).`,
     isStatic: true,
   },
   {
@@ -872,7 +872,7 @@ For the USA, with the home country advantage and the strength of the domestic pr
 
 If you're a player with national team aspirations, the most important thing you can do is compete at the highest available level in your region. That means elite club teams, national tournaments, and showcase events where national team scouts are present.
 
-The second most important thing is video. In the age of digital scouting, a well-produced highlight reel showing your skills against quality competition is an essential tool. Submit your highlights through every available channel, including the Talkin Flag player database.
+The second most important thing is video. In the age of digital scouting, a well-produced highlight reel showing your skills against quality competition is an essential tool. Submit your highlights through every available channel, including the [Talkin Flag player database](/players/submit).
 
 **Italy's Example: What Building a National Program Looks Like**
 
