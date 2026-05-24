@@ -23,8 +23,29 @@ export default async function EventsPage() {
 
   const eventList = events ?? [];
 
+  const itemListJsonLd = eventList.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Upcoming Flag Football Events",
+        "url": "https://talkinflag.com/events",
+        "itemListElement": eventList.map((e: { id: string; title: string }, i: number) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": e.title,
+          "url": `https://talkinflag.com/events/${e.id}`,
+        })),
+      }
+    : null;
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      {itemListJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        />
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
           <div className="flex items-start justify-between gap-4">
