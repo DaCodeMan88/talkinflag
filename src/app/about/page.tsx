@@ -10,9 +10,53 @@ export const metadata = buildMetadata({
   path: "/about",
 });
 
+const ambraJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Ambra Marcucci",
+  "url": "https://talkinflag.com/about",
+  "jobTitle": "Flag Football Podcast Host",
+  "description": "Co-host of Talkin Flag and member of the Italian National Flag Football Team.",
+  "nationality": { "@type": "Country", "name": "Italy" },
+  "sameAs": ["https://instagram.com/ambramarcu"],
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Talkin Flag",
+    "url": "https://talkinflag.com",
+  },
+};
+
+const tikaJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Tika Marcucci",
+  "url": "https://talkinflag.com/about",
+  "jobTitle": "Flag Football Podcast Host",
+  "description": "Co-host of Talkin Flag and member of the Italian National Flag Football Team.",
+  "nationality": { "@type": "Country", "name": "Italy" },
+  "sameAs": ["https://instagram.com/tikamarcu"],
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Talkin Flag",
+    "url": "https://talkinflag.com",
+  },
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+    { "@type": "ListItem", "position": 2, "name": "About", "item": "https://talkinflag.com/about" },
+  ],
+};
+
 export default function AboutPage() {
   return (
     <div className="bg-brand-black">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ambraJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tikaJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       {/* 1 ─ Twin hero: full photoshoot thumbnail + scrolling bio columns */}
       <HostsHero />
 

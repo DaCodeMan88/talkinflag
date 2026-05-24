@@ -62,6 +62,12 @@ function isSafeUrl(url: string | null | undefined): boolean {
   return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
 }
 
+function countryFlag(code: string | null | undefined): string {
+  if (!code || code.length !== 2) return "";
+  const offset = 127397;
+  return Array.from(code.toUpperCase()).map((c) => String.fromCodePoint(c.charCodeAt(0) + offset)).join("");
+}
+
 // ---------------------------------------------------------------------------
 // generateStaticParams — build all upcoming event pages at deploy time
 // ---------------------------------------------------------------------------
@@ -164,6 +170,7 @@ export default async function EventDetailPage({
   const location = [event.city, event.country].filter(Boolean).join(", ");
   const levelLabel = event.level ? (LEVEL_LABELS[event.level] ?? event.level.replaceAll("_", " ")) : null;
   const dateRange = formatDateRange(event.start_date, event.end_date);
+  const flag = countryFlag(event.country_code);
 
   // JSON-LD — schema.org Event for Google rich results
   const startIso = new Date(event.start_date + "T12:00:00Z").toISOString();
@@ -248,6 +255,11 @@ export default async function EventDetailPage({
               {event.event_type}
             </span>
           )}
+          {flag && (
+            <span className="text-2xl" aria-label={event.country ?? "Country"} title={event.country ?? undefined}>
+              {flag}
+            </span>
+          )}
         </div>
 
         {/* Title */}
@@ -269,9 +281,6 @@ export default async function EventDetailPage({
 
               <DetailRow label="Date" value={dateRange} />
               {location && <DetailRow label="Location" value={location} />}
-              {event.country_code && (
-                <DetailRow label="Country Code" value={event.country_code.toUpperCase()} />
-              )}
               {levelLabel && <DetailRow label="Level" value={levelLabel} />}
               {event.event_type && (
                 <DetailRow label="Type" value={event.event_type} />
