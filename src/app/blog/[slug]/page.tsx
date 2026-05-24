@@ -70,8 +70,28 @@ export default async function BlogPostPage({
       .map((p) => p.trim())
       .filter(Boolean);
 
+    const articleJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": staticPost.title,
+      "description": staticPost.excerpt,
+      "datePublished": staticPost.publishedAt,
+      "author": { "@type": "Person", "name": staticPost.author },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Talkin Flag",
+        "url": "https://talkinflag.com",
+      },
+      "url": `https://talkinflag.com/blog/${staticPost.slug}`,
+      "articleSection": staticPost.category,
+    };
+
     return (
       <div className="min-h-screen bg-brand-black pt-24 pb-20">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Back link */}

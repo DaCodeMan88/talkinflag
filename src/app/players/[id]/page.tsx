@@ -102,8 +102,24 @@ export default async function PlayerDetailPage({
     .filter(Boolean)
     .join(", ");
 
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": fullName,
+    "url": `https://talkinflag.com/players/${player.id}`,
+    ...(player.position && { "jobTitle": `Flag Football ${player.position}` }),
+    ...(location && { "address": { "@type": "PostalAddress", "addressLocality": location } }),
+    ...(player.instagram && {
+      "sameAs": [`https://instagram.com/${player.instagram.replace(/^@/, "")}`],
+    }),
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Back link */}
