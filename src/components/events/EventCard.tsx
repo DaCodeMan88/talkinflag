@@ -7,10 +7,17 @@ interface Event {
   end_date?: string | null;
   city?: string | null;
   country?: string | null;
+  country_code?: string | null;
   level?: string | null;
   event_type?: string | null;
   website_url?: string | null;
   is_featured?: boolean;
+}
+
+function countryFlag(code: string | null | undefined): string {
+  if (!code || code.length !== 2) return "";
+  const offset = 127397;
+  return Array.from(code.toUpperCase()).map((c) => String.fromCodePoint(c.charCodeAt(0) + offset)).join("");
 }
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -28,6 +35,7 @@ export function EventCard({ event }: { event: Event }) {
     ? (LEVEL_LABELS[event.level] ?? event.level.replace(/_/g, " "))
     : null;
   const location = [event.city, event.country].filter(Boolean).join(", ");
+  const flag = countryFlag(event.country_code);
 
   const formatDate = (d: string) =>
     new Date(d + "T12:00:00Z").toLocaleDateString("en-US", {
@@ -75,7 +83,12 @@ export function EventCard({ event }: { event: Event }) {
             {event.title}
           </h3>
           <p className="text-brand-white/60 text-sm mt-1">{dateStr}</p>
-          {location && <p className="text-brand-white/40 text-xs mt-1">{location}</p>}
+          {location && (
+            <p className="text-brand-white/40 text-xs mt-1">
+              {flag && <span className="mr-1" aria-hidden="true">{flag}</span>}
+              {location}
+            </p>
+          )}
         </div>
 
         {/* External link — z-10 so it floats above the card overlay */}
