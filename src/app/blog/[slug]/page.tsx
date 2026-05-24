@@ -109,9 +109,20 @@ export default async function BlogPostPage({
         "@type": "Organization",
         "name": "Talkin Flag",
         "url": "https://talkinflag.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://talkinflag.com/og-image.png",
+        },
       },
       "url": `https://talkinflag.com/blog/${staticPost.slug}`,
       "articleSection": staticPost.category,
+      // Custom edge-rendered OG image (opengraph-image.tsx)
+      "image": {
+        "@type": "ImageObject",
+        "url": `https://talkinflag.com/blog/${staticPost.slug}/opengraph-image`,
+        "width": 1200,
+        "height": 630,
+      },
     };
 
     return (

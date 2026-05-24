@@ -419,6 +419,79 @@ That's not glamorous. But it's what wins games.
 For a breakdown of specific positions and what they require, see the flag football positions guide. For player profiles by position, visit the Talkin Flag database.`,
     isStatic: true,
   },
+  {
+    slug: "flag-football-equipment-guide",
+    title: "Flag Football Equipment: What You Actually Need (And What You Don't)",
+    author: "Talkin Flag",
+    publishedAt: "2025-08-21T00:00:00Z",
+    category: "Beginner Guide",
+    excerpt:
+      "Flag football is one of the most accessible sports in the world — you need almost nothing to get started. But knowing what gear actually makes a difference can save you time, money, and performance.",
+    body: `One of flag football's great advantages over tackle football is how little equipment you actually need. No helmets. No pads. No expensive protective gear. But as you get more serious about the game, understanding what equipment matters — and what doesn't — becomes important.
+
+Here's everything you need, from your first game to competitive play.
+
+**The Essentials: What Everyone Needs**
+
+**Flag Belt**
+
+The flag belt is the core piece of equipment that makes flag football what it is. A standard flag belt has two fabric flags attached at the hips on velcro or clip-in connectors. The flags are typically 12 to 15 inches long and brightly colored for visibility.
+
+For recreational play, any NFL FLAG or NFHS-certified flag belt works well. For competitive play, look for belts with consistent flag tension — flags that are too easy to pull create unfair advantages, and flags that are too hard to pull lead to foul calls. Most organized leagues provide flags, but serious players typically own their own.
+
+**Football**
+
+A standard adult football works fine for recreational play. For competitive flag football, most leagues and tournaments use official NFL FLAG balls — a slightly smaller and lighter ball than a regulation NFL football.
+
+Youth players (ages 6–14) benefit from using youth-size footballs, which are easier to grip and throw. If you're a QB working on your mechanics, having your own ball to practice with is worth the investment.
+
+**Cleats**
+
+Cleats are the equipment upgrade that most directly impacts performance. For flag football specifically, you want lightweight, low-cut cleats with good lateral support. Wide receiver or defensive back cleats in tackle football are ideal — they're built for quick cuts, acceleration, and agility.
+
+Avoid heavy lineman cleats or boots. In flag football, you're never driving into defenders — you need to be light on your feet and able to change direction instantly. Molded cleats work on most grass surfaces; turf shoes are better for artificial turf.
+
+**What Competitive Players Add**
+
+**Gloves**
+
+Football receiver gloves dramatically improve catching reliability, especially in wet or cold conditions. Sticky palm gloves — the kind worn by NFL receivers — improve grip on the ball at all catch points. For WRs and DBs who make contested catches regularly, gloves are worth having.
+
+The trade-off: some players feel that gloves reduce their ability to feel the ball on the snap or during releases. QBs rarely use receiver gloves. Try them in practice before committing to wearing them in games.
+
+**Compression Gear**
+
+Compression shorts, leggings, and arm sleeves don't directly improve performance, but they do help with muscle warm-up and reduce minor strains during extended play. For players competing in multiple games in a day — as happens in tournament formats — compression gear is a practical recovery tool.
+
+Compression gear also keeps you warmer in cold-weather conditions without adding bulk.
+
+**Turf Shoes / Turfs**
+
+If your league plays on artificial turf, dedicated turf shoes are a significant upgrade over standard grass cleats. Turf shoes have shorter, more evenly distributed rubber studs that provide traction without getting caught in the turf surface. They also tend to be lighter than molded cleats.
+
+Having both a pair of molded cleats and turf shoes covers you for any surface.
+
+**The Things You Don't Need**
+
+Some equipment categories that tackle football players swear by are simply unnecessary for flag football:
+
+- **Mouth guards**: Not required in most recreational flag leagues. If you're playing in an environment where physical contact might occur (crowded fields, aggressive play), they're reasonable. But not standard.
+- **Padded compression shorts or hip pads**: Falling on a flag football field is rare and low-impact. These add weight and bulk without meaningful protection.
+- **Shoulder pads or rib guards**: There's no blocking and minimal contact in flag football. These are only relevant if you're transitioning from tackle or playing in an unusual format.
+
+**Building Your Kit by Level**
+
+If you're just starting out, you need cleats, a flag belt, and a football. That's it. Total investment: under $100.
+
+If you're playing in organized recreational leagues, add a pair of gloves and a ball that matches your league's standard.
+
+If you're competing at the club, national, or international level, invest in lightweight performance cleats, quality receiver gloves, compression gear, and both grass and turf footwear options.
+
+The sport is designed to be accessible. The equipment should support your performance, not burden it.
+
+For more on positions and what each role demands physically, see the flag football positions guide.`,
+    isStatic: true,
+  },
 ];
 
 export function getStaticPostBySlug(slug: string): StaticPost | undefined {
