@@ -23,6 +23,15 @@ export default async function EventsPage() {
 
   const eventList = events ?? [];
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+      { "@type": "ListItem", "position": 2, "name": "Events", "item": "https://talkinflag.com/events" },
+    ],
+  };
+
   const itemListJsonLd = eventList.length > 0
     ? {
         "@context": "https://schema.org",
@@ -40,6 +49,10 @@ export default async function EventsPage() {
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {itemListJsonLd && (
         <script
           type="application/ld+json"

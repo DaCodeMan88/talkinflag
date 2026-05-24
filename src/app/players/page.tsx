@@ -25,6 +25,15 @@ export default async function PlayersPage() {
 
   const playerList = players ?? [];
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
+      { "@type": "ListItem", "position": 2, "name": "Players", "item": "https://talkinflag.com/players" },
+    ],
+  };
+
   // Only include ranked players in the ItemList to keep the JSON-LD focused
   const rankedPlayers = playerList.filter((p) => p.ranking_national != null).slice(0, 50);
   const itemListJsonLd = rankedPlayers.length > 0
@@ -44,6 +53,10 @@ export default async function PlayersPage() {
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {itemListJsonLd && (
         <script
           type="application/ld+json"

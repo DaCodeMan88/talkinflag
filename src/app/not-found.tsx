@@ -43,6 +43,7 @@ export default function NotFound() {
         {[
           { label: "Players", href: "/players" },
           { label: "Events", href: "/events" },
+          { label: "Blog", href: "/blog" },
           { label: "About", href: "/about" },
           { label: "Recruit", href: "/recruit" },
         ].map((link) => (
