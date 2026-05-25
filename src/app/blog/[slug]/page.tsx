@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { RichText } from "@/components/blog/RichText";
+import { ShareButtons } from "@/components/blog/ShareButtons";
 
 export const revalidate = 300;
 
@@ -351,6 +352,14 @@ export default async function BlogPostPage({
               </svg>
               Back to top
             </a>
+          </div>
+
+          {/* Share buttons */}
+          <div className="mt-14 pt-10 border-t border-brand-white/10">
+            <ShareButtons
+              title={staticPost.title}
+              url={`https://talkinflag.com/blog/${staticPost.slug}`}
+            />
           </div>
 
           {/* More from the blog */}
