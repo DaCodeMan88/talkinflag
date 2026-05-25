@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Blog", href: "/blog" },
   { label: "Merch", href: "/merch" },
   { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function Nav() {
