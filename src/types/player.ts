@@ -17,6 +17,7 @@ export interface Player {
   instagram?: string | null;
   ranking_national?: number | null;
   ranking_position?: number | null;
+  gender?: "male" | "female" | null;
   bio?: string | null;
   is_verified?: boolean;
   created_at?: string;

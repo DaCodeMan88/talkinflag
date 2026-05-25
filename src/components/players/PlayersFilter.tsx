@@ -28,12 +28,21 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
   const [position, setPosition] = useState(searchParams.get("position") ?? "");
   const [level, setLevel] = useState(searchParams.get("level") ?? "");
   const [country, setCountry] = useState(searchParams.get("country") ?? "");
+  const [gender, setGender] = useState(searchParams.get("gender") ?? "");
+  const [gradYear, setGradYear] = useState(searchParams.get("gradYear") ?? "");
 
   // Derive unique countries from the player list (sorted, non-null)
   const countries = useMemo(() => {
     const set = new Set<string>();
     players.forEach((p) => { if (p.country) set.add(p.country); });
     return Array.from(set).sort();
+  }, [players]);
+
+  // Derive unique grad years from the player list (sorted ascending, non-null)
+  const gradYears = useMemo(() => {
+    const set = new Set<number>();
+    players.forEach((p) => { if (p.grad_year != null) set.add(p.grad_year); });
+    return Array.from(set).sort((a, b) => a - b);
   }, [players]);
 
   const filtered = useMemo(() => {
@@ -67,27 +76,59 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
       result = result.filter((p) => p.country === country);
     }
 
+    // Gender filter
+    if (gender) {
+      result = result.filter((p) => p.gender === gender);
+    }
+
+    // Class year filter
+    if (gradYear) {
+      result = result.filter((p) => p.grad_year === Number(gradYear));
+    }
+
     return result;
-  }, [players, query, position, level, country]);
+  }, [players, query, position, level, country, gender, gradYear]);
 
   const rankedFiltered = useMemo(
     () => filtered.filter((p) => p.ranking_national != null),
     [filtered]
   );
 
-  const hasAnyFilter = query.trim() !== "" || position !== "" || level !== "" || country !== "";
+  const hasAnyFilter = query.trim() !== "" || position !== "" || level !== "" || country !== "" || gender !== "" || gradYear !== "";
 
   function clearAll() {
     setQuery("");
     setPosition("");
     setLevel("");
     setCountry("");
+    setGender("");
+    setGradYear("");
   }
 
   return (
     <div>
       {/* Search + filter bar */}
       <div className="space-y-3 mb-8">
+        {/* Gender toggle */}
+        <div className="flex items-center gap-2" role="group" aria-label="Filter by gender">
+          {(["", "male", "female"] as const).map((g) => {
+            const label = g === "" ? "All" : g === "male" ? "Men's / Boys'" : "Women's / Girls'";
+            return (
+              <button
+                key={g}
+                onClick={() => setGender(g === gender ? "" : g)}
+                className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors ${
+                  gender === g
+                    ? "bg-brand-yellow text-brand-black"
+                    : "border border-brand-white/20 text-brand-white/60 hover:border-brand-white/40 hover:text-brand-white"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Text search */}
         <div className="relative">
           <Search
@@ -163,6 +204,40 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             ))}
           </div>
         </div>
+        {/* Class year filter — only shown when multiple grad years present */}
+        {gradYears.length > 1 && (
+          <div className="flex items-center gap-3">
+            <span className="text-brand-white/30 text-xs font-display uppercase tracking-widest shrink-0">Class</span>
+            <div className="relative">
+              <select
+                value={gradYear}
+                onChange={(e) => setGradYear(e.target.value)}
+                aria-label="Filter by class year"
+                className="appearance-none bg-[#111111] border border-brand-white/15 text-brand-white/70 pl-3 pr-8 py-1.5 text-xs font-display uppercase tracking-widest focus:border-brand-yellow focus:outline-none cursor-pointer"
+              >
+                <option value="">All Years</option>
+                {gradYears.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-brand-white/40">
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true">
+                  <path d="M0 0l5 6 5-6z" />
+                </svg>
+              </div>
+            </div>
+            {gradYear && (
+              <button
+                onClick={() => setGradYear("")}
+                aria-label="Clear class year filter"
+                className="text-brand-white/40 hover:text-brand-yellow transition-colors"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Country filter — only shown when multiple countries present */}
         {countries.length > 1 && (
           <div className="flex items-center gap-3">
@@ -233,7 +308,14 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
         <>
           {/* Rankings table — only for currently filtered ranked players */}
           {rankedFiltered.length > 0 && (
-            <RankingsTable players={rankedFiltered} />
+            <>
+              {gender && (
+                <p className="font-display text-xs uppercase tracking-widest text-brand-white/40 mb-2">
+                  {gender === "female" ? "Women's Rankings" : "Men's Rankings"}
+                </p>
+              )}
+              <RankingsTable players={rankedFiltered} />
+            </>
           )}
 
           {/* Player grid */}
