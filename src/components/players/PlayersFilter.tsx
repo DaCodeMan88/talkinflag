@@ -10,9 +10,8 @@ import type { Player } from "@/types/player";
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS: { value: string; label: string }[] = [
   { value: "high_school", label: "High School" },
-  { value: "college", label: "College" },
-  { value: "national", label: "National" },
-  { value: "international", label: "International" },
+  { value: "college",     label: "College"      },
+  { value: "world",       label: "World"         },
 ];
 
 interface PlayersFilterProps {
@@ -64,10 +63,12 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
       result = result.filter((p) => p.position === position);
     }
 
-    // Level filter — "high_school" catches legacy "youth" DB values too
+    // Level filter
     if (level) {
       if (level === "high_school") {
         result = result.filter((p) => p.level === "high_school" || p.level === "youth");
+      } else if (level === "world") {
+        result = result.filter((p) => p.level === "national" || p.level === "international");
       } else {
         result = result.filter((p) => p.level === level);
       }
@@ -315,9 +316,9 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
               title={
                 level === "college"
                   ? gender === "female" ? "Women's College Rankings" : gender === "male" ? "Men's College Rankings" : "College Rankings"
-                  : level === "national" || level === "international"
+                  : level === "world"
                   ? gender === "female" ? "Women's World Rankings" : gender === "male" ? "Men's World Rankings" : "World Rankings"
-                  : gender === "female" ? "Women's National Rankings" : gender === "male" ? "Men's National Rankings" : "National Rankings"
+                  : gender === "female" ? "Women's High School Rankings" : gender === "male" ? "Men's High School Rankings" : "High School Rankings"
               }
             />
           )}
