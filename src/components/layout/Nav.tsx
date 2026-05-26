@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { label: "Episodes", href: "/episodes" },
   { label: "Players", href: "/players" },
+  { label: "Rankings", href: "/rankings" },
   { label: "Events", href: "/events" },
   { label: "Blog", href: "/blog" },
   { label: "Merch", href: "/merch" },
