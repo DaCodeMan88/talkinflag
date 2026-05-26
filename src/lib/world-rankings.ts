@@ -4,10 +4,12 @@ export interface TeamRanking {
   points: number;
 }
 
-export interface CollegeTeamRanking {
-  rank: number;
-  team: string;
+export interface CollegeProgram {
+  school: string;
+  state: string;
+  division: "DI" | "DII" | "DIII";
   conference?: string;
+  status: "Competing" | "Announced";
   record?: string;
 }
 
@@ -190,5 +192,99 @@ export const MENS_WORLD_RANKINGS: TeamRanking[] = [
   { rank: 59, nation: "Malaysia",        points: 100   },
 ];
 
-// Populate with NCFFA / NIRSA data — leave empty until data is sourced
-export const COLLEGE_RANKINGS: CollegeTeamRanking[] = [];
+// Source: collegiateflagfootball.com, womenscollegeflagfootball.com, conference sites — May 2026
+export const COLLEGE_PROGRAMS: CollegeProgram[] = [
+
+  // ── Division I ──────────────────────────────────────────────────────────
+  { school: "Alabama State University",        state: "AL", division: "DI", conference: "SWAC",          status: "Competing" },
+  { school: "Long Island University",          state: "NY", division: "DI", conference: "ECAC",          status: "Competing" },
+  { school: "Mercyhurst University",           state: "PA", division: "DI", conference: "ECAC",          status: "Competing" },
+  { school: "Mount St. Mary's University",     state: "MD", division: "DI", conference: "Conference Carolinas", status: "Competing" },
+  { school: "Fairleigh Dickinson University",  state: "NJ", division: "DI", conference: "NEC / ECAC",    status: "Announced" },
+  { school: "Manhattan University",            state: "NY", division: "DI", conference: "MAAC / ECAC",   status: "Announced" },
+  { school: "University of North Alabama",     state: "AL", division: "DI", conference: "CUSA",          status: "Announced" },
+  { school: "Mississippi Valley State",        state: "MS", division: "DI", conference: "SWAC",          status: "Announced" },
+  { school: "Eastern Michigan University",     state: "MI", division: "DI", conference: "MAC",           status: "Announced" },
+  { school: "USC Upstate",                     state: "SC", division: "DI", conference: "Big South",     status: "Announced" },
+  { school: "UNC Asheville",                   state: "NC", division: "DI", conference: "Big South",     status: "Announced" },
+  { school: "University of Nebraska",          state: "NE", division: "DI", conference: "Big Ten",       status: "Announced" },
+  { school: "Cal Poly",                        state: "CA", division: "DI", conference: "Big West",      status: "Announced" },
+  { school: "UT Arlington",                    state: "TX", division: "DI", conference: "UAC",           status: "Announced" },
+  { school: "Charleston Southern University",  state: "SC", division: "DI", conference: "Big South",     status: "Announced" },
+  { school: "Gardner-Webb University",         state: "NC", division: "DI", conference: "Big South",     status: "Announced" },
+  { school: "Radford University",              state: "VA", division: "DI", conference: "Big South",     status: "Announced" },
+  { school: "Binghamton University",           state: "NY", division: "DI", conference: "America East",  status: "Announced" },
+  { school: "Bradley University",              state: "IL", division: "DI", conference: "Missouri Valley", status: "Announced" },
+
+  // ── Division II — Conference Carolinas ──────────────────────────────────
+  { school: "Wingate University",              state: "NC", division: "DII", conference: "Conference Carolinas", status: "Competing", record: "8-1 conf." },
+  { school: "Ferrum College",                  state: "VA", division: "DII", conference: "Conference Carolinas", status: "Competing", record: "8-1 conf." },
+  { school: "Barton College",                  state: "NC", division: "DII", conference: "Conference Carolinas", status: "Competing", record: "7-2 conf." },
+  { school: "Lees-McRae College",              state: "NC", division: "DII", conference: "Conference Carolinas", status: "Competing", record: "7-2 conf." },
+  { school: "Chowan University",               state: "NC", division: "DII", conference: "Conference Carolinas", status: "Competing" },
+  { school: "Emmanuel University",             state: "GA", division: "DII", conference: "Conference Carolinas", status: "Competing" },
+  { school: "Erskine College",                 state: "SC", division: "DII", conference: "Conference Carolinas", status: "Competing" },
+  { school: "King University",                 state: "TN", division: "DII", conference: "Conference Carolinas", status: "Competing" },
+  { school: "Mars Hill University",            state: "NC", division: "DII", conference: "Conference Carolinas", status: "Competing" },
+  { school: "Mount Olive University",          state: "NC", division: "DII", conference: "Conference Carolinas", status: "Competing" },
+
+  // ── Division II — CIAA ──────────────────────────────────────────────────
+  { school: "Winston-Salem State University",  state: "NC", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Fayetteville State University",   state: "NC", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Bowie State University",          state: "MD", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Bluefield State University",      state: "WV", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Claflin University",              state: "SC", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Johnson C. Smith University",     state: "NC", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Livingstone College",             state: "NC", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Shaw University",                 state: "NC", division: "DII", conference: "CIAA", status: "Competing" },
+  { school: "Virginia Union University",       state: "VA", division: "DII", conference: "CIAA", status: "Competing" },
+
+  // ── Division II — Other ─────────────────────────────────────────────────
+  { school: "Roberts Wesleyan University",     state: "NY", division: "DII", conference: "ECC",          status: "Competing" },
+  { school: "Allegheny College",               state: "PA", division: "DII", conference: "ECAC",         status: "Competing" },
+  { school: "Saginaw Valley State University", state: "MI", division: "DII", conference: "GLIAC",        status: "Announced" },
+  { school: "Spring Hill College",             state: "AL", division: "DII", conference: "SIAC",         status: "Announced" },
+  { school: "Menlo College",                   state: "CA", division: "DII", conference: "PacWest",      status: "Announced" },
+
+  // ── Division III — Atlantic East ────────────────────────────────────────
+  { school: "Marymount University",            state: "VA", division: "DIII", conference: "Atlantic East", status: "Competing", record: "18-2 (13-1 conf.)" },
+  { school: "Eastern University",              state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing", record: "13-2 (11-1 conf.)" },
+  { school: "Immaculata University",           state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing", record: "11-3 (10-3 conf.)" },
+  { school: "Centenary University",            state: "NJ", division: "DIII", conference: "Atlantic East", status: "Competing" },
+  { school: "Holy Family University",          state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing" },
+  { school: "Neumann University",              state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing" },
+  { school: "Penn State Schuylkill",           state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing" },
+  { school: "Chestnut Hill College",           state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing" },
+  { school: "Marywood University",             state: "PA", division: "DIII", conference: "Atlantic East", status: "Competing" },
+
+  // ── Division III — Empire 8 ─────────────────────────────────────────────
+  { school: "SUNY Geneseo",                    state: "NY", division: "DIII", conference: "Empire 8", status: "Competing", record: "12-5 (7-1 conf.)" },
+  { school: "SUNY Brockport",                  state: "NY", division: "DIII", conference: "Empire 8", status: "Competing", record: "10-5 (6-3 conf.)" },
+  { school: "Elmira College",                  state: "NY", division: "DIII", conference: "Empire 8", status: "Competing", record: "6-6 (3-5 conf.)" },
+  { school: "Hartwick College",                state: "NY", division: "DIII", conference: "Empire 8", status: "Competing", record: "4-7 (3-5 conf.)" },
+  { school: "Russell Sage College",            state: "NY", division: "DIII", conference: "Empire 8", status: "Competing", record: "1-7 (1-7 conf.)" },
+
+  // ── Division III — United East ──────────────────────────────────────────
+  { school: "Gallaudet University",            state: "DC", division: "DIII", conference: "United East", status: "Competing", record: "9-1 (6-0 conf.)" },
+  { school: "Penn State Harrisburg",           state: "PA", division: "DIII", conference: "United East", status: "Competing", record: "7-2 (5-2 conf.)" },
+  { school: "Cedar Crest College",             state: "PA", division: "DIII", conference: "United East", status: "Competing", record: "5-5" },
+  { school: "Cairn University",                state: "PA", division: "DIII", conference: "United East", status: "Competing", record: "3-7" },
+  { school: "Keystone College",                state: "PA", division: "DIII", conference: "United East", status: "Competing", record: "2-7" },
+
+  // ── Division III — American Southwest (ASC) ─────────────────────────────
+  { school: "University of Mary Hardin-Baylor", state: "TX", division: "DIII", conference: "ASC", status: "Competing" },
+  { school: "Hardin-Simmons University",        state: "TX", division: "DIII", conference: "ASC", status: "Competing" },
+  { school: "Howard Payne University",          state: "TX", division: "DIII", conference: "ASC", status: "Competing" },
+  { school: "McMurry University",               state: "TX", division: "DIII", conference: "ASC", status: "Competing" },
+  { school: "East Texas Baptist University",    state: "TX", division: "DIII", conference: "ASC", status: "Competing" },
+  { school: "Schreiner University",             state: "TX", division: "DIII", conference: "ASC", status: "Competing" },
+
+  // ── Division III — Other ────────────────────────────────────────────────
+  { school: "Baldwin Wallace University",      state: "OH", division: "DIII", conference: "Ohio Athletic", status: "Announced" },
+  { school: "University of Mount Union",       state: "OH", division: "DIII", conference: "Ohio Athletic", status: "Announced" },
+  { school: "Wisconsin-Oshkosh",               state: "WI", division: "DIII", conference: "WIAC",          status: "Competing" },
+  { school: "Texas Wesleyan University",       state: "TX", division: "DIII",                              status: "Competing" },
+  { school: "Guilford College",                state: "NC", division: "DIII",                              status: "Announced" },
+  { school: "Meredith College",                state: "NC", division: "DIII",                              status: "Announced" },
+  { school: "Albright College",                state: "PA", division: "DIII", conference: "MAC Commonwealth", status: "Announced" },
+];
