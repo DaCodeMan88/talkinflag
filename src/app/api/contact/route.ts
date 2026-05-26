@@ -39,10 +39,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to submit message" }, { status: 500 });
     }
 
-    // TODO: Send email notification to Ambra & Tika once recipient address confirmed
+    // TODO: Send email notification — set CONTACT_EMAIL_TO=talkinflagshow@gmail.com in Vercel env vars
     // import { sendEmail } from "@/lib/email";
     // await sendEmail({
-    //   to: process.env.CONTACT_EMAIL_TO, // <-- OPEN ITEM: set in Vercel env vars
+    //   to: process.env.CONTACT_EMAIL_TO,
     //   subject: `[Talkin Flag] ${subject} from ${body.name}`,
     //   text: `From: ${body.name} <${body.email}>\n\n${body.message}`,
     // });

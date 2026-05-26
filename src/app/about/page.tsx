@@ -16,9 +16,9 @@ const ambraJsonLd = {
   "name": "Ambra Marcucci",
   "url": "https://talkinflag.com/about",
   "jobTitle": "Flag Football Podcast Host",
-  "description": "Co-host of Talkin Flag and member of the Italian National Flag Football Team.",
+  "description": "Co-host of Talkin Flag, member of the Italian National Flag Football Team, Doctor of Psychology, and sports agent at Dub Sports & Entertainment.",
   "nationality": { "@type": "Country", "name": "Italy" },
-  "sameAs": ["https://instagram.com/ambramarcu"],
+  "sameAs": ["https://instagram.com/ambramarcucci"],
   "worksFor": {
     "@type": "Organization",
     "name": "Talkin Flag",
@@ -32,9 +32,9 @@ const tikaJsonLd = {
   "name": "Tika Marcucci",
   "url": "https://talkinflag.com/about",
   "jobTitle": "Flag Football Podcast Host",
-  "description": "Co-host of Talkin Flag and member of the Italian National Flag Football Team.",
+  "description": "Co-host of Talkin Flag, member of the Italian National Flag Football Team, Doctor of Psychology, sports psychologist, and forensic psychologist.",
   "nationality": { "@type": "Country", "name": "Italy" },
-  "sameAs": ["https://instagram.com/tikamarcu"],
+  "sameAs": ["https://instagram.com/fit_with_tika"],
   "worksFor": {
     "@type": "Organization",
     "name": "Talkin Flag",
@@ -74,9 +74,9 @@ export default function AboutPage() {
               host={{
                 name: "Ambra Marcucci",
                 title: "Co-Host · Italian National Team",
-                bio: "Ambra Marcucci brings elite on-field experience to the mic as a proud member of the Italian National Flag Football Team. She co-hosts Talkin Flag with her twin sister Tika, delivering expert analysis, inspiring interviews, and a global perspective on the sport she lives and breathes.",
+                bio: "Ambra Marcucci brings passion to the mic and is a proud member of the Italian National Flag Football Team. As co-host of Talkin Flag alongside her twin sister Tika, she brings energy and curiosity when connecting with guests, drawing out their stories, motivations, and contributions to the growth of flag football. Ambra holds a doctorate in Psychology and works as a sports agent at Dub Sports & Entertainment.",
                 flag: "🇮🇹",
-                instagram: "@ambramarcu",
+                instagram: "@ambramarcucci",
                 image: "/ambra.jpg",
               }}
             />
@@ -84,9 +84,9 @@ export default function AboutPage() {
               host={{
                 name: "Tika Marcucci",
                 title: "Co-Host · Italian National Team",
-                bio: "Tika Marcucci is the other half of the Talkin Flag powerhouse. Sharing the mic and the field with Ambra, Tika brings the same Italian National Team credentials, competitive insight, and infectious energy that has made Talkin Flag the premier flag football podcast globally.",
+                bio: "Tika Marcucci forms the other half of the Talkin Flag leadership duo. A fellow Italian National Team athlete, she brings a strong analytical voice to the show — taking notes during each episode and asking thoughtful, targeted questions that deepen the discussion. Tika holds a doctorate in Psychology, has a background in sports psychology, and works as a forensic psychologist.",
                 flag: "🇮🇹",
-                instagram: "@tikamarcu",
+                instagram: "@fit_with_tika",
                 image: "/tika.jpg",
               }}
             />

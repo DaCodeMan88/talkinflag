@@ -1,111 +1,92 @@
 import Image from "next/image";
 
-// NOTE: Based on the photoshoot thumbnail, Ambra is on the LEFT, Tika is on the RIGHT.
-// Swap the sides array order below if that turns out to be incorrect.
+const AMBRA_BIO =
+  "Ambra Marcucci brings passion to the mic and is a proud member of the Italian National Flag Football Team. As co-host of Talkin Flag alongside her twin sister Tika, she brings energy and curiosity when connecting with guests, drawing out their stories, motivations, and contributions to the growth of flag football. Ambra holds a doctorate in Psychology and works as a sports agent at Dub Sports & Entertainment.";
 
-const HOSTS = [
-  {
-    name: "Ambra",
-    side: "left" as const,
-    bio: "Ambra Marcucci brings elite on-field experience to the mic as a proud member of the Italian National Flag Football Team. She co-hosts Talkin Flag with her twin sister Tika, delivering expert analysis, inspiring interviews, and a global perspective on the sport she lives and breathes.",
-  },
-  {
-    name: "Tika",
-    side: "right" as const,
-    bio: "Tika Marcucci is the other half of the Talkin Flag powerhouse. Sharing the mic and the field with Ambra, Tika brings the same Italian National Team credentials, competitive insight, and infectious energy that has made Talkin Flag the premier flag football podcast globally.",
-  },
-];
+const TIKA_BIO =
+  "Tika Marcucci forms the other half of the Talkin Flag leadership duo. A fellow Italian National Team athlete, she brings a strong analytical voice to the show — taking notes during each episode and asking thoughtful, targeted questions that deepen the discussion. Tika holds a doctorate in Psychology, has a background in sports psychology, and works as a forensic psychologist.";
 
-function BioColumn({ name, bio }: { name: string; bio: string }) {
-  // Repeat content so the -50% translateY loop is seamless
-  const block = (
-    <div className="mb-10">
-      <span className="block font-display text-[9px] uppercase tracking-[0.25em] text-brand-yellow/50 mb-2">
-        {name} Marcucci
-      </span>
-      <p className="text-[11px] leading-[1.8] text-brand-white/30 font-body">{bio}</p>
-    </div>
-  );
-
-  const repeats = Array.from({ length: 10 }, (_, i) => (
-    <div key={i}>{block}</div>
-  ));
-
-  return (
-    <div className="relative flex-1 overflow-hidden" aria-hidden="true">
-      {/* Scrolling inner — duplicated so the loop is invisible */}
-      <div className="animate-scroll-bio" style={{ willChange: "transform" }}>
-        {repeats}
-        {repeats}
-      </div>
-      {/* Fade edges so text dissolves in/out naturally */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-brand-black to-transparent" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-brand-black to-transparent" />
-    </div>
-  );
-}
+const TOGETHER =
+  "Together, Ambra and Tika leverage their academic and athletic backgrounds to explore not only how the sport is played, but how athletes think, prepare, and perform under pressure.";
 
 export function HostsHero() {
   return (
-    <section className="min-h-screen bg-brand-black flex flex-col items-center pt-28 pb-0">
+    <section className="bg-brand-black flex flex-col items-center pt-28 pb-0">
       {/* Section header */}
       <div className="text-center px-6 mb-10">
         <p className="text-brand-yellow font-display text-[10px] uppercase tracking-[0.4em] mb-4">
           Your Hosts
         </p>
         <h1 className="font-display text-5xl sm:text-6xl md:text-8xl uppercase text-brand-white leading-none">
-          Ambra & Tika
+          Ambra &amp; Tika
         </h1>
         <p className="mt-4 text-brand-white/50 text-sm max-w-xs mx-auto leading-relaxed">
           Twin sisters. Italian National Team. The voices of global flag football.
         </p>
       </div>
 
-      {/* Three-column layout: bio | image | bio */}
-      <div className="flex items-start justify-center w-full max-w-5xl px-4 mx-auto">
-        {/* Left bio — Ambra */}
-        <div
-          className="hidden lg:flex flex-col w-44 xl:w-52 pr-5 overflow-hidden self-stretch"
-          style={{ minHeight: 560 }}
-        >
-          <BioColumn name="Ambra" bio={HOSTS[0].bio} />
-        </div>
-
-        {/* Center: full photoshoot thumbnail (natural dimensions) */}
-        <div className="relative flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px]">
-          <Image
-            src="/hosts-hero.jpg"
-            alt="Ambra & Tika Marcucci — Talkin Flag hosts, Italian National Flag Football Team"
-            width={1080}
-            height={1725}
-            priority
-            sizes="(max-width: 640px) 85vw, (max-width: 1024px) 55vw, 380px"
-            className="w-full h-auto block"
-          />
-          {/* Fade image into the section below */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand-black via-brand-black/50 to-transparent" />
-        </div>
-
-        {/* Right bio — Tika */}
-        <div
-          className="hidden lg:flex flex-col w-44 xl:w-52 pl-5 overflow-hidden self-stretch"
-          style={{ minHeight: 560 }}
-        >
-          <BioColumn name="Tika" bio={HOSTS[1].bio} />
-        </div>
+      {/* Thumbnail */}
+      <div className="relative flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px]">
+        <Image
+          src="/hosts-hero.jpg"
+          alt="Ambra & Tika Marcucci — Talkin Flag hosts, Italian National Flag Football Team"
+          width={1080}
+          height={1725}
+          priority
+          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 55vw, 380px"
+          className="w-full h-auto block"
+        />
+        {/* Fade image into panel below */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#111111] to-transparent" />
       </div>
 
-      {/* Single show link */}
-      <div className="mt-8 pb-14 text-center">
-        <a
-          href="https://instagram.com/talkinflagshow"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-brand-yellow font-display uppercase tracking-[0.25em] text-xs hover:underline transition-opacity hover:opacity-80"
-          aria-label="Talkin Flag Show on Instagram"
-        >
-          @talkinflagshow ↗
-        </a>
+      {/* Bio panel */}
+      <div className="w-full max-w-2xl mx-auto px-4 -mt-2 pb-16">
+        <div className="bg-[#111111] border border-brand-white/10 p-8 md:p-10">
+
+          {/* Ambra */}
+          <div className="mb-7">
+            <span className="font-display text-[10px] uppercase tracking-[0.35em] text-brand-yellow block mb-3">
+              Ambra Marcucci
+            </span>
+            <p className="text-brand-white/70 text-sm leading-relaxed">{AMBRA_BIO}</p>
+          </div>
+
+          <div className="h-px bg-brand-white/10 mb-7" aria-hidden="true" />
+
+          {/* Tika */}
+          <div className="mb-7">
+            <span className="font-display text-[10px] uppercase tracking-[0.35em] text-brand-yellow block mb-3">
+              Tika Marcucci
+            </span>
+            <p className="text-brand-white/70 text-sm leading-relaxed">{TIKA_BIO}</p>
+          </div>
+
+          <div className="h-px bg-brand-white/10 mb-7" aria-hidden="true" />
+
+          {/* Together */}
+          <p className="text-brand-white/55 text-sm leading-relaxed italic">{TOGETHER}</p>
+        </div>
+
+        {/* Instagram links */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-8">
+          {[
+            { handle: "ambramarcucci", label: "Ambra" },
+            { handle: "fit_with_tika", label: "Tika" },
+            { handle: "talkinflagshow", label: "Show" },
+          ].map(({ handle, label }) => (
+            <a
+              key={handle}
+              href={`https://instagram.com/${handle}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-brand-yellow font-display uppercase tracking-[0.2em] text-xs hover:underline transition-opacity hover:opacity-80"
+              aria-label={`${label} on Instagram`}
+            >
+              @{handle} ↗
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

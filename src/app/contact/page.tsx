@@ -36,10 +36,21 @@ export default function ContactPage() {
           </h1>
           <div className="mt-5 flex items-start gap-5">
             <div className="w-8 h-px bg-brand-yellow mt-3 shrink-0" aria-hidden="true" />
-            <p className="text-brand-white/55 leading-relaxed">
-              Reach out about podcast features, player submissions, partnerships, or press.
-              We read everything and respond personally.
-            </p>
+            <div>
+              <p className="text-brand-white/55 leading-relaxed">
+                Reach out about podcast features, player submissions, partnerships, or press.
+                We read everything and respond personally.
+              </p>
+              <p className="mt-3 text-brand-white/40 text-sm">
+                Or email us directly:{" "}
+                <a
+                  href="mailto:talkinflagshow@gmail.com"
+                  className="text-brand-yellow hover:underline"
+                >
+                  talkinflagshow@gmail.com
+                </a>
+              </p>
+            </div>
           </div>
         </div>
 
