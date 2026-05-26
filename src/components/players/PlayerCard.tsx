@@ -16,7 +16,7 @@ function countryFlag(code: string | null | undefined): string {
 
 export function PlayerCard({ player }: { player: Player }) {
   const name = `${player.first_name} ${player.last_name}`;
-  const levelLabel = player.level?.replaceAll("_", " ");
+  const levelLabel = player.level === "youth" ? "High School" : player.level?.replaceAll("_", " ");
   const flag = countryFlag(player.country_code);
 
   return (

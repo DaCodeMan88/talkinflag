@@ -13,6 +13,7 @@ import type { Player } from "@/types/player";
 type Tab = "players" | "world" | "college";
 type Gender = "mens" | "womens";
 type Division = "All" | "DI" | "DII" | "DIII";
+type RankTier = "national" | "college" | "world";
 
 interface RankingsHubProps {
   players: Player[];
@@ -20,12 +21,44 @@ interface RankingsHubProps {
 
 export function RankingsHub({ players }: RankingsHubProps) {
   const [tab, setTab] = useState<Tab>("players");
+  const [rankTier, setRankTier] = useState<RankTier>("national");
   const [gender, setGender] = useState<Gender>("mens");
   const [division, setDivision] = useState<Division>("All");
   const [search, setSearch] = useState("");
 
-  const rankedPlayers = players.filter((p) => p.ranking_national != null);
   const worldRankings = gender === "mens" ? MENS_WORLD_RANKINGS : WOMENS_WORLD_RANKINGS;
+
+  // Separate player pools by ranking tier
+  const nationalPlayers = players.filter(
+    (p) => p.ranking_national != null && (p.level === "high_school" || p.level === "youth" || p.level === "national" || p.level == null)
+  );
+  const collegePlayers = players.filter(
+    (p) => p.ranking_national != null && p.level === "college"
+  );
+  const worldPlayers = players.filter(
+    (p) => p.ranking_national != null && (p.level === "national" || p.level === "international")
+  );
+
+  // All ranked players for when tier has no matches yet
+  const allRankedPlayers = players.filter((p) => p.ranking_national != null);
+
+  const tierPlayers: Record<RankTier, Player[]> = {
+    national: nationalPlayers.length > 0 ? nationalPlayers : allRankedPlayers,
+    college:  collegePlayers,
+    world:    worldPlayers,
+  };
+
+  const tierLabels: Record<RankTier, string> = {
+    national: "National Rankings",
+    college:  "College Rankings",
+    world:    "World Player Rankings",
+  };
+
+  const tierDescriptions: Record<RankTier, string> = {
+    national: "Top high school players ranked nationally.",
+    college:  "Top players competing at the college level.",
+    world:    "Players competing for IFAF-recognized national teams.",
+  };
 
   const filteredPrograms = useMemo(() => {
     let list = COLLEGE_PROGRAMS;
@@ -79,15 +112,38 @@ export function RankingsHub({ players }: RankingsHubProps) {
       {/* ── Player Rankings ─────────────────────────────────── */}
       {tab === "players" && (
         <div>
-          {rankedPlayers.length === 0 ? (
+          {/* Tier sub-tabs */}
+          <div className="flex gap-1 mb-8" role="group" aria-label="Ranking tier">
+            {(["national", "college", "world"] as RankTier[]).map((t) => (
+              <button
+                key={t}
+                onClick={() => setRankTier(t)}
+                className={`font-display text-xs uppercase tracking-widest px-4 py-2 transition-colors ${
+                  rankTier === t
+                    ? "bg-brand-yellow text-brand-black"
+                    : "border border-brand-white/20 text-brand-white/60 hover:border-brand-white/40 hover:text-brand-white"
+                }`}
+              >
+                {t === "national" ? "National" : t === "college" ? "College" : "World"}
+              </button>
+            ))}
+          </div>
+
+          {/* Tier description */}
+          <p className="text-brand-white/40 text-xs mb-6">{tierDescriptions[rankTier]}</p>
+
+          {tierPlayers[rankTier].length === 0 ? (
             <EmptyState
-              title="Player Rankings Coming Soon"
+              title={`${rankTier.charAt(0).toUpperCase() + rankTier.slice(1)} Rankings Coming Soon`}
               body="Players are being ranked. Submit a profile to get listed."
               cta={{ label: "Submit Profile", href: "/players/submit" }}
             />
           ) : (
             <>
-              <RankingsTable players={rankedPlayers} />
+              <RankingsTable
+                players={tierPlayers[rankTier]}
+                title={tierLabels[rankTier]}
+              />
               <div className="mt-6 text-center">
                 <Link
                   href="/players"

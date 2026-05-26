@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Player } from "@/types/player";
 
-export function RankingsTable({ players }: { players: Player[] }) {
+export function RankingsTable({ players, title }: { players: Player[]; title?: string }) {
   if (players.length === 0) return null;
 
   // Only show players that actually have a national ranking assigned
@@ -12,7 +12,7 @@ export function RankingsTable({ players }: { players: Player[] }) {
     <div className="overflow-x-auto mb-12">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
-          National Rankings
+          {title ?? "Rankings"}
         </h2>
         <span className="text-brand-white/30 text-xs">{ranked.length} ranked players</span>
       </div>
@@ -50,7 +50,7 @@ export function RankingsTable({ players }: { players: Player[] }) {
                 <span className="text-brand-yellow font-display text-xs uppercase">{player.position || "—"}</span>
               </td>
               <td className="py-3 pr-4 text-brand-white/50 text-xs hidden md:table-cell">
-                {player.level?.replaceAll("_", " ") || "—"}
+                {player.level === "youth" ? "High School" : player.level?.replaceAll("_", " ") || "—"}
               </td>
               <td className="py-3 text-brand-white/50 text-xs hidden lg:table-cell">
                 {player.school_or_team || player.country || "—"}

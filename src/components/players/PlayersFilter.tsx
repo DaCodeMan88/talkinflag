@@ -9,12 +9,10 @@ import type { Player } from "@/types/player";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS: { value: string; label: string }[] = [
-  { value: "youth", label: "Youth" },
   { value: "high_school", label: "High School" },
   { value: "college", label: "College" },
   { value: "national", label: "National" },
   { value: "international", label: "International" },
-  { value: "pro", label: "Pro" },
 ];
 
 interface PlayersFilterProps {
@@ -66,9 +64,13 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
       result = result.filter((p) => p.position === position);
     }
 
-    // Level filter
+    // Level filter — "high_school" catches legacy "youth" DB values too
     if (level) {
-      result = result.filter((p) => p.level === level);
+      if (level === "high_school") {
+        result = result.filter((p) => p.level === "high_school" || p.level === "youth");
+      } else {
+        result = result.filter((p) => p.level === level);
+      }
     }
 
     // Country filter
@@ -308,14 +310,16 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
         <>
           {/* Rankings table — only for currently filtered ranked players */}
           {rankedFiltered.length > 0 && (
-            <>
-              {gender && (
-                <p className="font-display text-xs uppercase tracking-widest text-brand-white/40 mb-2">
-                  {gender === "female" ? "Women's Rankings" : "Men's Rankings"}
-                </p>
-              )}
-              <RankingsTable players={rankedFiltered} />
-            </>
+            <RankingsTable
+              players={rankedFiltered}
+              title={
+                level === "college"
+                  ? gender === "female" ? "Women's College Rankings" : gender === "male" ? "Men's College Rankings" : "College Rankings"
+                  : level === "national" || level === "international"
+                  ? gender === "female" ? "Women's World Rankings" : gender === "male" ? "Men's World Rankings" : "World Rankings"
+                  : gender === "female" ? "Women's National Rankings" : gender === "male" ? "Men's National Rankings" : "National Rankings"
+              }
+            />
           )}
 
           {/* Player grid */}
