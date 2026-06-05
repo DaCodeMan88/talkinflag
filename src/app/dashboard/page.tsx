@@ -168,6 +168,24 @@ export default async function DashboardPage({
                 Coming Soon
               </span>
             </div>
+
+            {/* Coach application */}
+            <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
+              <div>
+                <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
+                  Are you a coach?
+                </p>
+                <p className="text-brand-white/25 text-xs mt-1">
+                  Apply for verified coach status
+                </p>
+              </div>
+              <Link
+                href="/coaches/apply"
+                className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+              >
+                Apply →
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="bg-[#0d0d0d] border border-brand-white/10 p-8 text-center space-y-4">

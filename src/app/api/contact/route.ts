@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
+import { sendEmail } from "@/lib/email";
 
 const VALID_SUBJECTS = [
   "Podcast Feature",
@@ -13,7 +14,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // Validate required fields
     if (!body.name?.trim()) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
@@ -25,13 +25,13 @@ export async function POST(req: NextRequest) {
     }
 
     const subject = VALID_SUBJECTS.includes(body.subject) ? body.subject : "Other";
+    const name = body.name.trim().slice(0, 200);
+    const email = body.email.trim().slice(0, 200);
+    const message = body.message.trim().slice(0, 2000);
 
     const supabase = createServerClient();
     const { error } = await supabase.from("contact_submissions").insert({
-      name: body.name.trim().slice(0, 200),
-      email: body.email.trim().slice(0, 200),
-      subject,
-      message: body.message.trim().slice(0, 2000),
+      name, email, subject, message,
     });
 
     if (error) {
@@ -39,13 +39,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to submit message" }, { status: 500 });
     }
 
-    // TODO: Send email notification — set CONTACT_EMAIL_TO=talkinflagshow@gmail.com in Vercel env vars
-    // import { sendEmail } from "@/lib/email";
-    // await sendEmail({
-    //   to: process.env.CONTACT_EMAIL_TO,
-    //   subject: `[Talkin Flag] ${subject} from ${body.name}`,
-    //   text: `From: ${body.name} <${body.email}>\n\n${body.message}`,
-    // });
+    const to = process.env.CONTACT_EMAIL_TO;
+    if (to) {
+      await sendEmail({
+        to,
+        subject: `[Talkin Flag] ${subject} from ${name}`,
+        replyTo: email,
+        html: `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+            <h2 style="color:#FDDD58;font-family:sans-serif">${subject}</h2>
+            <p><strong>From:</strong> ${name} &lt;${email}&gt;</p>
+            <hr style="border:1px solid #222;margin:16px 0"/>
+            <p style="white-space:pre-wrap;color:#333">${message}</p>
+            <hr style="border:1px solid #222;margin:16px 0"/>
+            <p style="color:#999;font-size:12px">Talkin Flag contact form</p>
+          </div>
+        `,
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch {
