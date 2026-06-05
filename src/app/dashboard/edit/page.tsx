@@ -63,6 +63,7 @@ export default async function EditProfilePage() {
             years_active: (stats.years_active as number) ?? null,
             occupation: (stats.occupation as string) ?? "",
             education: (stats.education as string) ?? "",
+            grad_year: player.grad_year ?? null,
           }}
         />
       </div>

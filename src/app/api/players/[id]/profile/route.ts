@@ -81,6 +81,11 @@ export async function PATCH(
     if (mergedStats[k] === null) delete mergedStats[k];
   });
 
+  if (body.grad_year !== undefined) {
+    const v = parseInt(body.grad_year as string);
+    identity.grad_year = isNaN(v) || v < 2024 || v > 2032 ? null : v;
+  }
+
   const { error } = await supabase
     .from("players")
     .update({ ...identity, stats: mergedStats })

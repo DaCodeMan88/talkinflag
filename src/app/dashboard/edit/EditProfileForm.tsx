@@ -20,6 +20,7 @@ interface PlayerFormData {
   years_active: number | null;
   occupation: string;
   education: string;
+  grad_year: number | null;
 }
 
 function heightFromInches(inches: number | null): { ft: string; in: string } {
@@ -51,6 +52,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   const [fortyYard, setFortyYard] = useState(player.forty_yard);
   const [verticalJump, setVerticalJump] = useState(player.vertical_jump ? String(player.vertical_jump) : "");
   const [yearsActive, setYearsActive] = useState(player.years_active ? String(player.years_active) : "");
+  const [gradYear, setGradYear] = useState(player.grad_year ? String(player.grad_year) : "");
   const [occupation, setOccupation] = useState(player.occupation);
   const [education, setEducation] = useState(player.education);
 
@@ -125,6 +127,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
         years_active: yearsActive ? parseInt(yearsActive) : null,
         occupation,
         education,
+        grad_year: gradYear ? parseInt(gradYear) : null,
       }),
     });
 
@@ -452,6 +455,22 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
               placeholder="e.g. University of Rome, Doctorate in Psychology..."
               className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
             />
+          </div>
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              Graduating Class
+            </label>
+            <div className="relative w-40">
+              <input
+                type="number"
+                value={gradYear}
+                onChange={(e) => setGradYear(e.target.value)}
+                placeholder="2027"
+                min={2024} max={2032}
+                className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+              />
+            </div>
+            <p className="text-brand-white/20 text-xs mt-1">The year you graduate high school or college</p>
           </div>
         </div>
       </section>

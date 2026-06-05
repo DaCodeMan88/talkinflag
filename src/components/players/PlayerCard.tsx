@@ -64,12 +64,19 @@ export function PlayerCard({ player }: { player: Player }) {
       {player.school_or_team && (
         <p className="text-brand-white/60 text-xs mb-1">{player.school_or_team}</p>
       )}
-      {player.country && (
-        <p className="text-brand-white/40 text-xs">
-          {flag && <span className="mr-1" aria-hidden="true">{flag}</span>}
-          {player.country}
-        </p>
-      )}
+      <div className="flex items-center gap-2 flex-wrap">
+        {player.country && (
+          <p className="text-brand-white/40 text-xs">
+            {flag && <span className="mr-1" aria-hidden="true">{flag}</span>}
+            {player.country}
+          </p>
+        )}
+        {player.grad_year && (
+          <span className="text-brand-white/25 text-xs font-display uppercase tracking-widest">
+            Class of {player.grad_year}
+          </span>
+        )}
+      </div>
 
       <div className="flex items-center gap-3 mt-3 relative z-10">
         {isSafeUrl(player.highlight_url) && (

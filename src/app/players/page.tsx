@@ -16,12 +16,13 @@ export const metadata = buildMetadata({
 export default async function PlayersPage() {
   const supabase = createServerClient();
 
+  // Show ranked players first, then the rest — verified or with a ranking
   const { data: players } = await supabase
     .from("players")
     .select("*")
-    .eq("is_verified", true)
+    .or("is_verified.eq.true,ranking_national.not.is.null")
     .order("ranking_national", { ascending: true, nullsFirst: false })
-    .limit(200) as { data: Player[] | null };
+    .limit(300) as { data: Player[] | null };
 
   const playerList = players ?? [];
 

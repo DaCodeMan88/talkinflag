@@ -262,6 +262,11 @@ export default async function PlayerDetailPage({
                     {player.country}
                   </span>
                 )}
+                {player.grad_year && (
+                  <span className="border border-brand-white/20 text-brand-white/60 text-xs px-3 py-1 uppercase tracking-wide font-display">
+                    Class of {player.grad_year}
+                  </span>
+                )}
                 {player.is_claimed ? (
                   <span className="border border-brand-yellow/50 text-brand-yellow text-xs px-3 py-1 uppercase tracking-wide font-display">
                     ✓ Claimed
@@ -356,7 +361,7 @@ export default async function PlayerDetailPage({
                   selfReported={player.is_claimed && !player.is_verified}
                 />
               )}
-              {player.grad_year && <DetailRow label="Grad Year" value={String(player.grad_year)} />}
+              {player.grad_year && <DetailRow label="Class" value={`Class of ${player.grad_year}`} />}
               {ext.years_active && <DetailRow label="Years Active" value={`${ext.years_active} yrs`} />}
             </SideCard>
 
