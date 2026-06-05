@@ -37,9 +37,13 @@ export function PlayerCard({ player }: { player: Player }) {
           )}
           <h3 className="font-display text-lg uppercase text-brand-white leading-tight mt-0.5 group-hover:text-brand-yellow transition-colors">{name}</h3>
         </div>
-        {player.is_verified && (
+        {player.is_claimed ? (
           <span className="shrink-0 bg-brand-yellow text-brand-black font-display text-xs px-2 py-0.5 uppercase tracking-widest">
             ✓
+          </span>
+        ) : (
+          <span className="shrink-0 border border-brand-white/15 text-brand-white/25 font-display text-[9px] px-2 py-0.5 uppercase tracking-widest">
+            Unclaimed
           </span>
         )}
       </div>

@@ -8,9 +8,39 @@ import { PlayerCard } from "@/components/players/PlayerCard";
 
 export const revalidate = 300;
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface Tournament {
+  year: number;
+  event: string;
+  location?: string;
+  result: string;
+}
+
+interface ExtendedStats {
+  caps?: number;
+  achievements?: string[];
+  occupation?: string;
+  education?: string;
+  tournaments?: Tournament[];
+  forty_yard?: string;
+  vertical_jump?: string;
+  world_appearances?: number;
+  years_active?: number;
+  [key: string]: unknown;
+}
+
+const ATHLETICISM_KEYS = ["forty_yard", "vertical_jump", "world_appearances", "years_active"] as const;
+const ATHLETICISM_LABELS: Record<string, string> = {
+  forty_yard:        "40-Yd Dash",
+  vertical_jump:     "Vertical",
+  world_appearances: "World Apps.",
+  years_active:      "Yrs Active",
+};
+const META_KEYS = ["caps", "achievements", "occupation", "education", "tournaments",
+  ...ATHLETICISM_KEYS];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function isSafeUrl(url: string | null | undefined): boolean {
   return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
@@ -18,7 +48,14 @@ function isSafeUrl(url: string | null | undefined): boolean {
 
 function formatLevel(level: string | null): string {
   if (!level) return "";
-  return level.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const map: Record<string, string> = {
+    high_school: "High School",
+    college: "College",
+    national: "National Team",
+    international: "International",
+    youth: "Youth",
+  };
+  return map[level] ?? level.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function formatHeight(inches: number | null): string {
@@ -28,26 +65,27 @@ function formatHeight(inches: number | null): string {
   return `${ft}'${inch}"`;
 }
 
-// ---------------------------------------------------------------------------
-// generateStaticParams
-// ---------------------------------------------------------------------------
+function countryFlag(code: string | null | undefined): string {
+  if (!code || code.length !== 2) return "";
+  const offset = 127397;
+  return Array.from(code.toUpperCase())
+    .map((c) => String.fromCodePoint(c.charCodeAt(0) + offset))
+    .join("");
+}
+
+// ─── Static params ────────────────────────────────────────────────────────────
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
   try {
     const supabase = createServerClient();
-    const { data } = await supabase
-      .from("players")
-      .select("id")
-      .eq("is_verified", true);
+    const { data } = await supabase.from("players").select("id").eq("is_verified", true);
     return (data ?? []).map((row) => ({ id: row.id as string }));
   } catch {
     return [];
   }
 }
 
-// ---------------------------------------------------------------------------
-// generateMetadata
-// ---------------------------------------------------------------------------
+// ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export async function generateMetadata({
   params,
@@ -58,38 +96,29 @@ export async function generateMetadata({
   const supabase = createServerClient();
   const { data: player } = await supabase
     .from("players")
-    .select("first_name, last_name, position, level")
+    .select("first_name, last_name, position, level, school_or_team, country")
     .eq("id", id)
     .single();
 
-  if (!player) {
-    return { title: "Player Not Found | Talkin Flag" };
-  }
+  if (!player) return { title: "Player Not Found | Talkin Flag" };
 
   const name = `${player.first_name} ${player.last_name}`;
-  const desc = [player.position, formatLevel(player.level)]
-    .filter(Boolean)
-    .join(" · ");
-
-  const description = desc
-    ? `${name} — ${desc}. Ranked flag football player profile on Talkin Flag.`
+  const parts = [player.position, player.school_or_team].filter(Boolean).join(" · ");
+  const description = parts
+    ? `${name} — ${parts}. Flag football player profile on Talkin Flag.`
     : `${name} — flag football player profile on Talkin Flag.`;
 
-  // Let opengraph-image.tsx handle the OG image (player-specific card with name + position + ranking)
   const base = buildMetadata({
     title: `${name} | Talkin Flag Players`,
     description,
     path: `/players/${id}`,
   });
-  // Remove the generic /og?title= image so opengraph-image.tsx takes precedence
   if (base.openGraph) delete (base.openGraph as Record<string, unknown>).images;
   if (base.twitter) delete (base.twitter as Record<string, unknown>).images;
   return base;
 }
 
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function PlayerDetailPage({
   params,
@@ -99,178 +128,224 @@ export default async function PlayerDetailPage({
   const { id } = await params;
   const supabase = createServerClient();
 
-  const { data: player } = await supabase
+  const { data: player } = (await supabase
     .from("players")
     .select("*")
     .eq("id", id)
-    .single() as { data: Player | null };
+    .single()) as { data: Player | null };
 
   if (!player) notFound();
 
-  // Fetch similar players (same position, excluding current player)
   const { data: similar } = player.position
-    ? await supabase
+    ? await (supabase
         .from("players")
-        .select("id, first_name, last_name, position, level, school_or_team, country, ranking_national, is_verified, highlight_url, instagram")
+        .select(
+          "id, first_name, last_name, position, level, school_or_team, country, ranking_national, is_verified, highlight_url, instagram"
+        )
         .eq("is_verified", true)
         .eq("position", player.position)
         .neq("id", id)
         .order("ranking_national", { ascending: true, nullsFirst: false })
-        .limit(4) as { data: Player[] | null }
+        .limit(4) as unknown as Promise<{ data: Player[] | null }>)
     : { data: null };
 
   const similarPlayers = similar ?? [];
-
   const fullName = `${player.first_name} ${player.last_name}`;
-  const location = [player.city, player.state, player.country]
-    .filter(Boolean)
-    .join(", ");
-
-  // Country flag emoji from ISO 3166-1 alpha-2 code
-  function countryFlag(code: string | null | undefined): string {
-    if (!code || code.length !== 2) return "";
-    const offset = 127397;
-    return Array.from(code.toUpperCase()).map((c) => String.fromCodePoint(c.charCodeAt(0) + offset)).join("");
-  }
   const flag = countryFlag(player.country_code);
+  const ext = (player.stats ?? {}) as ExtendedStats;
+
+  const athleticismStats = ATHLETICISM_KEYS.filter((k) => ext[k] != null).map((k) => ({
+    key: k,
+    label: ATHLETICISM_LABELS[k],
+    value: String(ext[k]),
+  }));
+
+  const rawStats = Object.entries(ext).filter(([k]) => !META_KEYS.includes(k as typeof META_KEYS[number]));
+
+  const isNational = player.level === "national" || player.level === "international";
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
-      { "@type": "ListItem", "position": 2, "name": "Players", "item": "https://talkinflag.com/players" },
-      { "@type": "ListItem", "position": 3, "name": fullName, "item": `https://talkinflag.com/players/${player.id}` },
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://talkinflag.com" },
+      { "@type": "ListItem", position: 2, name: "Players", item: "https://talkinflag.com/players" },
+      { "@type": "ListItem", position: 3, name: fullName, item: `https://talkinflag.com/players/${player.id}` },
     ],
   };
 
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": fullName,
-    "url": `https://talkinflag.com/players/${player.id}`,
-    ...(player.position && { "jobTitle": `Flag Football ${player.position}` }),
-    ...(location && { "address": { "@type": "PostalAddress", "addressLocality": location } }),
+    name: fullName,
+    url: `https://talkinflag.com/players/${player.id}`,
+    ...(player.position && { jobTitle: `Flag Football ${player.position}` }),
+    ...(player.country && { nationality: player.country }),
     ...(player.instagram && {
-      "sameAs": [`https://instagram.com/${player.instagram.replace(/^@/, "")}`],
+      sameAs: [`https://instagram.com/${player.instagram.replace(/^@/, "")}`],
     }),
   };
 
   return (
-    <div className="min-h-screen bg-brand-black pt-24 pb-20">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
-      />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-brand-black">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
 
-        {/* Back link */}
-        <Link
-          href="/players"
-          className="inline-flex items-center gap-2 text-brand-white/50 hover:text-brand-yellow text-sm mb-10 transition-colors"
-        >
-          <span aria-hidden="true">&#8592;</span> Back to Players
-        </Link>
-
-        {/* Header */}
-        <div className="border-l-4 border-brand-yellow pl-6 mb-10">
-          <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white leading-none">
-            {fullName}
-          </h1>
-          <div className="flex flex-wrap items-center gap-3 mt-4">
-            {player.position && (
-              <span className="bg-brand-yellow text-brand-black font-display uppercase text-sm px-3 py-1 tracking-wider">
-                {player.position}
-              </span>
-            )}
-            {player.level && (
-              <span className="border border-brand-white/30 text-brand-white/70 text-sm px-3 py-1 uppercase tracking-wide">
-                {formatLevel(player.level)}
-              </span>
-            )}
-            {flag && (
-              <span className="text-2xl" aria-label={player.country ?? "Country"} title={player.country ?? undefined}>
-                {flag}
-              </span>
-            )}
-            {player.is_verified && (
-              <span className="border border-brand-yellow/40 text-brand-yellow text-xs px-3 py-1 uppercase tracking-wide">
-                Verified
-              </span>
-            )}
-          </div>
-          {/* Social share */}
-          <div className="flex flex-wrap gap-3 mt-4">
-            <a
-              href={`https://x.com/intent/tweet?text=${encodeURIComponent(
-                `Check out ${fullName}${player.position ? ` (${player.position})` : ""} on @TalkinFlagShow 🏈`
-              )}&url=${encodeURIComponent(`https://talkinflag.com/players/${player.id}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-brand-white/20 text-brand-white/60 font-display text-xs uppercase tracking-widest px-3 py-1.5 hover:border-brand-white/40 hover:text-brand-white transition-colors"
-              aria-label="Share on X"
-            >
-              <svg width="10" height="10" viewBox="0 0 1200 1227" fill="currentColor" aria-hidden="true">
-                <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.163 519.284ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"/>
-              </svg>
-              Share on X
-            </a>
-            <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                `https://talkinflag.com/players/${player.id}`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-brand-white/20 text-brand-white/60 font-display text-xs uppercase tracking-widest px-3 py-1.5 hover:border-brand-white/40 hover:text-brand-white transition-colors"
-              aria-label="Share on LinkedIn"
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-              </svg>
-              Share on LinkedIn
-            </a>
-          </div>
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <div className="relative bg-[#0a0a0a] border-b border-brand-white/10 pt-28 pb-12 overflow-hidden">
+        {/* Background accent */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-1 h-full bg-brand-yellow" />
+          <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-brand-yellow/5 blur-3xl" />
         </div>
 
-        {/* Main content grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/players"
+            className="inline-flex items-center gap-2 text-brand-white/40 hover:text-brand-yellow text-xs font-display uppercase tracking-widest mb-8 transition-colors"
+          >
+            ← Players
+          </Link>
 
-          {/* Left column — details */}
-          <div className="md:col-span-1 space-y-6">
-            <div className="bg-[#111111] border border-brand-white/10 p-6 space-y-4">
-              <h2 className="font-display uppercase text-brand-yellow text-sm tracking-widest">
-                Profile
-              </h2>
-
-              {player.school_or_team && (
-                <DetailRow label="Team / School" value={player.school_or_team} />
+          <div className="flex flex-col md:flex-row md:items-end gap-6">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              {player.photo_url ? (
+                <img
+                  src={player.photo_url}
+                  alt={fullName}
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-2 border-brand-yellow/30"
+                />
+              ) : (
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-brand-yellow/10 border-2 border-brand-yellow/30 flex items-center justify-center">
+                  <span className="font-display text-3xl md:text-4xl text-brand-yellow">
+                    {player.first_name[0]}{player.last_name[0]}
+                  </span>
+                </div>
               )}
-              {player.grad_year && (
-                <DetailRow label="Grad Year" value={String(player.grad_year)} />
-              )}
-              {location && (
-                <DetailRow label="Location" value={location} />
-              )}
-              {player.height_in && (
-                <DetailRow label="Height" value={formatHeight(player.height_in)} />
-              )}
-              {player.weight_lbs && (
-                <DetailRow label="Weight" value={`${player.weight_lbs} lbs`} />
+              {!player.is_claimed && (
+                <div className="absolute -bottom-1 -right-1 bg-brand-black border border-brand-white/20 rounded-full px-2 py-0.5">
+                  <span className="text-[9px] font-display uppercase tracking-widest text-brand-white/40">Unclaimed</span>
+                </div>
               )}
             </div>
 
+            <div className="flex-1">
+              {/* Country + team */}
+              <div className="flex items-center gap-2 mb-3">
+                {flag && <span className="text-2xl leading-none">{flag}</span>}
+                {player.school_or_team && (
+                  <span className="text-brand-white/50 text-sm font-display uppercase tracking-widest">
+                    {player.school_or_team}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white leading-none mb-4">
+                {fullName}
+              </h1>
+
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2">
+                {player.position && (
+                  <span className="bg-brand-yellow text-brand-black font-display uppercase text-sm px-3 py-1 tracking-wider">
+                    {player.position}
+                  </span>
+                )}
+                {player.level && (
+                  <span className="border border-brand-white/20 text-brand-white/60 text-xs px-3 py-1 uppercase tracking-wide font-display">
+                    {formatLevel(player.level)}
+                  </span>
+                )}
+                {player.country && (
+                  <span className="border border-brand-white/20 text-brand-white/60 text-xs px-3 py-1 uppercase tracking-wide font-display">
+                    {player.country}
+                  </span>
+                )}
+                {player.is_claimed ? (
+                  <span className="border border-brand-yellow/50 text-brand-yellow text-xs px-3 py-1 uppercase tracking-wide font-display">
+                    ✓ Claimed
+                  </span>
+                ) : (
+                  <span className="border border-brand-white/15 text-brand-white/30 text-xs px-3 py-1 uppercase tracking-wide font-display">
+                    Unclaimed
+                  </span>
+                )}
+              </div>
+
+              {/* Claim CTA */}
+              {!player.is_claimed && (
+                <div className="mt-5 flex items-center gap-4">
+                  <Link
+                    href={`/auth/claim/${player.id}`}
+                    className="inline-flex items-center gap-2 bg-brand-yellow text-brand-black font-display text-xs uppercase tracking-widest px-5 py-2.5 hover:bg-brand-yellow/90 transition-colors"
+                  >
+                    Is this you? Claim Profile →
+                  </Link>
+                  <span className="text-brand-white/25 text-xs">Free · Honor system</span>
+                </div>
+              )}
+            </div>
+
+            {/* Share */}
+            <div className="flex gap-2 md:self-end">
+              <a
+                href={`https://x.com/intent/tweet?text=${encodeURIComponent(
+                  `Check out ${fullName}${player.position ? ` (${player.position})` : ""} on @TalkinFlagShow 🏈`
+                )}&url=${encodeURIComponent(`https://talkinflag.com/players/${player.id}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Share on X"
+                className="border border-brand-white/15 text-brand-white/40 hover:text-brand-white hover:border-brand-white/30 p-2.5 transition-colors"
+              >
+                <svg width="12" height="12" viewBox="0 0 1200 1227" fill="currentColor" aria-hidden="true">
+                  <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.163 519.284ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          {/* Key stats bar */}
+          <div className="flex flex-wrap gap-6 mt-8 pt-8 border-t border-brand-white/10">
+            {player.ranking_national && (
+              <StatChip label="World Rank" value={`#${player.ranking_national}`} highlight />
+            )}
+            {ext.caps && (
+              <StatChip label="Caps" value={String(ext.caps)} />
+            )}
+            {ext.occupation && (
+              <StatChip label="Off the Field" value={ext.occupation} />
+            )}
+            {ext.education && (
+              <StatChip label="Education" value={ext.education} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Body ─────────────────────────────────────────────────────────── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          {/* ── Left sidebar ──────────────────────────────────────────────── */}
+          <div className="space-y-6">
+
+            {/* Profile details */}
+            <SideCard title="Profile">
+              {player.school_or_team && <DetailRow label="Team" value={player.school_or_team} />}
+              {player.city && <DetailRow label="City" value={player.city} />}
+              {player.country && <DetailRow label="Country" value={player.country} />}
+              {player.height_in && <DetailRow label="Height" value={formatHeight(player.height_in)} />}
+              {player.weight_lbs && <DetailRow label="Weight" value={`${player.weight_lbs} lbs`} />}
+              {player.grad_year && <DetailRow label="Grad Year" value={String(player.grad_year)} />}
+              {ext.years_active && <DetailRow label="Years Active" value={`${ext.years_active} yrs`} />}
+            </SideCard>
+
             {/* Rankings */}
             {(player.ranking_national || player.ranking_position) && (
-              <div className="bg-[#111111] border border-brand-white/10 p-6 space-y-4">
-                <h2 className="font-display uppercase text-brand-yellow text-sm tracking-widest">
-                  Rankings
-                </h2>
+              <SideCard title="Rankings">
                 {player.ranking_national && (
-                  <DetailRow label="National Rank" value={`#${player.ranking_national}`} />
+                  <DetailRow label="World Rank" value={`#${player.ranking_national}`} highlight />
                 )}
                 {player.ranking_position && (
                   <DetailRow
@@ -278,15 +353,30 @@ export default async function PlayerDetailPage({
                     value={`#${player.ranking_position}`}
                   />
                 )}
-              </div>
+              </SideCard>
             )}
 
-            {/* Links */}
+            {/* Tournament history */}
+            {ext.tournaments && ext.tournaments.length > 0 && (
+              <SideCard title="Tournament History">
+                <div className="space-y-3">
+                  {ext.tournaments.map((t, i) => (
+                    <div key={i} className="text-xs">
+                      <div className="flex items-center justify-between gap-2 mb-0.5">
+                        <span className="text-brand-yellow font-display uppercase tracking-wide text-[10px]">{t.year}</span>
+                        <span className="text-brand-white/40 font-display text-[10px] uppercase tracking-wide">{t.result}</span>
+                      </div>
+                      <div className="text-brand-white/70">{t.event}</div>
+                      {t.location && <div className="text-brand-white/30">{t.location}</div>}
+                    </div>
+                  ))}
+                </div>
+              </SideCard>
+            )}
+
+            {/* Social links */}
             {(player.highlight_url || player.instagram) && (
-              <div className="bg-[#111111] border border-brand-white/10 p-6 space-y-4">
-                <h2 className="font-display uppercase text-brand-yellow text-sm tracking-widest">
-                  Links
-                </h2>
+              <SideCard title="Links">
                 {isSafeUrl(player.highlight_url) && (
                   <a
                     href={player.highlight_url!}
@@ -294,7 +384,7 @@ export default async function PlayerDetailPage({
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-brand-yellow hover:underline text-sm"
                   >
-                    <span aria-hidden="true">&#9654;</span> Highlight Reel
+                    ▶ Highlight Reel
                   </a>
                 )}
                 {player.instagram && (
@@ -306,44 +396,98 @@ export default async function PlayerDetailPage({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-brand-white/70 hover:text-brand-white text-sm"
+                    className="flex items-center gap-2 text-brand-white/60 hover:text-brand-white text-sm transition-colors"
                   >
-                    <span aria-hidden="true">@</span>{" "}
-                    {player.instagram.startsWith("@")
-                      ? player.instagram
-                      : `@${player.instagram}`}
+                    @ {player.instagram.replace(/^@/, "")}
                   </a>
                 )}
-              </div>
+              </SideCard>
             )}
           </div>
 
-          {/* Right column — bio + stats */}
+          {/* ── Right main column ─────────────────────────────────────────── */}
           <div className="md:col-span-2 space-y-6">
+
+            {/* Bio */}
             {player.bio && (
-              <div className="bg-[#111111] border border-brand-white/10 p-6">
-                <h2 className="font-display uppercase text-brand-yellow text-sm tracking-widest mb-4">
-                  Bio
-                </h2>
-                <p className="text-brand-white/80 leading-relaxed whitespace-pre-line">
-                  {player.bio}
-                </p>
+              <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
+                <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">Biography</h2>
+                <p className="text-brand-white/80 leading-relaxed">{player.bio}</p>
               </div>
             )}
 
-            {/* Stats */}
-            {player.stats && Object.keys(player.stats).length > 0 && (
-              <div className="bg-[#111111] border border-brand-white/10 p-6">
-                <h2 className="font-display uppercase text-brand-yellow text-sm tracking-widest mb-4">
-                  Stats
+            {/* Athleticism */}
+            {athleticismStats.length > 0 && (
+              <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
+                <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-5">
+                  Athleticism
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {Object.entries(player.stats as Record<string, unknown>).map(([key, val]) => (
-                    <div key={key} className="text-center p-3 bg-[#1a1a1a] border border-brand-white/5">
-                      <div className="font-display text-2xl text-brand-white">
-                        {String(val)}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-brand-white/10">
+                  {athleticismStats.map(({ key, label, value }) => (
+                    <div key={key} className="bg-[#0d0d0d] p-4 text-center">
+                      <div className="font-display text-2xl md:text-3xl text-brand-white tabular-nums">
+                        {value}
                       </div>
-                      <div className="text-brand-white/50 text-xs uppercase tracking-wide mt-1">
+                      <div className="text-brand-white/40 text-[10px] uppercase tracking-widest mt-1.5">
+                        {label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Achievements */}
+            {ext.achievements && ext.achievements.length > 0 && (
+              <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
+                <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">
+                  Career Highlights
+                </h2>
+                <ul className="space-y-2">
+                  {ext.achievements.map((a, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm text-brand-white/75">
+                      <span className="text-brand-yellow mt-0.5 flex-shrink-0">—</span>
+                      {a}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* National team context */}
+            {isNational && player.country && (
+              <div className="bg-brand-yellow/5 border border-brand-yellow/20 p-6">
+                <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">
+                  National Team
+                </h2>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-3xl">{flag}</span>
+                  <div>
+                    <div className="text-brand-white font-medium">{player.school_or_team}</div>
+                    {player.ranking_national && (
+                      <div className="text-brand-white/50 text-xs mt-0.5">
+                        Ranked #{player.ranking_national} in the world (IFAF Women&apos;s)
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {ext.caps && (
+                  <p className="text-brand-white/60 text-sm">
+                    {player.first_name} has earned <span className="text-brand-white font-medium">{ext.caps} international caps</span> representing Italy on the world stage.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Raw game stats (if any) */}
+            {rawStats.length > 0 && (
+              <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
+                <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">Stats</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {rawStats.map(([key, val]) => (
+                    <div key={key} className="text-center p-4 bg-[#1a1a1a] border border-brand-white/5">
+                      <div className="font-display text-2xl text-brand-white">{String(val)}</div>
+                      <div className="text-brand-white/40 text-xs uppercase tracking-wide mt-1">
                         {key.replace(/_/g, " ")}
                       </div>
                     </div>
@@ -352,18 +496,35 @@ export default async function PlayerDetailPage({
               </div>
             )}
 
-            {/* Placeholder when no bio/stats */}
-            {!player.bio && (!player.stats || Object.keys(player.stats).length === 0) && (
-              <div className="bg-[#111111] border border-brand-yellow/10 p-10 text-center">
-                <p className="text-brand-white/40 text-sm">
-                  More profile details coming soon.
-                </p>
+            {/* Highlight video embed */}
+            {isSafeUrl(player.highlight_url) &&
+              (player.highlight_url!.includes("youtube.com") || player.highlight_url!.includes("youtu.be")) && (
+                <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
+                  <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">
+                    Highlights
+                  </h2>
+                  <div className="relative aspect-video">
+                    <iframe
+                      src={player.highlight_url!.replace("watch?v=", "embed/")}
+                      title={`${fullName} highlight reel`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                    />
+                  </div>
+                </div>
+              )}
+
+            {/* Empty state */}
+            {!player.bio && !ext.achievements && rawStats.length === 0 && (
+              <div className="bg-[#0d0d0d] border border-brand-yellow/10 p-10 text-center">
+                <p className="text-brand-white/40 text-sm">More profile details coming soon.</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Similar players */}
+        {/* ── Similar players ───────────────────────────────────────────── */}
         {similarPlayers.length > 0 && (
           <div className="mt-16 pt-10 border-t border-brand-white/10">
             <div className="flex items-center justify-between mb-6">
@@ -389,15 +550,45 @@ export default async function PlayerDetailPage({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Sub-component
-// ---------------------------------------------------------------------------
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function SideCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 space-y-3">
+      <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest pb-3 border-b border-brand-white/10">
+        {title}
+      </h2>
+      {children}
+    </div>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
     <div className="flex justify-between items-start gap-4 text-sm">
-      <span className="text-brand-white/50 flex-shrink-0">{label}</span>
-      <span className="text-brand-white text-right">{value}</span>
+      <span className="text-brand-white/40 flex-shrink-0 text-xs">{label}</span>
+      <span className={highlight ? "text-brand-yellow font-display font-bold" : "text-brand-white text-right text-xs"}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function StatChip({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div>
+      <div className={`font-display text-xl md:text-2xl ${highlight ? "text-brand-yellow" : "text-brand-white"}`}>
+        {value}
+      </div>
+      <div className="text-brand-white/40 text-[11px] uppercase tracking-widest mt-0.5">{label}</div>
     </div>
   );
 }

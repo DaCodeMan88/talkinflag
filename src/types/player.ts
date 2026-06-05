@@ -20,6 +20,10 @@ export interface Player {
   gender?: "male" | "female" | null;
   bio?: string | null;
   is_verified?: boolean;
+  is_claimed?: boolean;
+  claimed_by?: string | null;
+  claimed_at?: string | null;
+  photo_url?: string | null;
   created_at?: string;
   updated_at?: string;
 }
