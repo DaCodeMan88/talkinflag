@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DaysUntil } from "./DaysUntil";
 
 interface Event {
   id: string;
@@ -89,6 +90,9 @@ export function EventCard({ event }: { event: Event }) {
               {location}
             </p>
           )}
+          <div className="mt-2">
+            <DaysUntil dateStr={event.start_date} />
+          </div>
         </div>
 
         {/* External link — z-10 so it floats above the card overlay */}

@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 import { EventCard } from "./EventCard";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface Event {
   id: string;
@@ -42,6 +42,7 @@ function formatShortDate(dateStr: string) {
 }
 
 export function EventsFilter({ events }: { events: Event[] }) {
+  const [query, setQuery] = useState("");
   const [activeLevel, setActiveLevel] = useState<string>("all");
   const [activeCountry, setActiveCountry] = useState<string>("");
 
@@ -66,12 +67,21 @@ export function EventsFilter({ events }: { events: Event[] }) {
   }, [events]);
 
   const filtered = useMemo(() => {
-    // Exclude featured events from the main list (they appear in the pinned section)
     let result = events.filter((e) => !e.is_featured);
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      result = result.filter((e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.city?.toLowerCase().includes(q) ||
+        e.country?.toLowerCase().includes(q) ||
+        e.event_type?.toLowerCase().includes(q) ||
+        e.description?.toLowerCase().includes(q)
+      );
+    }
     if (activeLevel !== "all") result = result.filter((e) => e.level === activeLevel);
     if (activeCountry) result = result.filter((e) => e.country === activeCountry);
     return result;
-  }, [events, activeLevel, activeCountry]);
+  }, [events, query, activeLevel, activeCountry]);
 
   // Group filtered events by month
   const eventsByMonth = useMemo(() => {
@@ -151,6 +161,24 @@ export function EventsFilter({ events }: { events: Event[] }) {
           </div>
         </div>
       )}
+
+      {/* Search */}
+      <div className="relative mb-6">
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-white/30 pointer-events-none" aria-hidden="true" />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search events by name, location, or type…"
+          aria-label="Search events"
+          className="w-full bg-[#111111] border border-brand-white/15 text-brand-white pl-10 pr-10 py-3 text-sm focus:border-brand-yellow focus:outline-none placeholder:text-brand-white/30"
+        />
+        {query && (
+          <button onClick={() => setQuery("")} aria-label="Clear search" className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-white/40 hover:text-brand-white transition-colors">
+            <X size={14} />
+          </button>
+        )}
+      </div>
 
       {/* Level filter tabs — only shown when multiple levels exist */}
       {/* Derive levels from non-featured events only */}

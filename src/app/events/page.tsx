@@ -1,8 +1,10 @@
 import { createServerClient } from "@/lib/supabase";
 import { EventsFilter } from "@/components/events/EventsFilter";
+import { PastEventsSection } from "@/components/events/PastEventsSection";
 import { GlobeSection } from "@/components/events/GlobeSection";
 import { buildMetadata } from "@/lib/seo";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const revalidate = 3600;
 
@@ -14,14 +16,25 @@ export const metadata = buildMetadata({
 
 export default async function EventsPage() {
   const supabase = createServerClient();
-  const { data: events } = await supabase
-    .from("events")
-    .select("*")
-    .gte("start_date", new Date().toISOString().split("T")[0])
-    .order("start_date", { ascending: true })
-    .limit(50);
+  const today = new Date().toISOString().split("T")[0];
+
+  const [{ data: events }, { data: pastEvents }] = await Promise.all([
+    supabase
+      .from("events")
+      .select("*")
+      .gte("start_date", today)
+      .order("start_date", { ascending: true })
+      .limit(50),
+    supabase
+      .from("events")
+      .select("id, title, start_date, end_date, city, country, country_code, level, event_type, website_url, is_featured")
+      .lt("start_date", today)
+      .order("start_date", { ascending: false })
+      .limit(20),
+  ]);
 
   const eventList = events ?? [];
+  const pastEventList = pastEvents ?? [];
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -110,6 +123,13 @@ export default async function EventsPage() {
             </div>
           ) : (
             <EventsFilter events={eventList} />
+          )}
+
+          {/* Past events */}
+          {pastEventList.length > 0 && (
+            <Suspense fallback={null}>
+              <PastEventsSection events={pastEventList} />
+            </Suspense>
           )}
         </div>
       </div>
