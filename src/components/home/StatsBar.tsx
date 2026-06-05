@@ -1,21 +1,32 @@
+import { createServerClient } from "@/lib/supabase";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface StatsBarProps {
   episodeCount?: number;
 }
 
-export function StatsBar({ episodeCount }: StatsBarProps) {
+export async function StatsBar({ episodeCount }: StatsBarProps) {
   const episodeLabel = episodeCount ? `${episodeCount}+` : "39+";
 
+  // Live player count
+  let playerCount = 75;
+  try {
+    const supabase = createServerClient();
+    const { count } = await supabase
+      .from("players")
+      .select("id", { count: "exact", head: true });
+    if (count && count > 0) playerCount = count;
+  } catch { /* use fallback */ }
+
   const stats = [
-    { value: episodeLabel, label: "Episodes" },
-    { value: "25+", label: "Countries Represented" },
-    { value: "2", label: "Italian National Team Hosts" },
-    { value: "#1", label: "Flag Football Podcast" },
+    { value: episodeLabel,              label: "Episodes" },
+    { value: `${playerCount}+`,         label: "Player Profiles" },
+    { value: "14",                       label: "States Represented" },
+    { value: "#1",                       label: "Flag Football Podcast" },
   ];
 
   return (
-    <section className="bg-brand-yellow py-6" aria-label="Podcast statistics">
+    <section className="bg-brand-yellow py-6" aria-label="Platform statistics">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((stat, i) => (

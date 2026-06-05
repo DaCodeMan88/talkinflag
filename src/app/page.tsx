@@ -4,6 +4,7 @@ import { NewsletterSignup } from "@/components/home/NewsletterSignup";
 import { ListenOn } from "@/components/home/ListenOn";
 import { EventsTeaser } from "@/components/home/EventsTeaser";
 import { PlayersSpotlight } from "@/components/home/PlayersSpotlight";
+import { RankingsTeaser } from "@/components/home/RankingsTeaser";
 import { BlogTeaser } from "@/components/home/BlogTeaser";
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
@@ -81,7 +82,9 @@ export default async function HomePage() {
         }) }}
       />
       <Hero latestEpisode={episodes[0]} episodeCount={episodes.length} />
-      <StatsBar episodeCount={episodes.length} />
+      <Suspense fallback={<div className="bg-brand-yellow py-6 h-20" />}>
+        <StatsBar episodeCount={episodes.length} />
+      </Suspense>
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">
         <div className="max-w-7xl mx-auto">
@@ -115,6 +118,18 @@ export default async function HomePage() {
       </section>
 
       <ListenOn />
+      <Suspense fallback={
+        <div className="bg-[#060606] border-t border-brand-white/5 py-20 px-6">
+          <div className="max-w-7xl mx-auto space-y-3">
+            <div className="h-10 w-56 bg-brand-white/5 animate-pulse rounded-sm mb-8" />
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="h-12 bg-brand-white/5 animate-pulse rounded-sm" />
+            ))}
+          </div>
+        </div>
+      }>
+        <RankingsTeaser />
+      </Suspense>
       {/* Suspense allows EventsTeaser & PlayersSpotlight to stream independently
           so the hero, episodes, and ListenOn sections appear before Supabase resolves */}
       <Suspense fallback={
