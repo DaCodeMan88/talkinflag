@@ -335,8 +335,27 @@ export default async function PlayerDetailPage({
               {player.school_or_team && <DetailRow label="Team" value={player.school_or_team} />}
               {player.city && <DetailRow label="City" value={player.city} />}
               {player.country && <DetailRow label="Country" value={player.country} />}
-              {player.height_in && <DetailRow label="Height" value={formatHeight(player.height_in)} />}
-              {player.weight_lbs && <DetailRow label="Weight" value={`${player.weight_lbs} lbs`} />}
+              {player.height_in && (
+                <DetailRow
+                  label="Height"
+                  value={formatHeight(player.height_in)}
+                  selfReported={player.is_claimed && !player.is_verified}
+                />
+              )}
+              {player.weight_lbs && (
+                <DetailRow
+                  label="Weight"
+                  value={`${player.weight_lbs} lbs`}
+                  selfReported={player.is_claimed && !player.is_verified}
+                />
+              )}
+              {!!ext.wingspan_in && (
+                <DetailRow
+                  label="Wingspan"
+                  value={`${ext.wingspan_in as number}"`}
+                  selfReported={player.is_claimed && !player.is_verified}
+                />
+              )}
               {player.grad_year && <DetailRow label="Grad Year" value={String(player.grad_year)} />}
               {ext.years_active && <DetailRow label="Years Active" value={`${ext.years_active} yrs`} />}
             </SideCard>
@@ -419,9 +438,21 @@ export default async function PlayerDetailPage({
             {/* Athleticism */}
             {athleticismStats.length > 0 && (
               <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
-                <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-5">
-                  Athleticism
-                </h2>
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest">
+                    Athleticism
+                  </h2>
+                  {player.is_claimed && !player.is_verified && (
+                    <span className="text-brand-white/25 text-[10px] font-display uppercase tracking-widest">
+                      Self-reported
+                    </span>
+                  )}
+                  {player.is_verified && (
+                    <span className="text-brand-yellow text-[10px] font-display uppercase tracking-widest">
+                      ✓ Verified
+                    </span>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-brand-white/10">
                   {athleticismStats.map(({ key, label, value }) => (
                     <div key={key} className="bg-[#0d0d0d] p-4 text-center">
@@ -567,16 +598,23 @@ function DetailRow({
   label,
   value,
   highlight,
+  selfReported,
 }: {
   label: string;
   value: string;
   highlight?: boolean;
+  selfReported?: boolean;
 }) {
   return (
     <div className="flex justify-between items-start gap-4 text-sm">
       <span className="text-brand-white/40 flex-shrink-0 text-xs">{label}</span>
-      <span className={highlight ? "text-brand-yellow font-display font-bold" : "text-brand-white text-right text-xs"}>
-        {value}
+      <span className="flex items-center gap-1.5">
+        <span className={highlight ? "text-brand-yellow font-display font-bold" : "text-brand-white text-right text-xs"}>
+          {value}
+        </span>
+        {selfReported && (
+          <span title="Self-reported by player" className="text-brand-white/20 text-[9px] cursor-help">·</span>
+        )}
       </span>
     </div>
   );
