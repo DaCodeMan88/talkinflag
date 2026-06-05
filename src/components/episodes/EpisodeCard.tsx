@@ -28,15 +28,21 @@ export function EpisodeCard({ episode }: { episode: Episode }) {
         </div>
 
         <div className="p-4">
-          {episode.guestName && (
-            <p className="text-brand-yellow font-display text-xs uppercase tracking-widest mb-1">
-              {episode.guestName}
-            </p>
+          {episode.guestName ? (
+            <>
+              <h3 className="font-display text-base uppercase text-brand-white leading-tight group-hover:text-brand-yellow transition-colors">
+                {episode.guestName}
+              </h3>
+              <p className="text-brand-white/50 text-xs mt-1 line-clamp-2 leading-snug">
+                {episode.title}
+              </p>
+            </>
+          ) : (
+            <h3 className="text-brand-white text-sm font-medium line-clamp-2 leading-snug group-hover:text-brand-yellow transition-colors">
+              {episode.title}
+            </h3>
           )}
-          <h3 className="text-brand-white text-sm font-medium line-clamp-2 leading-snug">
-            {episode.title}
-          </h3>
-          <p className="text-brand-white/40 text-xs mt-2">
+          <p className="text-brand-white/30 text-xs mt-2">
             {new Date(episode.publishedAt).toLocaleDateString("en-US", {
               month: "short", day: "numeric", year: "numeric",
             })}
