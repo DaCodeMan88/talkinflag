@@ -154,7 +154,7 @@ export default async function DashboardPage({
               </div>
             </div>
 
-            {/* Verification teaser */}
+            {/* Verification */}
             <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
               <div>
                 <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
@@ -164,9 +164,12 @@ export default async function DashboardPage({
                   Earn the ✓ Verified badge on your measurables
                 </p>
               </div>
-              <span className="text-brand-white/20 text-xs font-display uppercase tracking-widest border border-brand-white/10 px-3 py-1">
-                Coming Soon
-              </span>
+              <Link
+                href="/dashboard/verify"
+                className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+              >
+                Submit →
+              </Link>
             </div>
 
             {/* Coach application */}

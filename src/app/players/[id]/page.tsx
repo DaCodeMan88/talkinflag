@@ -149,6 +149,15 @@ export default async function PlayerDetailPage({
         .limit(4) as unknown as Promise<{ data: Player[] | null }>)
     : { data: null };
 
+  // Fetch approved stat verifications for per-stat verified badges
+  const { data: verifications } = await supabase
+    .from("stat_verifications")
+    .select("stat_key")
+    .eq("player_id", id)
+    .eq("status", "approved");
+
+  const verifiedStats = new Set((verifications ?? []).map((v) => v.stat_key));
+
   const similarPlayers = similar ?? [];
   const fullName = `${player.first_name} ${player.last_name}`;
   const flag = countryFlag(player.country_code);
@@ -344,21 +353,24 @@ export default async function PlayerDetailPage({
                 <DetailRow
                   label="Height"
                   value={formatHeight(player.height_in)}
-                  selfReported={player.is_claimed && !player.is_verified}
+                  verified={verifiedStats.has("height_in")}
+                  selfReported={player.is_claimed && !verifiedStats.has("height_in")}
                 />
               )}
               {player.weight_lbs && (
                 <DetailRow
                   label="Weight"
                   value={`${player.weight_lbs} lbs`}
-                  selfReported={player.is_claimed && !player.is_verified}
+                  verified={verifiedStats.has("weight_lbs")}
+                  selfReported={player.is_claimed && !verifiedStats.has("weight_lbs")}
                 />
               )}
               {!!ext.wingspan_in && (
                 <DetailRow
                   label="Wingspan"
                   value={`${ext.wingspan_in as number}"`}
-                  selfReported={player.is_claimed && !player.is_verified}
+                  verified={verifiedStats.has("wingspan_in")}
+                  selfReported={player.is_claimed && !verifiedStats.has("wingspan_in")}
                 />
               )}
               {player.grad_year && <DetailRow label="Class" value={`Class of ${player.grad_year}`} />}
@@ -460,13 +472,19 @@ export default async function PlayerDetailPage({
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-brand-white/10">
                   {athleticismStats.map(({ key, label, value }) => (
-                    <div key={key} className="bg-[#0d0d0d] p-4 text-center">
+                    <div key={key} className="bg-[#0d0d0d] p-4 text-center relative">
                       <div className="font-display text-2xl md:text-3xl text-brand-white tabular-nums">
                         {value}
                       </div>
                       <div className="text-brand-white/40 text-[10px] uppercase tracking-widest mt-1.5">
                         {label}
                       </div>
+                      {verifiedStats.has(key) && (
+                        <div className="absolute top-2 right-2 text-brand-yellow text-[9px] font-display uppercase tracking-widest">✓</div>
+                      )}
+                      {player.is_claimed && !verifiedStats.has(key) && (
+                        <div className="absolute top-2 right-2 text-brand-white/15 text-[9px]">·</div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -604,11 +622,13 @@ function DetailRow({
   value,
   highlight,
   selfReported,
+  verified,
 }: {
   label: string;
   value: string;
   highlight?: boolean;
   selfReported?: boolean;
+  verified?: boolean;
 }) {
   return (
     <div className="flex justify-between items-start gap-4 text-sm">
@@ -617,7 +637,10 @@ function DetailRow({
         <span className={highlight ? "text-brand-yellow font-display font-bold" : "text-brand-white text-right text-xs"}>
           {value}
         </span>
-        {selfReported && (
+        {verified && (
+          <span title="Verified" className="text-brand-yellow text-[9px] font-display">✓</span>
+        )}
+        {!verified && selfReported && (
           <span title="Self-reported by player" className="text-brand-white/20 text-[9px] cursor-help">·</span>
         )}
       </span>
