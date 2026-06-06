@@ -63,7 +63,7 @@ export async function SubscribePanel() {
         {/* View all episodes link */}
         <div className="text-center mt-5 mb-14">
           <a
-            href="/episodes"
+            href="/podcast"
             className="text-brand-white/40 font-display text-[10px] uppercase tracking-[0.25em] hover:text-brand-yellow transition-colors"
           >
             Browse All Episodes →

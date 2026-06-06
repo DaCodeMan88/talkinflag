@@ -28,7 +28,7 @@ export async function generateMetadata({
     title: episode.guestName || episode.title,
     description: episode.description.slice(0, 160),
     image: episode.thumbnail,
-    path: `/episodes/${id}`,
+    path: `/podcast/${id}`,
   });
   // Let opengraph-image.tsx generate the branded OG card instead
   if (base.openGraph) delete (base.openGraph as Record<string, unknown>).images;
@@ -88,7 +88,7 @@ export default async function EpisodePage({
     `Listening to "${episode.guestName || episode.title}" on @TalkinFlagShow 🏈🇮🇹`
   );
   const xShareUrl = `https://x.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(
-    `https://talkinflag.com/episodes/${id}`
+    `https://talkinflag.com/podcast/${id}`
   )}`;
 
   // JSON-LD: BreadcrumbList
@@ -97,8 +97,8 @@ export default async function EpisodePage({
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
-      { "@type": "ListItem", "position": 2, "name": "Episodes", "item": "https://talkinflag.com/episodes" },
-      { "@type": "ListItem", "position": 3, "name": episode.guestName || episode.title, "item": `https://talkinflag.com/episodes/${id}` },
+      { "@type": "ListItem", "position": 2, "name": "Podcast", "item": "https://talkinflag.com/podcast" },
+      { "@type": "ListItem", "position": 3, "name": episode.guestName || episode.title, "item": `https://talkinflag.com/podcast/${id}` },
     ],
   };
 
@@ -108,7 +108,7 @@ export default async function EpisodePage({
     "@type": "PodcastEpisode",
     "name": episode.title,
     "description": episode.description.slice(0, 500),
-    "url": `https://talkinflag.com/episodes/${id}`,
+    "url": `https://talkinflag.com/podcast/${id}`,
     "datePublished": episode.publishedAt,
     "associatedMedia": {
       "@type": "MediaObject",
@@ -141,7 +141,7 @@ export default async function EpisodePage({
 
         {/* Back navigation */}
         <Link
-          href="/episodes"
+          href="/podcast"
           className="inline-flex items-center gap-2 text-brand-white/50 hover:text-brand-yellow text-sm mb-8 transition-colors group"
         >
           <span className="transition-transform group-hover:-translate-x-1" aria-hidden="true">←</span>
@@ -209,7 +209,7 @@ export default async function EpisodePage({
           </a>
           <a
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-              `https://talkinflag.com/episodes/${id}`
+              `https://talkinflag.com/podcast/${id}`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -289,7 +289,7 @@ export default async function EpisodePage({
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-xl uppercase text-brand-white">More Episodes</h2>
               <Link
-                href="/episodes"
+                href="/podcast"
                 className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline"
               >
                 All Episodes →

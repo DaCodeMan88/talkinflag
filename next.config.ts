@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/episodes", destination: "/podcast", permanent: true },
+      { source: "/episodes/:id", destination: "/podcast/:id", permanent: true },
+    ];
+  },
   experimental: {
     optimizeCss: true,
   },

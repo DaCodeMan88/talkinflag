@@ -379,7 +379,7 @@ Flag football was officially added to the Los Angeles 2028 Summer Olympics progr
 
 If you're just discovering the sport now, you're entering at exactly the right moment. The sport is growing, the community is welcoming, and the path from beginner to competitive player has never been more clearly defined.
 
-To follow the game at the highest level, explore [episodes of the Talkin Flag podcast](/episodes) and the [global player database](/players).`,
+To follow the game at the highest level, explore [episodes of the Talkin Flag podcast](/podcast) and the [global player database](/players).`,
     faqItems: [
       {
         q: "How many players are on a flag football team?",
@@ -679,7 +679,7 @@ If you're coaching flag football at any level, you have an opportunity to build 
 
 Build something you're proud of. The wins will follow.
 
-For player development resources, visit the [Talkin Flag player database](/players). To explore episodes on coaching and elite performance, [browse the podcast](/episodes).`,
+For player development resources, visit the [Talkin Flag player database](/players). To explore episodes on coaching and elite performance, [browse the podcast](/podcast).`,
     faqItems: [
       {
         q: "How do I start coaching flag football?",
@@ -1326,7 +1326,7 @@ If you're an adult picking up the sport for the first time, don't worry about yo
 
 Flag football isn't just a US sport anymore. With the LA 2028 Olympics approaching, programs are active on every continent. If you're based outside the United States, your national flag football federation is the best starting point for finding organized competition. IFAF maintains a list of all national federations and their contact information on their website.
 
-For international players looking to connect with the global community, the [Talkin Flag podcast](/episodes) and player database have been building connections between the flag football world since our founding. We've talked to players and coaches from Italy, Costa Rica, Sri Lanka, Nigeria, Sweden, and dozens of other countries — and every one of them found their community by starting exactly where you are: looking for a league and taking the first step.
+For international players looking to connect with the global community, the [Talkin Flag podcast](/podcast) and player database have been building connections between the flag football world since our founding. We've talked to players and coaches from Italy, Costa Rica, Sri Lanka, Nigeria, Sweden, and dozens of other countries — and every one of them found their community by starting exactly where you are: looking for a league and taking the first step.
 
 Find your league. Join your team. Welcome to flag football.`,
     faqItems: [

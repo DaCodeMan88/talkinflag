@@ -316,7 +316,7 @@ export default async function BlogPostPage({
               <p className="text-brand-white/60 text-sm">Explore the episodes that inspired this story.</p>
             </div>
             <Link
-              href="/episodes"
+              href="/podcast"
               className="shrink-0 inline-flex items-center gap-2 bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-yellow-400 transition-colors"
             >
               All Episodes →

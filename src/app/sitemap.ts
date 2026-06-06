@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── Static pages ──────────────────────────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
-    { url: `${BASE_URL}/episodes`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/podcast`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${BASE_URL}/events`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/players`, lastModified: now, changeFrequency: "hourly", priority: 0.8 },
     { url: `${BASE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const episodes = await getEpisodes(50);
     episodePages = episodes.map((ep) => ({
-      url: `${BASE_URL}/episodes/${ep.id}`,
+      url: `${BASE_URL}/podcast/${ep.id}`,
       lastModified: new Date(ep.publishedAt),
       changeFrequency: "monthly" as const,
       priority: 0.7,

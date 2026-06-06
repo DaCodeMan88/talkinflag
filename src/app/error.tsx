@@ -51,7 +51,7 @@ export default function GlobalError({
       {/* Quick links */}
       <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2">
         {[
-          { label: "Episodes", href: "/episodes" },
+          { label: "Podcast", href: "/podcast" },
           { label: "Players", href: "/players" },
           { label: "Events", href: "/events" },
         ].map((link) => (

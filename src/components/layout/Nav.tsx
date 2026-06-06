@@ -7,18 +7,12 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { label: "Episodes", href: "/episodes" },
   { label: "Players", href: "/players" },
-  { label: "Coaches", href: "/coaches" },
   { label: "Teams", href: "/teams" },
+  { label: "Podcast", href: "/podcast" },
   { label: "Events", href: "/events" },
-  { label: "Community", href: "/community" },
-  { label: "Scouts", href: "/scouts/apply" },
-  { label: "Media", href: "/media" },
   { label: "Blog", href: "/blog" },
-  { label: "Merch", href: "/merch" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export function Nav() {
