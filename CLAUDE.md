@@ -76,16 +76,21 @@ These 3 items are blocking final polish on the live site:
    ```
 
 ### Build Queue
-1. **Episode-to-Blog Conversion** — long-form articles from podcast episodes. Start with Vanita Krouch, Katherine Sowers. Each = new SEO page.
-2. **TF Rankings Algorithm (Phase A)** — needs Ambra & Tika to define the 100-pt rubric weights before building.
-3. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+1. **Episode-to-Blog + Player SEO** — plan at `docs/plans/2026-06-06-episode-blog-player-seo.md`. Branch: `episode-blog-seo`. Kickoff: *"Read CLAUDE.md and docs/plans/2026-06-06-episode-blog-player-seo.md. Create branch episode-blog-seo off main and execute the plan."*
+2. **Podcast audio widget** — pre-build component now; activate when Spotify show ID is provided.
+3. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
+4. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+5. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. Needs `RESEND_API_KEY`.
 
 ### Other Owner Actions
 | Item | What It Unlocks | Action |
 |------|----------------|--------|
+| YouTube video IDs (×5) | Episode-to-Blog embeds | After YOUTUBE_API_KEY is live, replace `TODO_OWNER` in the 5 interview posts in `static-posts.ts` |
+| Spotify show ID | Podcast audio widget on `/podcast` | Find in Spotify for Podcasters dashboard URL |
+| Drop backup tables | Clean Supabase schema | Run `DROP TABLE IF EXISTS _backup_players_20260606; DROP TABLE IF EXISTS _backup_events_20260606;` in SQL Editor |
 | 100-pt TF Rank rubric | TF Rankings Algorithm live scores | Define with Ambra & Tika |
-| `RESEND_API_KEY` | Contact form, welcome email, weekly digest | Vercel → Settings → Env Vars |
-| `YOUTUBE_API_KEY` | Live episode fetching | Vercel |
+| `RESEND_API_KEY` | Contact form, welcome email, profile claim outreach | Vercel → Settings → Env Vars |
+| `YOUTUBE_API_KEY` | Live episode fetching + video IDs for blog | Vercel |
 | `PRINTFUL_API_KEY` | Merch store (code done) | Vercel |
 | Domain decision | talkinflag.com vs talkinflagshow.com | Supabase + Google Console |
 
