@@ -8,70 +8,73 @@
 
 ## Active Roadmap
 
-**File:** `docs/plans/2026-06-05-traffic-growth-roadmap.md`
-
 **To start the next build session, say:**
 > "Read CLAUDE.md and let's continue from the open items."
 
-### Traffic Growth Phases — All Shipped ✅
+---
+
+## Completed Work — All Shipped ✅
+
+### Traffic Growth Roadmap (docs/plans/2026-06-05-traffic-growth-roadmap.md)
 | Phase | Feature | Status |
 |-------|---------|--------|
-| A | TF Rankings Algorithm | Deferred (needs rubric input from Ambra & Tika) |
-| B | Athlete Profile of the Week | ✅ Live |
-| C | Top 10 Plays of the Week | ✅ Live (process to revisit) |
-| D | Profile Embed Widget + Share Card | ✅ Live |
-| E | Tournament Results | ✅ Live |
-| F | League Finder Partnership | ✅ Live |
-| G | Player Comparison Tool | ✅ Live |
+| A | TF Rankings Algorithm | Deferred — needs 100-pt rubric from Ambra & Tika |
+| B | Athlete Profile of the Week | ✅ Live — `/admin/featured`, homepage hero section, `/athletes/featured` |
+| C | Top 10 Plays of the Week | ✅ Live — player submission, `/admin/highlights`, `/plays/week/[week]`, `/plays` |
+| D | Profile Embed Widget + Share Card | ✅ Live — `/players/[id]/embed`, embed code in share modal |
+| E | Tournament Results | ✅ Live — `event_results` table, `/admin/events/[id]/results`, `/results` |
+| F | League Finder | ✅ Live — `/find-a-league` |
+| G | Player Comparison Tool | ✅ Live — `/players/compare`, Compare button on profiles |
+
+### Media / Gallery
+- `/media` page with photo gallery (masonry grid) + 3×3 Instagram embed grid
+- **4 most popular** posts (20.4K + 8.5K + 2 more) + **5 most recent** = 9 embeds
+- Official Instagram blockquote embeds — real previews, link to posts
+- Nav + Footer links added
+- To add photos: drop files in `public/gallery/` and add entry in `src/app/media/page.tsx`
+- To swap IG posts: edit the `INSTAGRAM_POSTS` array in that file (use post/reel shortcode)
+
+### Database — What's Been Added
+- **Tournament Results:** 21+ championship events (2024–2026), all sanctioned US states + IFAF
+- **Player Profiles:** 18 named players from championship games with stats
+  - Ariana Akey (Mountain Vista, CO) — QB, Nebraska commit, 4,545 pass yds, 89 TDs
+  - Taimane & Jade Skipps (North Pole, AK) — back-to-back Alaska state champs
+  - Annie Keith (Robinson, FL) — 2025 2A Championship MVP, 42/48, 371 yds
+  - Samaya Taylor-Jenkins (Hamilton, AZ) — NFL Showcase NFC MVP
+  - Shaleah Moore (Campbell, HI) — Tournament MOP, 20 sacks, 5'1" 105 lbs
+  - Aribella Spandiary (Maine South, IL) — IL POY, Purdue NW commit
+  - + 12 more from Maine South, Mahtomedi, Robinson, Whitney Young, Nordonia
+- **107 total players** · 45 high school · 78 female
 
 ---
 
 ## Open Items — Next Session
 
 ### Build Queue
-1. **Gallery / Media Page** — Ambra & Tika provided images; build `/media` or `/gallery` page to display them. Also explore embedding their Instagram feed (see notes below).
-2. **Episode-to-Blog Conversion** — convert podcast episodes into long-form Rolling Stone-style articles. Start with highest-profile guests (Vanita Krouch, Katherine Sowers, etc.). Each article = new SEO page.
-3. **Revisit Top 10 Plays Process** — is player self-submission the right model? Consider admin-sourced highlights + email notification to admin on submission + notify players when featured.
-4. **TF Rankings Algorithm (Phase A)** — deferred until Ambra & Tika define the 100-pt rubric weights.
-
-### Instagram Feed Embed
-- Ambra & Tika want their IG feed embedded on the site.
-- **Options (best to worst):**
-  1. **Behold.so** — paid service (~$19/mo), no Meta app approval needed, clean React embed, good caching. Recommended.
-  2. **Elfsight** — similar paid widget, easier setup but less customizable.
-  3. **Instagram Graph API** — free but requires Meta Business verification + approved app. Complex setup, rate limits.
-  4. **Manual curated grid** — just display static images from the gallery page with a link to IG. No API needed.
-- **Decision needed:** Which IG account(s) to show? @talkinflagshow? Ambra's personal? Tika's personal?
-- **Recommendation:** Start with manual curated grid on the Gallery page (images they provided), add a "Follow us on Instagram" CTA. Revisit live embed once they decide on the account and budget.
+1. **More images for Gallery** — Ambra & Tika provided images. Drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+2. **Episode-to-Blog Conversion** — long-form articles from podcast episodes. Start with Vanita Krouch, Katherine Sowers. Each = new SEO page.
+3. **Revisit Top 10 Plays Process** — is player self-submission the right model? Admin notification on new submission? Notify players when featured?
+4. **TF Rankings Algorithm (Phase A)** — needs Ambra & Tika to define the 100-pt rubric weights before building.
+5. **New Growth Roadmap** — monetization, recruiting tools, national team pages, etc.
 
 ### Owner Actions Still Blocking Features
-| Env Var | What It Unlocks |
-|---------|----------------|
-| `RESEND_API_KEY` | Contact form, welcome email, weekly digest |
-| `CRON_SECRET` | Secures `/api/digest/send` |
-| `ADMIN_EMAILS` | Gates admin scout/verification pages |
-| `YOUTUBE_API_KEY` | Live episode fetching |
-| `PRINTFUL_API_KEY` | Merch store (code is done) |
-| Amazon affiliate tag | Revenue from equipment blog posts |
-| Domain decision | talkinflag.com vs talkinflagshow.com — then update Supabase + Google OAuth |
+| Env Var | What It Unlocks | Where to Add |
+|---------|----------------|-------------|
+| `RESEND_API_KEY` | Contact form, welcome email, weekly digest | Vercel → Settings → Environment Variables |
+| `CRON_SECRET` | Secures `/api/digest/send` | Vercel |
+| `ADMIN_EMAILS` | Gates admin scout/verification pages | Vercel |
+| `YOUTUBE_API_KEY` | Live episode fetching | Vercel |
+| `PRINTFUL_API_KEY` | Merch store (code is done) | Vercel |
+| Amazon affiliate tag | Revenue from equipment blog posts | `src/lib/static-posts.ts` |
+| Domain decision | talkinflag.com vs talkinflagshow.com → update Supabase + Google OAuth | Supabase + Google Console |
 
-### Database — What's Been Added
-- **Tournament Results:** 21+ high school & international championship events (2024-2026), all sanctioned states
-- **Player Profiles:** 18 named players from championship games with stats (Ariana Akey, Taimane & Jade Skipps, Annie Keith, Samaya Taylor-Jenkins, Shaleah Moore, Aribella Spandiary, etc.)
-- **107 total players** in DB · 45 high school · 78 female
-
----
-
-## Pending Owner Actions
-
-- Add `RESEND_API_KEY` to Vercel env vars — activates contact form, welcome email, weekly digest
-- Add `CRON_SECRET` to Vercel env vars — secures `/api/digest/send`
-- Add `ADMIN_EMAILS` to Vercel env vars — gates admin scout/verification pages
-- Add `YOUTUBE_API_KEY` to Vercel env vars — enables live episode fetching
-- Add `PRINTFUL_API_KEY` to Vercel env vars — activates merch store (code is done)
-- Swap Amazon affiliate tag `talkinflag-20` for real tag in `src/lib/static-posts.ts`
-- Finalize domain (talkinflag.com or talkinflagshow.com), then update Supabase + Google OAuth
-- **Provide images for Gallery page** — drop in `public/gallery/` or share URLs
+### Instagram Embed — Future Upgrade
+- Current: Official blockquote embeds (free, requires posts to stay public)
+- Future option: Behold.so (~$19/mo) for live auto-updating feed — no manual URL updates needed
+- Questions for Ambra & Tika:
+  1. Which account(s) to show? `@talkinflagshow`, personal, or both?
+  2. OK with ~$19/mo for live feed?
+  3. Want the feed on homepage too?
 
 ---
 
@@ -81,6 +84,7 @@
 |------|-------|
 | Nav | `src/components/layout/Nav.tsx` |
 | Footer | `src/components/layout/Footer.tsx` |
+| Media/Gallery page | `src/app/media/page.tsx` |
 | Player types | `src/types/player.ts` |
 | Supabase server client | `src/lib/supabase/server.ts` |
 | Supabase anon client | `src/lib/supabase/index.ts` |
@@ -97,3 +101,11 @@
 - Black: `#000000` (Tailwind: `brand-black`)
 - Fonts: Anton (`font-display`) + Inter (`font-body`)
 - All headings: `font-display uppercase tracking-widest`
+
+---
+
+## Supabase Project
+
+- **Project ID:** `wxeuybksowhncalrnttl`
+- **URL:** `https://wxeuybksowhncalrnttl.supabase.co`
+- **Anon key:** in `.env.local`
