@@ -56,20 +56,33 @@
 
 ## Open Items — Next Session
 
-### Build Queue
-1. **Merge accuracy-ia-overhaul branch** — build is clean, ready for PR + Vercel deploy
-2. **Drop backup tables after merge** — `DROP TABLE _backup_players_20260606; DROP TABLE _backup_events_20260606;`
-3. **About page photos from Ambra** — drop in `public/` as `/hosts-hero.jpg`, `/ambra.jpg`, `/tika.jpg`
-4. **Podcast audio widget** — needs Spotify show ID (owner action) for `/podcast` embedded player
-5. **Episode-to-Blog Conversion** — long-form articles from podcast episodes. Start with Vanita Krouch, Katherine Sowers.
-6. **TF Rankings Algorithm (Phase A)** — needs Ambra & Tika to define the 100-pt rubric weights.
-7. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+### 🚨 Owner Actions — Needed Now
+These 3 items are blocking final polish on the live site:
 
-### Owner Actions Still Blocking Features
+1. **Ambra's host photos** — Drop 3 files into `public/`:
+   - `public/hosts-hero.jpg` — twin photoshoot hero image
+   - `public/ambra.jpg` — Ambra solo headshot
+   - `public/tika.jpg` — Tika solo headshot
+   - Once dropped in, they will appear automatically on `/about`
+
+2. **Spotify show ID** — For the podcast audio widget on `/podcast`
+   - Find: open your Spotify for Podcasters dashboard → copy the Show ID from the URL
+   - Send the ID → I'll wire it into `src/app/podcast/page.tsx` in 5 minutes
+
+3. **Drop DB backup tables** — After confirming the live site looks correct, run these two SQL statements in the Supabase dashboard (SQL Editor):
+   ```sql
+   DROP TABLE IF EXISTS _backup_players_20260606;
+   DROP TABLE IF EXISTS _backup_events_20260606;
+   ```
+
+### Build Queue
+1. **Episode-to-Blog Conversion** — long-form articles from podcast episodes. Start with Vanita Krouch, Katherine Sowers. Each = new SEO page.
+2. **TF Rankings Algorithm (Phase A)** — needs Ambra & Tika to define the 100-pt rubric weights before building.
+3. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+
+### Other Owner Actions
 | Item | What It Unlocks | Action |
 |------|----------------|--------|
-| Spotify show ID | Podcast audio widget | Send show ID → add to PodcastAudioPlayer |
-| Ambra's photos | About page | Drop `/hosts-hero.jpg`, `/ambra.jpg`, `/tika.jpg` in `public/` |
 | 100-pt TF Rank rubric | TF Rankings Algorithm live scores | Define with Ambra & Tika |
 | `RESEND_API_KEY` | Contact form, welcome email, weekly digest | Vercel → Settings → Env Vars |
 | `YOUTUBE_API_KEY` | Live episode fetching | Vercel |
