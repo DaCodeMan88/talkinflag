@@ -435,6 +435,56 @@ export const HS_RANKINGS: HSTeam[] = [
   { rank: 50, school: "Miami Springs Golden Hawks",  city: "Miami Springs",  state: "FL", stateFull: "Florida",  record: "8-5",  notes: "Miami-Dade program with growing girls flag tradition" },
 ];
 
+// ─── College Commits ──────────────────────────────────────────────────────────
+// Known D1 / NAIA commits by HS and club flag football players — 2025/2026
+
+export interface CollegeCommit {
+  name: string;
+  position: string;
+  highSchool: string;
+  state: string;
+  commitSchool: string;
+  division: "D1" | "DII" | "DIII" | "NAIA";
+  conference?: string;
+  notes?: string;
+  season?: string;
+}
+
+export const COLLEGE_COMMITS: CollegeCommit[] = [
+  {
+    name: "Ariana Akey",
+    position: "QB",
+    highSchool: "Mountain Vista",
+    state: "CO",
+    commitSchool: "University of Nebraska",
+    division: "D1",
+    conference: "Big Ten",
+    notes: "4,545 pass yds, 89 TDs. Nebraska announced D1 flag football program.",
+    season: "2026",
+  },
+  {
+    name: "Aribella Spandiary",
+    position: "WR",
+    highSchool: "Maine South",
+    state: "IL",
+    commitSchool: "Purdue University Northwest",
+    division: "NAIA",
+    conference: "Sun Conference",
+    notes: "Illinois Player of the Year.",
+    season: "2026",
+  },
+  {
+    name: "Makena Cook",
+    position: "WR",
+    highSchool: "TBD",
+    state: "TBD",
+    commitSchool: "Power Four (offer — school TBD)",
+    division: "D1",
+    notes: "First known Power Four flag football offer.",
+    season: "2026",
+  },
+];
+
 // ─── Olympic 2028 ─────────────────────────────────────────────────────────────
 // Flag football debuts as an Olympic sport at Los Angeles 2028.
 // Official national team rosters have not yet been named by USA Football or IFAF.
