@@ -29,7 +29,7 @@ type ComparePlayer = {
 
 export async function generateMetadata({ searchParams }: Props) {
   const { a, b } = await searchParams;
-  if (!a || !b) return buildMetadata({ title: "Compare Players | Talkin Flag", path: "/players/compare" });
+  if (!a || !b) return buildMetadata({ title: "Compare Players | Talkin Flag", description: "Compare flag football players side-by-side — stats, ranking, and measurables.", path: "/players/compare" });
   const supabase = await createClient();
   const [{ data: pa }, { data: pb }] = await Promise.all([
     supabase.from("players").select("first_name, last_name").eq("id", a).single(),
