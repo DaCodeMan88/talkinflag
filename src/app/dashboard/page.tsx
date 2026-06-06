@@ -4,6 +4,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { buildMetadata } from "@/lib/seo";
 import SignOutButton from "./SignOutButton";
+import { HighlightSubmitForm } from "./HighlightSubmitForm";
 
 export const metadata = buildMetadata({
   title: "Dashboard | Talkin Flag",
@@ -236,6 +237,9 @@ export default async function DashboardPage({
                 View →
               </Link>
             </div>
+
+            {/* Highlight submission */}
+            <HighlightSubmitForm playerId={player.id} />
 
             {/* Coach status */}
             {coachApp ? (
