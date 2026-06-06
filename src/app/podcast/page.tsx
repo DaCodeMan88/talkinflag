@@ -2,10 +2,15 @@ import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
 import { EpisodeSearch } from "@/components/episodes/EpisodeSearch";
+import { SpotifyPlayer } from "@/components/episodes/SpotifyPlayer";
 import { buildMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 
 export const revalidate = 3600;
+
+// Spotify show ID for the audio player. Set NEXT_PUBLIC_SPOTIFY_SHOW_ID in Vercel
+// (or hard-code the ID here) to activate the "Listen on Spotify" section below.
+const SPOTIFY_SHOW_ID = process.env.NEXT_PUBLIC_SPOTIFY_SHOW_ID ?? "";
 
 export const metadata = buildMetadata({
   title: "Podcast | Talkin Flag — The Flag Football Podcast",
@@ -54,6 +59,7 @@ export default async function PodcastPage() {
     "sameAs": [
       "https://youtube.com/@thetalkinballsnetwork",
       "https://instagram.com/talkinflagshow",
+      ...(SPOTIFY_SHOW_ID ? [`https://open.spotify.com/show/${SPOTIFY_SHOW_ID}`] : []),
     ],
     "publisher": {
       "@type": "Organization",
@@ -111,6 +117,18 @@ export default async function PodcastPage() {
                   })}
                 </p>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Listen on Spotify — renders only once SPOTIFY_SHOW_ID is configured */}
+        {SPOTIFY_SHOW_ID && (
+          <div className="mb-12">
+            <p className="font-display text-xs text-brand-yellow uppercase tracking-widest mb-4">
+              Listen on Spotify
+            </p>
+            <div className="bg-[#222222] border border-brand-yellow/30 p-4">
+              <SpotifyPlayer showId={SPOTIFY_SHOW_ID} title="Talkin Flag on Spotify" />
             </div>
           </div>
         )}

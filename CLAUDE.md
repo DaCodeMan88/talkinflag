@@ -73,9 +73,9 @@ These 3 items are blocking final polish on the live site:
    - `public/tika.jpg` — Tika solo headshot
    - Once dropped in, they will appear automatically on `/about`
 
-2. **Spotify show ID** — For the podcast audio widget on `/podcast`
+2. **Spotify show ID** — Audio widget on `/podcast` is now **pre-built** (`SpotifyPlayer` component, wired into the page behind an env gate)
    - Find: open your Spotify for Podcasters dashboard → copy the Show ID from the URL
-   - Send the ID → I'll wire it into `src/app/podcast/page.tsx` in 5 minutes
+   - Activate: set `NEXT_PUBLIC_SPOTIFY_SHOW_ID` in Vercel (or send the ID and I'll hard-code it). Until set, the "Listen on Spotify" section stays hidden.
 
 3. **Drop DB backup tables** — After confirming the live site looks correct, run these two SQL statements in the Supabase dashboard (SQL Editor):
    ```sql
@@ -84,16 +84,19 @@ These 3 items are blocking final polish on the live site:
    ```
 
 ### Build Queue
-1. **Podcast audio widget** — pre-build component now; activate when Spotify show ID is provided.
-2. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
-3. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
-4. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. Needs `RESEND_API_KEY`.
+1. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
+2. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+3. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. Needs `RESEND_API_KEY`.
+4. **Interview articles — Q&A upgrade** — the 5 interview posts in `static-posts.ts` are currently editorial paraphrase (no quotes). Once episode transcripts are available, upgrade them to direct Q&A / pull-quotes. **Do NOT invent quotes** — quotes must come from real transcripts.
+
+> ✅ **Podcast audio widget** — pre-built (`src/components/episodes/SpotifyPlayer.tsx`, wired into `/podcast`). Now just an owner action (provide Spotify show ID — see above).
 
 ### Other Owner Actions
 | Item | What It Unlocks | Action |
 |------|----------------|--------|
 | YouTube video IDs (×5) | Episode-to-Blog embeds | After YOUTUBE_API_KEY is live, replace `TODO_OWNER` in the 5 interview posts in `static-posts.ts` |
-| Spotify show ID | Podcast audio widget on `/podcast` | Find in Spotify for Podcasters dashboard URL |
+| Spotify show ID (or `NEXT_PUBLIC_SPOTIFY_SHOW_ID`) | Podcast audio widget on `/podcast` (already built) | Set env var in Vercel, or send the ID |
+| Episode transcripts | Q&A upgrade of the 5 interview blog posts | Provide transcripts → real quotes get woven into the articles |
 | Drop backup tables | Clean Supabase schema | Run `DROP TABLE IF EXISTS _backup_players_20260606; DROP TABLE IF EXISTS _backup_events_20260606;` in SQL Editor |
 | 100-pt TF Rank rubric | TF Rankings Algorithm live scores | Define with Ambra & Tika |
 | `RESEND_API_KEY` | Contact form, welcome email, profile claim outreach | Vercel → Settings → Env Vars |
