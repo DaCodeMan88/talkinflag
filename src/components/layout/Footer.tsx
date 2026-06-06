@@ -10,6 +10,7 @@ const socials = [
 
 const mediaLinks = [
   { label: "Episodes", href: "/episodes" },
+  { label: "Media", href: "/media" },
   { label: "Blog", href: "/blog" },
   { label: "RSS Feed", href: "/blog/feed.xml", external: true },
   { label: "About", href: "/about" },
