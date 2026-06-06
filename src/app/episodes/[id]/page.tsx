@@ -1,4 +1,5 @@
-import { getEpisodes } from "@/lib/youtube";
+import { getEpisodes, getEpisodeById, deriveTopicTags } from "@/lib/youtube";
+import { createServerClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import { ShareButton } from "@/components/episodes/ShareButton";
@@ -42,10 +43,39 @@ export default async function EpisodePage({
 }) {
   const { id } = await params;
   const episodes = await getEpisodes(50);
-  const episode = episodes.find((e) => e.id === id);
-  if (!episode) notFound();
+  const baseEpisode = episodes.find((e) => e.id === id);
+  if (!baseEpisode) notFound();
+
+  // Try to get full description from videos.list; fall back to search snippet
+  const fullEpisode = await getEpisodeById(id);
+  const episode = fullEpisode ?? baseEpisode;
 
   const related = episodes.filter((e) => e.id !== episode.id).slice(0, 4);
+
+  // Topic tags — from full content if available, otherwise derive from title
+  const tags = episode.tags?.length
+    ? episode.tags
+    : deriveTopicTags(episode.title, episode.description);
+
+  // Guest intro: first non-empty paragraph of description (often a bio summary)
+  const descParagraphs = episode.description.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const guestIntro = descParagraphs.length > 1 ? descParagraphs[0] : null;
+  const showNotes = guestIntro ? descParagraphs.slice(1).join("\n\n") : episode.description;
+
+  // Related player lookup — match guest name against players DB
+  let relatedPlayers: { id: string; first_name: string; last_name: string; position: string | null; school_or_team: string | null }[] = [];
+  if (episode.guestName) {
+    const nameParts = episode.guestName.trim().split(/\s+/);
+    const supabase = createServerClient();
+    const { data } = await supabase
+      .from("players")
+      .select("id, first_name, last_name, position, school_or_team")
+      .or(
+        nameParts.map((n) => `first_name.ilike.%${n}%,last_name.ilike.%${n}%`).join(",")
+      )
+      .limit(3);
+    relatedPlayers = data ?? [];
+  }
 
   const formattedDate = new Date(episode.publishedAt).toLocaleDateString("en-US", {
     month: "long",
@@ -136,10 +166,7 @@ export default async function EpisodePage({
               Ep {episode.episodeNumber}
             </span>
           )}
-          <time
-            dateTime={episode.publishedAt}
-            className="text-brand-white/40 text-sm"
-          >
+          <time dateTime={episode.publishedAt} className="text-brand-white/40 text-sm">
             {formattedDate}
           </time>
         </div>
@@ -197,15 +224,64 @@ export default async function EpisodePage({
           <ShareButton title={episode.guestName || episode.title} />
         </div>
 
-        {/* Description */}
-        <div>
+        {/* Topic tags */}
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-8">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="border border-brand-white/15 text-brand-white/50 text-xs font-display uppercase tracking-widest px-3 py-1"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Guest intro (first paragraph as highlighted bio) */}
+        {guestIntro && (
+          <div className="border-l-4 border-brand-yellow pl-5 mb-8">
+            <p className="text-brand-white/30 text-xs font-display uppercase tracking-widest mb-2">
+              About the Guest
+            </p>
+            <p className="text-brand-white/80 leading-relaxed italic">{guestIntro}</p>
+          </div>
+        )}
+
+        {/* Show notes */}
+        <div className="mb-8">
           <h2 className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-3">
-            About This Episode
+            Show Notes
           </h2>
           <p className="text-brand-white/70 leading-relaxed whitespace-pre-line">
-            {episode.description}
+            {showNotes}
           </p>
         </div>
+
+        {/* Related players */}
+        {relatedPlayers.length > 0 && (
+          <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 mb-8">
+            <p className="text-brand-white/30 text-xs font-display uppercase tracking-widest mb-3">
+              Featured in Our Database
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {relatedPlayers.map((p) => (
+                <a
+                  key={p.id}
+                  href={`/players/${p.id}`}
+                  className="flex items-center gap-2 border border-brand-white/10 px-3 py-2 hover:border-brand-yellow/40 transition-colors group"
+                >
+                  <span className="text-brand-white text-sm group-hover:text-brand-yellow transition-colors">
+                    {p.first_name} {p.last_name}
+                  </span>
+                  {p.position && (
+                    <span className="text-brand-white/30 text-xs">{p.position}</span>
+                  )}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Related episodes */}
         {related.length > 0 && (

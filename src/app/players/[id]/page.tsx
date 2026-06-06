@@ -1,10 +1,14 @@
 import { createServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { Player } from "@/types/player";
 import { buildMetadata } from "@/lib/seo";
 import { PlayerCard } from "@/components/players/PlayerCard";
+import CoachViewTracker from "./CoachViewTracker";
+import ShareCardModal from "./ShareCardModal";
+import FollowButton from "@/components/ui/FollowButton";
 
 export const revalidate = 300;
 
@@ -136,6 +140,19 @@ export default async function PlayerDetailPage({
 
   if (!player) notFound();
 
+  const authSupabase = await createClient();
+  const { data: { user } } = await authSupabase.auth.getUser();
+  let isVerifiedCoach = false;
+  if (user) {
+    const { data: coachRow } = await authSupabase
+      .from("coaches")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("is_verified", true)
+      .maybeSingle();
+    isVerifiedCoach = !!coachRow;
+  }
+
   const { data: similar } = player.position
     ? await (supabase
         .from("players")
@@ -150,13 +167,20 @@ export default async function PlayerDetailPage({
     : { data: null };
 
   // Fetch approved stat verifications for per-stat verified badges
-  const { data: verifications } = await supabase
-    .from("stat_verifications")
-    .select("stat_key")
-    .eq("player_id", id)
-    .eq("status", "approved");
+  const [{ data: verifications }, { count: interestCount }] = await Promise.all([
+    supabase
+      .from("stat_verifications")
+      .select("stat_key")
+      .eq("player_id", id)
+      .eq("status", "approved"),
+    supabase
+      .from("recruiting_interests")
+      .select("id", { count: "exact", head: true })
+      .eq("player_id", id),
+  ]);
 
   const verifiedStats = new Set((verifications ?? []).map((v) => v.stat_key));
+  const isInDemand = (interestCount ?? 0) >= 3;
 
   const similarPlayers = similar ?? [];
   const fullName = `${player.first_name} ${player.last_name}`;
@@ -285,6 +309,11 @@ export default async function PlayerDetailPage({
                     Unclaimed
                   </span>
                 )}
+                {isInDemand && (
+                  <span className="bg-brand-yellow text-brand-black text-xs px-3 py-1 uppercase tracking-wide font-display font-bold">
+                    🔥 In Demand
+                  </span>
+                )}
               </div>
 
               {/* Claim CTA */}
@@ -301,8 +330,13 @@ export default async function PlayerDetailPage({
               )}
             </div>
 
-            {/* Share */}
-            <div className="flex gap-2 md:self-end">
+            {/* Follow + Share */}
+            <div className="flex flex-col gap-2 md:self-end">
+              <FollowButton
+                followedId={player.id}
+                followedType="player"
+                isLoggedIn={!!user}
+              />
               <a
                 href={`https://x.com/intent/tweet?text=${encodeURIComponent(
                   `Check out ${fullName}${player.position ? ` (${player.position})` : ""} on @TalkinFlagShow 🏈`
@@ -599,7 +633,35 @@ export default async function PlayerDetailPage({
             </div>
           </div>
         )}
+        {/* Community CTA */}
+        <div className="mt-16 bg-[#0d0d0d] border border-brand-white/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <p className="text-brand-white font-display uppercase tracking-widest text-sm">Join the Talkin Flag Community</p>
+            <p className="text-brand-white/40 text-xs mt-1">Players, coaches, and fans on Discord.</p>
+          </div>
+          <a
+            href="/community"
+            className="flex-shrink-0 border border-brand-yellow/40 text-brand-yellow font-display uppercase tracking-widest text-xs py-2 px-5 hover:bg-brand-yellow hover:text-brand-black transition-colors"
+          >
+            Join Discord →
+          </a>
+        </div>
       </div>
+      {isVerifiedCoach && <CoachViewTracker playerId={player.id} />}
+      <ShareCardModal
+        playerName={fullName}
+        position={player.position ?? null}
+        school={player.school_or_team ?? null}
+        gradYear={player.grad_year ?? null}
+        rankNational={player.ranking_national ?? null}
+        photoUrl={player.photo_url ?? null}
+        heightIn={player.height_in ?? null}
+        weightLbs={player.weight_lbs ?? null}
+        level={player.level ?? null}
+        verifiedStatKeys={Array.from(verifiedStats)}
+        fortyYard={ext.forty_yard ? String(ext.forty_yard) : null}
+        verticalJump={ext.vertical_jump ? String(ext.vertical_jump) : null}
+      />
     </div>
   );
 }

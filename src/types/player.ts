@@ -26,4 +26,5 @@ export interface Player {
   photo_url?: string | null;
   created_at?: string;
   updated_at?: string;
+  interest_count?: number | null;
 }

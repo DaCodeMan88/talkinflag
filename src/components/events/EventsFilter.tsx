@@ -44,6 +44,7 @@ function formatShortDate(dateStr: string) {
 export function EventsFilter({ events }: { events: Event[] }) {
   const [query, setQuery] = useState("");
   const [activeLevel, setActiveLevel] = useState<string>("all");
+  const [activeType, setActiveType] = useState<string>("all");
   const [activeCountry, setActiveCountry] = useState<string>("");
 
   // Separate featured events (pinned at top regardless of filter)
@@ -66,6 +67,13 @@ export function EventsFilter({ events }: { events: Event[] }) {
     return Array.from(set).sort();
   }, [events]);
 
+  // Derive unique event types
+  const availableTypes = useMemo(() => {
+    const set = new Set<string>();
+    events.forEach((e) => { if (e.event_type) set.add(e.event_type); });
+    return Array.from(set).sort();
+  }, [events]);
+
   const filtered = useMemo(() => {
     let result = events.filter((e) => !e.is_featured);
     if (query.trim()) {
@@ -79,6 +87,7 @@ export function EventsFilter({ events }: { events: Event[] }) {
       );
     }
     if (activeLevel !== "all") result = result.filter((e) => e.level === activeLevel);
+    if (activeType !== "all") result = result.filter((e) => e.event_type === activeType);
     if (activeCountry) result = result.filter((e) => e.country === activeCountry);
     return result;
   }, [events, query, activeLevel, activeCountry]);
@@ -211,6 +220,35 @@ export function EventsFilter({ events }: { events: Event[] }) {
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* Event type filter tabs */}
+      {availableTypes.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            onClick={() => setActiveType("all")}
+            className={`font-display text-xs uppercase tracking-widest px-4 py-2 border transition-colors ${
+              activeType === "all"
+                ? "bg-brand-white/10 text-brand-white border-brand-white/30"
+                : "border-brand-white/15 text-brand-white/40 hover:border-brand-white/30 hover:text-brand-white/70"
+            }`}
+          >
+            All Types
+          </button>
+          {availableTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => setActiveType(type)}
+              className={`font-display text-xs uppercase tracking-widest px-4 py-2 border transition-colors ${
+                activeType === type
+                  ? "bg-brand-white/10 text-brand-white border-brand-white/30"
+                  : "border-brand-white/15 text-brand-white/40 hover:border-brand-white/30 hover:text-brand-white/70"
+              }`}
+            >
+              {type}
+            </button>
+          ))}
         </div>
       )}
 

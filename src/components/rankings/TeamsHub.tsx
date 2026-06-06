@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   MENS_WORLD_RANKINGS,
   WOMENS_WORLD_RANKINGS,
@@ -8,6 +9,25 @@ import {
   getFlag,
   type WorldTeam,
 } from "@/lib/world-rankings";
+
+type NationalCoach = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  team: string | null;
+  title: string | null;
+  wins: number | null;
+  losses: number | null;
+};
+
+type NationalPlayer = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  position: string | null;
+  country: string | null;
+  school_or_team: string | null;
+};
 
 type Tab = "highschool" | "college" | "world";
 type Gender = "mens" | "womens";
@@ -269,8 +289,33 @@ function CollegeTab() {
 
 // ─── World Tab ────────────────────────────────────────────────────────────────
 
-function WorldTeamRow({ team, expanded, onToggle }: { team: WorldTeam; expanded: boolean; onToggle: () => void }) {
-  const hasProfile = !!(team.yearEstablished || team.accomplishments?.length || team.keyPlayers?.length || team.notes);
+function WorldTeamRow({
+  team,
+  expanded,
+  onToggle,
+  coaches,
+  players,
+}: {
+  team: WorldTeam;
+  expanded: boolean;
+  onToggle: () => void;
+  coaches: NationalCoach[];
+  players: NationalPlayer[];
+}) {
+  const matchedCoaches = coaches.filter((c) =>
+    c.team?.toLowerCase().includes(team.nation.toLowerCase())
+  );
+  const matchedPlayers = players.filter((p) =>
+    p.country?.toLowerCase() === team.nation.toLowerCase()
+  );
+  const hasProfile = !!(
+    team.yearEstablished ||
+    team.accomplishments?.length ||
+    team.keyPlayers?.length ||
+    team.notes ||
+    matchedCoaches.length ||
+    matchedPlayers.length
+  );
 
   return (
     <>
@@ -338,6 +383,56 @@ function WorldTeamRow({ team, expanded, onToggle }: { team: WorldTeam; expanded:
                   <div className="text-brand-white/70">{team.headCoach}</div>
                 </div>
               )}
+              {matchedCoaches.length > 0 && (
+                <div>
+                  <div className="font-display text-[10px] uppercase tracking-widest text-brand-yellow mb-1.5">
+                    Verified Coach{matchedCoaches.length > 1 ? "es" : ""}
+                  </div>
+                  <ul className="space-y-1.5">
+                    {matchedCoaches.map((c) => (
+                      <li key={c.id}>
+                        <Link
+                          href={`/coaches/${c.id}`}
+                          className="text-brand-white hover:text-brand-yellow transition-colors"
+                        >
+                          {c.first_name} {c.last_name}
+                        </Link>
+                        {c.title && (
+                          <span className="text-brand-white/40 text-[11px] block">{c.title}</span>
+                        )}
+                        {(c.wins !== null || c.losses !== null) && (
+                          <span className="text-brand-white/40 text-[11px]">
+                            {c.wins ?? "—"}–{c.losses ?? "—"} record
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {matchedPlayers.length > 0 && (
+                <div>
+                  <div className="font-display text-[10px] uppercase tracking-widest text-brand-yellow mb-1.5">
+                    Roster ({matchedPlayers.length})
+                  </div>
+                  <ul className="space-y-1">
+                    {matchedPlayers.slice(0, 8).map((p) => (
+                      <li key={p.id}>
+                        <Link
+                          href={`/players/${p.id}`}
+                          className="text-brand-white/70 hover:text-brand-yellow transition-colors"
+                        >
+                          {p.first_name} {p.last_name}
+                          {p.position && <span className="text-brand-white/35 ml-1">· {p.position}</span>}
+                        </Link>
+                      </li>
+                    ))}
+                    {matchedPlayers.length > 8 && (
+                      <li className="text-brand-white/30 text-[11px]">+{matchedPlayers.length - 8} more</li>
+                    )}
+                  </ul>
+                </div>
+              )}
               {team.notes && (
                 <div className="sm:col-span-2 lg:col-span-3">
                   <div className="font-display text-[10px] uppercase tracking-widest text-brand-yellow mb-1.5">About</div>
@@ -352,7 +447,7 @@ function WorldTeamRow({ team, expanded, onToggle }: { team: WorldTeam; expanded:
   );
 }
 
-function WorldTab() {
+function WorldTab({ coaches, players }: { coaches: NationalCoach[]; players: NationalPlayer[] }) {
   const [gender, setGender] = useState<Gender>("mens");
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -414,6 +509,8 @@ function WorldTab() {
                 team={team}
                 expanded={expanded === team.nation}
                 onToggle={() => toggle(team.nation)}
+                coaches={coaches}
+                players={players}
               />
             ))}
           </tbody>
@@ -429,7 +526,13 @@ function WorldTab() {
 
 // ─── Main Hub ─────────────────────────────────────────────────────────────────
 
-export function TeamsHub() {
+export function TeamsHub({
+  nationalCoaches = [],
+  nationalPlayers = [],
+}: {
+  nationalCoaches?: NationalCoach[];
+  nationalPlayers?: NationalPlayer[];
+}) {
   const [tab, setTab] = useState<Tab>("highschool");
 
   const tabs: { id: Tab; label: string }[] = [
@@ -461,7 +564,7 @@ export function TeamsHub() {
 
       {tab === "highschool" && <HighSchoolTab />}
       {tab === "college"    && <CollegeTab />}
-      {tab === "world"      && <WorldTab />}
+      {tab === "world"      && <WorldTab coaches={nationalCoaches} players={nationalPlayers} />}
     </div>
   );
 }

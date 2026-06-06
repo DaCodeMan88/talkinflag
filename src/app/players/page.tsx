@@ -17,14 +17,28 @@ export default async function PlayersPage() {
   const supabase = createServerClient();
 
   // Show ranked players first, then the rest — verified or with a ranking
-  const { data: players } = await supabase
-    .from("players")
-    .select("*")
-    .or("is_verified.eq.true,ranking_national.not.is.null")
-    .order("ranking_national", { ascending: true, nullsFirst: false })
-    .limit(300) as { data: Player[] | null };
+  const [{ data: players }, { data: interestCounts }] = await Promise.all([
+    supabase
+      .from("players")
+      .select("*")
+      .or("is_verified.eq.true,ranking_national.not.is.null")
+      .order("ranking_national", { ascending: true, nullsFirst: false })
+      .limit(300) as unknown as Promise<{ data: Player[] | null }>,
+    supabase
+      .from("recruiting_interests")
+      .select("player_id"),
+  ]);
 
-  const playerList = players ?? [];
+  // Count interests per player
+  const interestMap = new Map<string, number>();
+  for (const row of interestCounts ?? []) {
+    interestMap.set(row.player_id, (interestMap.get(row.player_id) ?? 0) + 1);
+  }
+
+  const playerList = (players ?? []).map((p) => ({
+    ...p,
+    interest_count: interestMap.get(p.id) ?? 0,
+  }));
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

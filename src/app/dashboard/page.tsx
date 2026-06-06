@@ -46,16 +46,46 @@ export default async function DashboardPage({
 
   const { claimed } = await searchParams;
 
-  const { data: player } = await supabase
-    .from("players")
-    .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team")
-    .eq("claimed_by", user.id)
-    .eq("is_claimed", true)
-    .single();
+  const [{ data: player }, { data: coachApp }] = await Promise.all([
+    supabase
+      .from("players")
+      .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country")
+      .eq("claimed_by", user.id)
+      .eq("is_claimed", true)
+      .maybeSingle(),
+    supabase
+      .from("coaches")
+      .select("id, status, is_verified, first_name, last_name, team")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+  ]);
 
   const stats = (player?.stats ?? {}) as Record<string, unknown>;
   const pct = player ? completionScore(player as Record<string, unknown>, stats) : 0;
   const missing = player ? missingFields(player as Record<string, unknown>, stats) : [];
+
+  // National team coach matching — only if player has a country set
+  let nationalCoaches: { id: string; first_name: string; last_name: string; team: string | null; title: string | null }[] = [];
+  if (player?.country) {
+    const { data: matched } = await supabase
+      .from("coaches")
+      .select("id, first_name, last_name, team, title")
+      .eq("is_verified", true)
+      .eq("level", "national")
+      .ilike("team", `%${player.country}%`);
+    nationalCoaches = matched ?? [];
+  }
+
+  let weeklyViews = 0;
+  if (player) {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { count } = await supabase
+      .from("coach_profile_views")
+      .select("id", { count: "exact", head: true })
+      .eq("player_id", player.id)
+      .gte("last_viewed_at", sevenDaysAgo);
+    weeklyViews = count ?? 0;
+  }
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
@@ -154,6 +184,23 @@ export default async function DashboardPage({
               </div>
             </div>
 
+            {/* Coach views this week */}
+            <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
+              <div>
+                <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
+                  Coach Interest
+                </p>
+                <p className="text-brand-white/25 text-xs mt-1">
+                  {weeklyViews === 0
+                    ? "No coach views yet this week"
+                    : weeklyViews === 1
+                    ? "1 coach viewed your profile this week"
+                    : `${weeklyViews} coaches viewed your profile this week`}
+                </p>
+              </div>
+              <span className="font-display text-2xl text-brand-yellow">{weeklyViews}</span>
+            </div>
+
             {/* Verification */}
             <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
               <div>
@@ -172,23 +219,104 @@ export default async function DashboardPage({
               </Link>
             </div>
 
-            {/* Coach application */}
+            {/* Following */}
             <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
               <div>
                 <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
-                  Are you a coach?
+                  Following
                 </p>
                 <p className="text-brand-white/25 text-xs mt-1">
-                  Apply for verified coach status
+                  Players and coaches you follow
                 </p>
               </div>
               <Link
-                href="/coaches/apply"
+                href="/dashboard/following"
                 className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
               >
-                Apply →
+                View →
               </Link>
             </div>
+
+            {/* Coach status */}
+            {coachApp ? (
+              <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
+                    Coach Status
+                  </p>
+                  <p className="text-brand-white/25 text-xs mt-1">
+                    {coachApp.first_name} {coachApp.last_name} · {coachApp.team}
+                  </p>
+                </div>
+                {coachApp.is_verified ? (
+                  <Link
+                    href="/dashboard/recruiting"
+                    className="border border-brand-yellow/40 text-brand-yellow text-xs font-display uppercase tracking-widest px-3 py-1 hover:bg-brand-yellow hover:text-brand-black transition-colors"
+                  >
+                    ✓ Verified
+                  </Link>
+                ) : (
+                  <span className={`text-xs font-display uppercase tracking-widest px-3 py-1 border ${
+                    coachApp.status === "rejected"
+                      ? "border-red-500/30 text-red-400"
+                      : "border-brand-white/20 text-brand-white/40"
+                  }`}>
+                    {coachApp.status === "rejected" ? "Not Approved" : "Pending Review"}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
+                    Are you a coach?
+                  </p>
+                  <p className="text-brand-white/25 text-xs mt-1">
+                    Apply for verified coach status
+                  </p>
+                </div>
+                <Link
+                  href="/coaches/apply"
+                  className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+                >
+                  Apply →
+                </Link>
+              </div>
+            )}
+            {/* International Opportunity */}
+            {nationalCoaches.length > 0 && (
+              <div className="bg-[#0d0d0d] border border-brand-yellow/30 p-5">
+                <p className="text-brand-yellow text-sm font-display uppercase tracking-widest mb-1">
+                  International Opportunity
+                </p>
+                <p className="text-brand-white/40 text-xs mb-4">
+                  Your nationality qualifies you for these national team programs
+                </p>
+                <div className="space-y-3">
+                  {nationalCoaches.map((coach) => (
+                    <div key={coach.id} className="flex items-center justify-between">
+                      <div>
+                        <p className="text-brand-white text-sm font-semibold">
+                          {coach.first_name} {coach.last_name}
+                        </p>
+                        {coach.team && (
+                          <p className="text-brand-white/40 text-xs">{coach.team}</p>
+                        )}
+                        {coach.title && (
+                          <p className="text-brand-white/25 text-xs">{coach.title}</p>
+                        )}
+                      </div>
+                      <Link
+                        href={`/coaches/${coach.id}`}
+                        className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors shrink-0 ml-4"
+                      >
+                        View →
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="bg-[#0d0d0d] border border-brand-white/10 p-8 text-center space-y-4">

@@ -1,194 +1,180 @@
+import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
-import { PlayerCard } from "@/components/players/PlayerCard";
-import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
-import type { Player } from "@/types/player";
+import Link from "next/link";
+import RecruitBrowser from "./RecruitBrowser";
+import RosterSpotsBoard from "./RosterSpotsBoard";
 
 export const revalidate = 300;
 
 export const metadata = buildMetadata({
-  title: "Recruit Players | Talkin Flag — Find Elite Flag Football Talent",
-  description:
-    "Browse the Talkin Flag global player database. Connect with verified flag football athletes across all levels — high school, college, national, and pro.",
+  title: "Recruiting | Talkin Flag — Flag Football Player Marketplace",
+  description: "Connect high school and college flag football players with verified coaches. Browse recruiting profiles, post roster openings, express interest.",
   path: "/recruit",
 });
 
 export default async function RecruitPage() {
-  const supabase = createServerClient();
+  const supabase = await createClient();
+  const publicSupabase = createServerClient();
 
-  // Fetch top-ranked verified players for the showcase
-  const { data: topPlayers } = await supabase
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let viewerCoach: { id: string; first_name: string; team: string } | null = null;
+  let viewerPlayer: { id: string } | null = null;
+  let myInterests: string[] = [];
+  let myNotes: Record<string, string> = {};
+
+  if (user) {
+    const [{ data: coach }, { data: player }] = await Promise.all([
+      supabase.from("coaches").select("id, first_name, team").eq("user_id", user.id).eq("is_verified", true).single(),
+      supabase.from("players").select("id").eq("claimed_by", user.id).eq("is_claimed", true).single(),
+    ]);
+    viewerCoach = coach ?? null;
+    viewerPlayer = player ?? null;
+
+    if (viewerCoach) {
+      const [{ data: interests }, { data: notes }] = await Promise.all([
+        supabase.from("recruiting_interests").select("player_id").eq("coach_id", viewerCoach.id),
+        supabase.from("coach_player_notes").select("player_id, note").eq("coach_id", viewerCoach.id),
+      ]);
+      myInterests = (interests ?? []).map((r) => r.player_id as string);
+      myNotes = Object.fromEntries((notes ?? []).map((r) => [r.player_id as string, r.note as string]));
+    }
+  }
+
+  const { data: players } = await publicSupabase
     .from("players")
-    .select("*")
-    .eq("is_verified", true)
-    .not("ranking_national", "is", null)
-    .order("ranking_national", { ascending: true })
-    .limit(8) as { data: Player[] | null };
+    .select("id, first_name, last_name, position, level, school_or_team, city, state, country, country_code, grad_year, photo_url, height_in, weight_lbs, stats, recruiting_targets, is_verified, is_claimed, created_at")
+    .eq("recruiting_open", true)
+    .order("created_at", { ascending: false })
+    .limit(100);
 
-  // Fallback: if no ranked players, show any verified players
-  const { data: fallbackPlayers } = !topPlayers?.length
-    ? await supabase
-        .from("players")
-        .select("*")
-        .eq("is_verified", true)
-        .limit(8) as { data: Player[] | null }
-    : { data: null };
+  const { data: spots } = await publicSupabase
+    .from("coach_roster_spots")
+    .select("id, position, target_grad_year, state_pref, description, created_at, coach_id, coaches(first_name, last_name, team, level)")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+    .limit(20);
 
-  const showcase = topPlayers?.length ? topPlayers : (fallbackPlayers ?? []);
+  const playerList = (players ?? []) as Array<{
+    id: string; first_name: string; last_name: string; position?: string | null;
+    level?: string | null; school_or_team?: string | null; city?: string | null;
+    state?: string | null; country?: string | null; country_code?: string | null;
+    grad_year?: number | null; photo_url?: string | null; height_in?: number | null;
+    weight_lbs?: number | null; stats?: Record<string, unknown> | null;
+    recruiting_targets?: string[] | null; is_verified?: boolean; is_claimed?: boolean;
+    created_at?: string;
+  }>;
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
-      { "@type": "ListItem", "position": 2, "name": "Recruit", "item": "https://talkinflag.com/recruit" },
-    ],
-  };
+  const spotList = (spots ?? []) as unknown as Array<{
+    id: string; position: string | null; target_grad_year: number | null;
+    state_pref: string | null; description: string | null; created_at: string;
+    coaches: { first_name: string; last_name: string; team: string; level: string };
+  }>;
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const newPlayerIds = playerList
+    .filter((p) => p.created_at && p.created_at > sevenDaysAgo)
+    .map((p) => p.id);
 
   return (
-    <div className="min-h-screen bg-brand-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      {/* Hero */}
-      <section className="pt-32 pb-24 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-yellow/5 rounded-full blur-3xl" />
-        </div>
+    <div className="min-h-screen bg-brand-black pt-24 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div className="max-w-5xl mx-auto relative">
-          <p className="font-display text-brand-yellow text-xs uppercase tracking-[0.3em] mb-6">
-            For Coaches &amp; Scouts
-          </p>
-          <h1 className="font-display text-6xl md:text-8xl uppercase text-brand-white leading-none mb-6">
-            Find Elite<br />
-            <span className="text-brand-yellow">Flag Football</span><br />
-            Talent
-          </h1>
-          <p className="text-brand-white/60 text-lg max-w-xl mb-10 leading-relaxed">
-            The Talkin Flag player database connects coaches and scouts with verified
-            athletes from around the world — complete with highlight videos, stats,
-            and contact information.
-          </p>
-
-          <Link
-            href="/players"
-            className="inline-flex items-center gap-3 bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-8 py-4 hover:bg-yellow-400 transition-colors"
-          >
-            Browse Full Database
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 px-4 border-t border-brand-white/10">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="font-display text-3xl uppercase text-brand-white mb-12 text-center">
-            What You Get
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Global Database",
-                body: "Athletes from the US, Europe, Latin America, and beyond. Flag football is worldwide — so is our database.",
-              },
-              {
-                title: "Verified Profiles",
-                body: "Every player is manually reviewed before appearing. No bots, no fake profiles — just real talent.",
-              },
-              {
-                title: "Highlight Videos",
-                body: "Watch players in action before reaching out. Every profile links directly to game film and highlight reels.",
-              },
-            ].map((feat) => (
-              <div key={feat.title} className="border border-brand-white/10 bg-[#111111] p-6">
-                <div className="w-8 h-1 bg-brand-yellow mb-4" />
-                <h3 className="font-display text-xl uppercase text-brand-white mb-3">{feat.title}</h3>
-                <p className="text-brand-white/60 text-sm leading-relaxed">{feat.body}</p>
-              </div>
-            ))}
+        <div className="flex items-start justify-between gap-4 mb-12">
+          <div className="border-l-4 border-brand-yellow pl-6">
+            <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white leading-none">Recruiting</h1>
+            <p className="mt-3 text-brand-white/60 max-w-xl">
+              {viewerCoach
+                ? `Welcome, ${viewerCoach.first_name}. Browse players open to recruiting and post your open spots.`
+                : viewerPlayer
+                ? "Toggle recruiting on your profile to connect with coaches."
+                : "The flag football recruiting marketplace. Players opt in. Coaches connect directly."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 shrink-0 mt-1">
+            {viewerPlayer && (
+              <Link href="/dashboard" className="border border-brand-yellow/40 text-brand-yellow font-display text-xs uppercase tracking-widest px-4 py-2 hover:bg-brand-yellow hover:text-brand-black transition-colors text-center">
+                Manage Profile →
+              </Link>
+            )}
+            {viewerCoach && (
+              <Link href="/dashboard/recruiting" className="border border-brand-yellow/40 text-brand-yellow font-display text-xs uppercase tracking-widest px-4 py-2 hover:bg-brand-yellow hover:text-brand-black transition-colors text-center">
+                My Pipeline →
+              </Link>
+            )}
+            {!user && (
+              <Link href="/auth/login?next=/recruit" className="border border-brand-white/20 text-brand-white/60 font-display text-xs uppercase tracking-widest px-4 py-2 hover:border-brand-yellow/40 hover:text-brand-yellow transition-colors text-center">
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
-      </section>
 
-      {/* Top Players Showcase */}
-      {showcase.length > 0 && (
-        <section className="py-20 px-4 border-t border-brand-white/10 bg-[#0a0a0a]">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <p className="font-display text-brand-yellow text-xs uppercase tracking-[0.3em] mb-2">
-                  Currently Listed
-                </p>
-                <h2 className="font-display text-3xl md:text-4xl uppercase text-brand-white">
-                  {topPlayers?.length ? "Top Ranked Players" : "Featured Players"}
-                </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+
+          {/* Player browse — 2/3 */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-2xl uppercase text-brand-white">
+                Open to Recruiting
+                <span className="ml-3 text-brand-white/30 text-sm normal-case tracking-normal font-sans">
+                  {playerList.length} players
+                </span>
+              </h2>
+            </div>
+            {playerList.length === 0 ? (
+              <div className="border border-brand-white/10 p-10 text-center space-y-3">
+                <p className="text-brand-white/40 text-sm">No players have opened recruiting yet.</p>
+                {viewerPlayer && (
+                  <Link href="/dashboard" className="inline-block text-brand-yellow text-xs font-display uppercase tracking-widest hover:underline">
+                    Open your recruiting profile →
+                  </Link>
+                )}
               </div>
-              <Link
-                href="/players"
-                className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline hidden md:block"
-              >
-                View All →
-              </Link>
+            ) : (
+              <RecruitBrowser
+                players={playerList}
+                isCoach={!!viewerCoach}
+                coachId={viewerCoach?.id ?? null}
+                initialInterests={myInterests}
+                initialNotes={myNotes}
+                newPlayerIds={newPlayerIds}
+              />
+            )}
+          </div>
+
+          {/* Roster spots — 1/3 */}
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-2xl uppercase text-brand-white">Open Spots</h2>
+              {viewerCoach && (
+                <Link href="/dashboard/recruiting#post-spot" className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors">
+                  + Post →
+                </Link>
+              )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {showcase.map((player) => (
-                <PlayerCard key={player.id} player={player} />
-              ))}
+            <RosterSpotsBoard spots={spotList} isPlayer={!!viewerPlayer} />
+          </div>
+        </div>
+
+        {!viewerCoach && !viewerPlayer && (
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-brand-white/10 p-8 text-center space-y-3">
+              <p className="font-display text-lg uppercase text-brand-white">Are you a player?</p>
+              <p className="text-brand-white/40 text-sm">Claim your profile and toggle recruiting to connect with coaches.</p>
+              <Link href="/players" className="inline-block text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline">Find Your Profile →</Link>
             </div>
-            <div className="mt-8 text-center md:hidden">
-              <Link href="/players" className="text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline">
-                View All Players →
+            <div className="border border-brand-yellow/20 p-8 text-center space-y-3">
+              <p className="font-display text-lg uppercase text-brand-white">Are you a coach?</p>
+              <p className="text-brand-white/40 text-sm">Apply for verified coach status to express interest in players.</p>
+              <Link href="/coaches/apply" className="inline-block bg-brand-yellow text-brand-black font-display text-xs uppercase tracking-widest py-2 px-5 hover:bg-brand-yellow/90 transition-colors">
+                Apply for Verification →
               </Link>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Stats strip */}
-      <section className="py-14 px-4 bg-brand-yellow">
-        <div className="max-w-5xl mx-auto grid grid-cols-3 gap-8 text-center">
-          {[
-            { value: "Global", label: "Player Coverage" },
-            { value: "48hr", label: "Review Turnaround" },
-            { value: "Free", label: "Always Free to Browse" },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <p className="font-display text-4xl md:text-5xl uppercase text-brand-black leading-none">{stat.value}</p>
-              <p className="text-brand-black/60 text-xs uppercase tracking-widest mt-2">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Player CTA */}
-      <section className="py-24 px-4 border-t border-brand-white/10">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="font-display text-brand-yellow text-xs uppercase tracking-[0.3em] mb-4">
-            Are You a Player?
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl uppercase text-brand-white mb-4">
-            Get Discovered
-          </h2>
-          <p className="text-brand-white/60 mb-8 max-w-lg mx-auto leading-relaxed">
-            Submit your player profile and get in front of college coaches, national
-            team selectors, and scouts worldwide. It&apos;s completely free.
-          </p>
-          <Link
-            href="/players/submit"
-            className="inline-flex items-center gap-3 border-2 border-brand-yellow text-brand-yellow font-display uppercase tracking-widest text-sm px-8 py-4 hover:bg-brand-yellow hover:text-brand-black transition-colors"
-          >
-            Submit Your Profile
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        </div>
-      </section>
+        )}
+      </div>
     </div>
   );
 }

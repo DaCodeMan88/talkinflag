@@ -5,6 +5,7 @@
       "name": "talkinflag-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/danielharris/Desktop/Flag/talkinflag",
       "port": 3000
     }
   ]

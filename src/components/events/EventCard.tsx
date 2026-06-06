@@ -72,12 +72,14 @@ export function EventCard({ event }: { event: Event }) {
               </span>
             )}
             {levelLabel && (
-              <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
+              <span className="border border-brand-yellow/40 text-brand-yellow font-display text-xs uppercase tracking-widest px-2 py-0.5">
                 {levelLabel}
               </span>
             )}
             {event.event_type && (
-              <span className="text-brand-white/40 text-xs">{event.event_type}</span>
+              <span className="border border-brand-white/15 text-brand-white/50 font-display text-xs uppercase tracking-widest px-2 py-0.5">
+                {event.event_type}
+              </span>
             )}
           </div>
           <h3 className="font-display text-lg uppercase text-brand-white leading-tight group-hover:text-brand-yellow transition-colors">

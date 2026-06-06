@@ -8,21 +8,27 @@ interface StatsBarProps {
 export async function StatsBar({ episodeCount }: StatsBarProps) {
   const episodeLabel = episodeCount ? `${episodeCount}+` : "39+";
 
-  // Live player count
-  let playerCount = 75;
+  let memberCount = 0;
+  let countryCount = 0;
   try {
     const supabase = createServerClient();
-    const { count } = await supabase
-      .from("players")
-      .select("id", { count: "exact", head: true });
-    if (count && count > 0) playerCount = count;
+    const [playersRes, coachesRes, countriesRes] = await Promise.all([
+      supabase.from("players").select("id", { count: "exact", head: true }),
+      supabase.from("coaches").select("id", { count: "exact", head: true }),
+      supabase.from("players").select("country").not("country", "is", null),
+    ]);
+    memberCount = (playersRes.count ?? 0) + (coachesRes.count ?? 0);
+    const uniqueCountries = new Set(
+      (countriesRes.data ?? []).map((r) => r.country).filter(Boolean)
+    );
+    countryCount = uniqueCountries.size;
   } catch { /* use fallback */ }
 
   const stats = [
-    { value: episodeLabel,              label: "Episodes" },
-    { value: `${playerCount}+`,         label: "Player Profiles" },
-    { value: "14",                       label: "States Represented" },
-    { value: "#1",                       label: "Flag Football Podcast" },
+    { value: episodeLabel,                                  label: "Episodes" },
+    { value: memberCount > 0 ? `${memberCount}+` : "75+",  label: "Members" },
+    { value: countryCount > 1 ? `${countryCount}` : "10+", label: "Countries" },
+    { value: "#1",                                          label: "Flag Football Podcast" },
   ];
 
   return (

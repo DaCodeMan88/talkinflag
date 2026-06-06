@@ -37,15 +37,22 @@ export function PlayerCard({ player }: { player: Player }) {
           )}
           <h3 className="font-display text-lg uppercase text-brand-white leading-tight mt-0.5 group-hover:text-brand-yellow transition-colors">{name}</h3>
         </div>
-        {player.is_claimed ? (
-          <span className="shrink-0 bg-brand-yellow text-brand-black font-display text-xs px-2 py-0.5 uppercase tracking-widest">
-            ✓
-          </span>
-        ) : (
-          <span className="shrink-0 border border-brand-white/15 text-brand-white/25 font-display text-[9px] px-2 py-0.5 uppercase tracking-widest">
-            Unclaimed
-          </span>
-        )}
+        <div className="flex flex-col items-end gap-1">
+          {(player.interest_count ?? 0) >= 3 && (
+            <span className="shrink-0 bg-brand-yellow text-brand-black font-display text-[9px] px-2 py-0.5 uppercase tracking-widest font-bold">
+              🔥 In Demand
+            </span>
+          )}
+          {player.is_claimed ? (
+            <span className="shrink-0 bg-brand-yellow text-brand-black font-display text-xs px-2 py-0.5 uppercase tracking-widest">
+              ✓
+            </span>
+          ) : (
+            <span className="shrink-0 border border-brand-white/15 text-brand-white/25 font-display text-[9px] px-2 py-0.5 uppercase tracking-widest">
+              Unclaimed
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-3">

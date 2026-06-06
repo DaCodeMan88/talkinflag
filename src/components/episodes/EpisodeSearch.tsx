@@ -5,60 +5,66 @@ import { Search, X } from "lucide-react";
 import { EpisodeCard } from "./EpisodeCard";
 import type { Episode } from "@/types/episode";
 
-const TOPICS = [
-  { label: "All",          keywords: [] },
-  { label: "Athletes",     keywords: ["athlete", "player", "quarterback", "receiver", "db", "rusher", "wide receiver"] },
-  { label: "Coaches",      keywords: ["coach", "coaching", "coordinator", "staff"] },
-  { label: "Mental Game",  keywords: ["mental", "psychology", "mindset", "visualization", "confidence", "psycholog"] },
-  { label: "Training",     keywords: ["training", "workout", "drill", "conditioning", "strength", "speed", "athleti"] },
-  { label: "Recruiting",   keywords: ["recruit", "college", "scholarship", "ncaa", "commit"] },
-  { label: "International",keywords: ["italy", "italia", "europe", "ifaf", "world", "international", "national team", "olympic"] },
-  { label: "Women's Flag", keywords: ["women", "girls", "female", "ladies"] },
-];
-
-function matchesTopic(ep: Episode, keywords: string[]): boolean {
-  if (keywords.length === 0) return true;
-  const text = `${ep.title} ${ep.description} ${ep.guestName ?? ""}`.toLowerCase();
-  return keywords.some((kw) => text.includes(kw));
-}
-
 export function EpisodeSearch({ episodes }: { episodes: Episode[] }) {
   const searchParams = useSearchParams();
-  const [query, setQuery]   = useState(searchParams.get("q") ?? "");
-  const [topic, setTopic]   = useState("All");
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const [tag, setTag] = useState("All");
+
+  // Derive unique tags present across all episodes, in frequency order
+  const availableTags = useMemo(() => {
+    const freq = new Map<string, number>();
+    episodes.forEach((ep) => {
+      ep.tags?.forEach((t) => freq.set(t, (freq.get(t) ?? 0) + 1));
+    });
+    return Array.from(freq.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([t]) => t);
+  }, [episodes]);
 
   const filtered = useMemo(() => {
-    const topicKw = TOPICS.find((t) => t.label === topic)?.keywords ?? [];
     return episodes.filter((ep) => {
       const matchesSearch = !query.trim() ||
         ep.title.toLowerCase().includes(query.toLowerCase()) ||
         (ep.guestName?.toLowerCase().includes(query.toLowerCase()) ?? false) ||
         ep.description.toLowerCase().includes(query.toLowerCase()) ||
         (ep.episodeNumber ? `ep ${ep.episodeNumber}`.includes(query.toLowerCase()) : false);
-      return matchesSearch && matchesTopic(ep, topicKw);
+      const matchesTag = tag === "All" || (ep.tags?.includes(tag) ?? false);
+      return matchesSearch && matchesTag;
     });
-  }, [query, topic, episodes]);
+  }, [query, tag, episodes]);
 
-  const hasFilter = query.trim() !== "" || topic !== "All";
+  const hasFilter = query.trim() !== "" || tag !== "All";
 
   return (
     <div>
-      {/* Topic pills */}
-      <div className="flex flex-wrap gap-2 mb-5">
-        {TOPICS.map((t) => (
+      {/* Tag filter pills */}
+      {availableTags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-5">
           <button
-            key={t.label}
-            onClick={() => setTopic(t.label)}
+            onClick={() => setTag("All")}
             className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 border transition-colors ${
-              topic === t.label
+              tag === "All"
                 ? "bg-brand-yellow text-brand-black border-brand-yellow"
                 : "border-brand-white/20 text-brand-white/50 hover:border-brand-white/40 hover:text-brand-white"
             }`}
           >
-            {t.label}
+            All
           </button>
-        ))}
-      </div>
+          {availableTags.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTag(t === tag ? "All" : t)}
+              className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 border transition-colors ${
+                tag === t
+                  ? "bg-brand-yellow text-brand-black border-brand-yellow"
+                  : "border-brand-white/20 text-brand-white/50 hover:border-brand-white/40 hover:text-brand-white"
+              }`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Search bar */}
       <div className="relative mb-6">
@@ -85,7 +91,7 @@ export function EpisodeSearch({ episodes }: { episodes: Episode[] }) {
             {filtered.length === 0 ? "No episodes found" : `${filtered.length} episode${filtered.length === 1 ? "" : "s"}`}
           </p>
           <button
-            onClick={() => { setQuery(""); setTopic("All"); }}
+            onClick={() => { setQuery(""); setTag("All"); }}
             className="text-brand-white/30 text-xs font-display uppercase tracking-widest hover:text-brand-yellow transition-colors"
           >
             × Clear
@@ -97,7 +103,7 @@ export function EpisodeSearch({ episodes }: { episodes: Episode[] }) {
       {filtered.length === 0 ? (
         <div className="text-center py-20 border border-brand-white/10">
           <p className="text-brand-white/40 text-sm">No episodes match your filters.</p>
-          <button onClick={() => { setQuery(""); setTopic("All"); }} className="mt-4 text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline">
+          <button onClick={() => { setQuery(""); setTag("All"); }} className="mt-4 text-brand-yellow font-display text-xs uppercase tracking-widest hover:underline">
             Clear filters
           </button>
         </div>

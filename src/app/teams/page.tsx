@@ -1,5 +1,8 @@
 import { TeamsHub } from "@/components/rankings/TeamsHub";
 import { buildMetadata } from "@/lib/seo";
+import { createServerClient } from "@/lib/supabase";
+
+export const revalidate = 300;
 
 export const metadata = buildMetadata({
   title: "Teams | Talkin Flag — World & College Flag Football",
@@ -17,7 +20,22 @@ const breadcrumbJsonLd = {
   ],
 };
 
-export default function TeamsPage() {
+export default async function TeamsPage() {
+  const supabase = createServerClient();
+
+  const [{ data: coaches }, { data: players }] = await Promise.all([
+    supabase
+      .from("coaches")
+      .select("id, first_name, last_name, team, title, wins, losses")
+      .eq("is_verified", true)
+      .eq("level", "national"),
+    supabase
+      .from("players")
+      .select("id, first_name, last_name, position, country, school_or_team")
+      .or("level.eq.national,level.eq.international")
+      .eq("is_verified", true),
+  ]);
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <script
@@ -31,7 +49,7 @@ export default function TeamsPage() {
             IFAF world national team rankings and NCAA college program directory.
           </p>
         </div>
-        <TeamsHub />
+        <TeamsHub nationalCoaches={coaches ?? []} nationalPlayers={players ?? []} />
       </div>
     </div>
   );

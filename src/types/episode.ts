@@ -8,4 +8,5 @@ export interface Episode {
   guestName?: string;
   episodeNumber?: number;
   youtubeUrl: string;
+  tags?: string[];
 }

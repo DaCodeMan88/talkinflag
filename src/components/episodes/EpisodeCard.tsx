@@ -28,6 +28,11 @@ export function EpisodeCard({ episode }: { episode: Episode }) {
         </div>
 
         <div className="p-4">
+          {episode.tags?.[0] && (
+            <span className="inline-block font-display text-[10px] uppercase tracking-widest bg-brand-yellow/15 text-brand-yellow px-2 py-0.5 mb-2">
+              {episode.tags[0]}
+            </span>
+          )}
           {episode.guestName ? (
             <>
               <h3 className="font-display text-base uppercase text-brand-white leading-tight group-hover:text-brand-yellow transition-colors">

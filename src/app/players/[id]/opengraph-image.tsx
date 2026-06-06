@@ -9,11 +9,16 @@ export const contentType = "image/png";
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // Fetch just the fields needed for the image (anon key is safe for public player data)
   let playerName = "Flag Football Player";
   let position = "";
   let ranking = "";
   let level = "";
+  let photoUrl: string | null = null;
+  let school: string | null = null;
+  let gradYear: number | null = null;
+  let heightIn: number | null = null;
+  let weightLbs: number | null = null;
+  let initials = "FF";
 
   try {
     const supabase = createClient(
@@ -22,23 +27,39 @@ export default async function Image({ params }: { params: Promise<{ id: string }
     );
     const { data } = await supabase
       .from("players")
-      .select("first_name, last_name, position, ranking_national, level")
+      .select("first_name, last_name, position, ranking_national, level, photo_url, school_or_team, grad_year, height_in, weight_lbs")
       .eq("id", id)
       .single();
 
     if (data) {
       playerName = `${data.first_name} ${data.last_name}`;
+      initials = `${data.first_name[0] ?? ""}${data.last_name[0] ?? ""}`;
       position = data.position ?? "";
       ranking = data.ranking_national ? `#${data.ranking_national}` : "";
       level = data.level
         ? data.level.replaceAll("_", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
         : "";
+      photoUrl = data.photo_url ?? null;
+      school = data.school_or_team ?? null;
+      gradYear = data.grad_year ?? null;
+      heightIn = data.height_in ?? null;
+      weightLbs = data.weight_lbs ?? null;
     }
   } catch {
     // Fall back to generic player image
   }
 
-  const nameFontSize = playerName.length > 20 ? 72 : 88;
+  const nameFontSize = playerName.length > 20 ? 64 : 80;
+
+  // Height formatter
+  const heightStr = heightIn
+    ? `${Math.floor(heightIn / 12)}'${heightIn % 12}"`
+    : null;
+
+  const measurables = [
+    heightStr,
+    weightLbs ? `${weightLbs} lbs` : null,
+  ].filter(Boolean).join(" · ");
 
   return new ImageResponse(
     (
@@ -47,14 +68,13 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           width: "1200px",
           height: "630px",
           display: "flex",
-          flexDirection: "column",
           backgroundColor: "#000000",
           fontFamily: "sans-serif",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Yellow accent bar */}
+        {/* Yellow top bar */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "6px", backgroundColor: "#FDDD58", display: "flex" }} />
 
         {/* Left border accent */}
@@ -82,17 +102,18 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           }}
         />
 
-        {/* Content */}
+        {/* Left column: text content (~780px) */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            padding: "72px 80px 72px 104px",
+            padding: "60px 40px 60px 104px",
+            width: "780px",
             height: "100%",
             justifyContent: "space-between",
           }}
         >
-          {/* Top: Network tag + ranking */}
+          {/* Top: Brand tag + ranking badge */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#FDDD58", display: "flex" }} />
@@ -105,20 +126,20 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                 style={{
                   backgroundColor: "#FDDD58",
                   color: "#000000",
-                  fontSize: "22px",
+                  fontSize: "20px",
                   fontWeight: 900,
                   letterSpacing: "0.05em",
-                  padding: "6px 18px",
+                  padding: "6px 16px",
                   display: "flex",
                 }}
               >
-                {ranking} NATIONAL
+                {ranking} NATIONALLY
               </div>
             )}
           </div>
 
-          {/* Middle: Player name */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {/* Middle: Name + badges */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             <span
               style={{
                 color: "#FFFFFF",
@@ -131,13 +152,15 @@ export default async function Image({ params }: { params: Promise<{ id: string }
             >
               {playerName}
             </span>
+
+            {/* Position + level */}
             <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               {position && (
                 <div
                   style={{
                     backgroundColor: "#FDDD58",
                     color: "#000000",
-                    fontSize: "20px",
+                    fontSize: "18px",
                     fontWeight: 700,
                     letterSpacing: "0.1em",
                     padding: "4px 14px",
@@ -149,19 +172,97 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                 </div>
               )}
               {level && (
-                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "18px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "16px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                   {level}
                 </span>
               )}
             </div>
+
+            {/* School */}
+            {school && (
+              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "18px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                {school}
+              </span>
+            )}
+
+            {/* Class year + measurables */}
+            {(gradYear || measurables) && (
+              <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                {gradYear && (
+                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "15px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    Class of {gradYear}
+                  </span>
+                )}
+                {measurables && gradYear && (
+                  <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "15px" }}>|</span>
+                )}
+                {measurables && (
+                  <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "15px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    {measurables}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Bottom */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "16px", textTransform: "uppercase", letterSpacing: "0.2em" }}>
-              Player Profile · talkinflag.com/players
+          {/* Bottom watermark */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.2em" }}>
+              talkinflag.com/players
             </span>
           </div>
+        </div>
+
+        {/* Right column: photo (~420px) */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "420px",
+            height: "100%",
+            position: "relative",
+          }}
+        >
+          {photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={photoUrl}
+              width={280}
+              height={280}
+              style={{
+                width: "280px",
+                height: "280px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "4px solid #FDDD58",
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "280px",
+                height: "280px",
+                borderRadius: "50%",
+                backgroundColor: "rgba(253,221,88,0.15)",
+                border: "4px solid #FDDD58",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span
+                style={{
+                  color: "#FDDD58",
+                  fontSize: "72px",
+                  fontWeight: 900,
+                  textTransform: "uppercase",
+                }}
+              >
+                {initials}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     ),

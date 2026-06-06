@@ -1,5 +1,58 @@
 import { Episode } from "@/types/episode";
 
+const TOPIC_KEYWORDS: Record<string, string[]> = {
+  Recruiting:    ["recruit", "d1", "college", "scholarship", "offer"],
+  Coaching:      ["coach", "coaching", "scheme", "playbook", "strategy"],
+  International: ["world", "ifaf", "national team", "italy", "europe", "global", "olympic"],
+  "Women's Flag":["women", "girl", "female"],
+  Performance:   ["speed", "training", "athlete", "combine", "measurable"],
+  Business:      ["brand", "sponsor", "media", "business", "startup", "league"],
+  "Youth Flag":  ["youth", "high school", "hs", "prep"],
+};
+
+export function deriveTopicTags(title: string, description: string): string[] {
+  const text = (title + " " + description).toLowerCase();
+  return Object.entries(TOPIC_KEYWORDS)
+    .filter(([, keywords]) => keywords.some((k) => text.includes(k)))
+    .map(([tag]) => tag)
+    .slice(0, 4);
+}
+
+export async function getEpisodeById(id: string): Promise<Episode | null> {
+  if (!API_KEY || API_KEY === "PLACEHOLDER_YOUTUBE_API_KEY") return null;
+
+  try {
+    const url = new URL("https://www.googleapis.com/youtube/v3/videos");
+    url.searchParams.set("key", API_KEY);
+    url.searchParams.set("id", id);
+    url.searchParams.set("part", "snippet");
+
+    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const item = data.items?.[0];
+    if (!item) return null;
+
+    const s = item.snippet;
+    const title: string = s.title;
+    const description: string = s.description ?? "";
+    return {
+      id,
+      title,
+      description,
+      thumbnail: s.thumbnails?.maxres?.url ?? s.thumbnails?.high?.url ?? "",
+      publishedAt: s.publishedAt,
+      youtubeUrl: `https://www.youtube.com/watch?v=${id}`,
+      guestName: parseGuestName(title),
+      episodeNumber: parseEpisodeNumber(title),
+      tags: deriveTopicTags(title, description),
+    };
+  } catch {
+    return null;
+  }
+}
+
 const API_KEY = process.env.YOUTUBE_API_KEY;
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID;
 
