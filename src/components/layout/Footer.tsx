@@ -20,6 +20,7 @@ const databaseLinks = [
   { label: "Players", href: "/players" },
   { label: "Teams", href: "/teams" },
   { label: "Rankings", href: "/rankings" },
+  { label: "How Rankings Work", href: "/how-rankings-work" },
   { label: "Athlete of the Week", href: "/athletes/featured" },
   { label: "Top 10 Plays", href: "/plays" },
 ];

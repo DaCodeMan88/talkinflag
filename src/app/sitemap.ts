@@ -27,6 +27,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/coaches`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/community`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/scouts/apply`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/how-rankings-work`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE_URL}/results`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
   ];
 
   // ── Episode pages ─────────────────────────────────────────────────────────
