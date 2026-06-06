@@ -647,8 +647,21 @@ export default async function PlayerDetailPage({
           </a>
         </div>
       </div>
+      {/* Embed link */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-6 text-right">
+        <a
+          href={`/players/${player.id}/embed`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-brand-white/20 hover:text-brand-white/50 text-xs font-display uppercase tracking-widest transition-colors"
+        >
+          {'</>'}  Embed this profile
+        </a>
+      </div>
+
       {isVerifiedCoach && <CoachViewTracker playerId={player.id} />}
       <ShareCardModal
+        playerId={player.id}
         playerName={fullName}
         position={player.position ?? null}
         school={player.school_or_team ?? null}

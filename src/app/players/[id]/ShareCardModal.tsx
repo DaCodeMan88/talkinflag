@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 type Props = {
+  playerId: string;
   playerName: string;
   position: string | null;
   school: string | null;
@@ -72,7 +73,7 @@ function LockedToggle({ label, reason }: { label: string; reason: string }) {
 }
 
 export default function ShareCardModal(props: Props) {
-  const { playerName, position, school, gradYear, rankNational, photoUrl, heightIn, weightLbs, level, verifiedStatKeys, fortyYard, verticalJump } = props;
+  const { playerId, playerName, position, school, gradYear, rankNational, photoUrl, heightIn, weightLbs, level, verifiedStatKeys, fortyYard, verticalJump } = props;
 
   const isHeightVerified = verifiedStatKeys.includes("height_in");
   const isWeightVerified = verifiedStatKeys.includes("weight_lbs");
@@ -89,6 +90,7 @@ export default function ShareCardModal(props: Props) {
   const [showForty, setShowForty] = useState(isFortyVerified);
   const [showVertical, setShowVertical] = useState(isVerticalVerified);
   const [copied, setCopied] = useState(false);
+  const [copiedEmbed, setCopiedEmbed] = useState(false);
 
   const initials = playerName
     .split(" ")
@@ -111,6 +113,15 @@ export default function ShareCardModal(props: Props) {
     navigator.clipboard.writeText(window.location.href).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function handleCopyEmbed() {
+    const embedUrl = `https://talkinflag.com/players/${playerId}/embed`;
+    const snippet = `<iframe src="${embedUrl}" width="400" height="240" frameborder="0" style="border:none;overflow:hidden" scrolling="no" title="${playerName} | Talkin Flag"></iframe>`;
+    navigator.clipboard.writeText(snippet).then(() => {
+      setCopiedEmbed(true);
+      setTimeout(() => setCopiedEmbed(false), 2000);
     });
   }
 
@@ -426,6 +437,7 @@ export default function ShareCardModal(props: Props) {
               </div>
 
               <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                {/* Copy profile link */}
                 <button
                   onClick={handleCopy}
                   style={{
@@ -444,9 +456,39 @@ export default function ShareCardModal(props: Props) {
                 >
                   {copied ? "✓ Copied!" : "Copy Profile Link"}
                 </button>
+
+                {/* Share on X */}
+                <a
+                  href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Check out ${playerName}${position ? ` (${position})` : ""} on @TalkinFlagShow 🏈`)}&url=${encodeURIComponent(`https://talkinflag.com/players/${playerId}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    border: "1px solid rgba(255,255,255,0.2)",
+                    padding: "10px 16px",
+                    fontSize: "12px",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    width: "100%",
+                  }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 1200 1227" fill="currentColor">
+                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.163 519.284ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+                  </svg>
+                  Share on X
+                </a>
+
+                {/* Share on LinkedIn */}
                 <button
                   onClick={() => {
-                    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
+                    const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://talkinflag.com/players/${playerId}`)}`;
                     window.open(url, "_blank", "noopener,noreferrer");
                   }}
                   style={{
@@ -470,6 +512,26 @@ export default function ShareCardModal(props: Props) {
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
                   Share on LinkedIn
+                </button>
+
+                {/* Copy embed code */}
+                <button
+                  onClick={handleCopyEmbed}
+                  style={{
+                    backgroundColor: copiedEmbed ? "rgba(253,221,88,0.15)" : "rgba(255,255,255,0.05)",
+                    border: `1px solid ${copiedEmbed ? "#FDDD58" : "rgba(255,255,255,0.1)"}`,
+                    color: copiedEmbed ? "#FDDD58" : "rgba(255,255,255,0.5)",
+                    padding: "10px 16px",
+                    fontSize: "12px",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    transition: "all 0.2s",
+                    width: "100%",
+                  }}
+                >
+                  {copiedEmbed ? "✓ Embed Code Copied!" : "Copy Embed Code"}
                 </button>
               </div>
             </div>

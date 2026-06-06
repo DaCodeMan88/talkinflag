@@ -238,6 +238,12 @@ _When working on the blog, convert podcast episodes to long-form Rolling Stone-s
 - More page surface area = more ad/monetization space
 - Start with the highest-profile guests (Vanita Krouch, Katherine Sowers, etc.)
 
+### Top 10 Plays — Revisit Process
+_Built and shipped in Phase C, but the submission/curation workflow needs a second look:_
+- Is the player self-submission model the right flow, or should Ambra/Tika source plays themselves?
+- Consider adding email notification to admin when a new highlight is submitted
+- Consider letting submitters know when their play makes the Top 10
+
 ### Email Digest
 - Already built. Needs `RESEND_API_KEY` in Vercel env vars to activate.
 - Once live, add a newsletter signup CTA to the homepage and blog posts.
