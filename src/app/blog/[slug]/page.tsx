@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { RichText } from "@/components/blog/RichText";
 import { ShareButtons } from "@/components/blog/ShareButtons";
+import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
 
 export const revalidate = 300;
 
@@ -213,6 +214,14 @@ export default async function BlogPostPage({
             {staticPost.title}
           </h1>
 
+          {/* Guest byline (interview posts) */}
+          {staticPost.guestName && (
+            <p className="text-brand-yellow font-display text-xs uppercase tracking-widest mt-4">
+              Interview with {staticPost.guestName}
+              {staticPost.guestRole ? ` — ${staticPost.guestRole}` : ""}
+            </p>
+          )}
+
           {/* Meta + share */}
           <div className="flex flex-wrap items-center justify-between gap-4 mt-4 mb-10">
             <div className="flex items-center gap-4 text-brand-white/40 text-xs">
@@ -285,6 +294,18 @@ export default async function BlogPostPage({
                 ))}
               </ol>
             </nav>
+          )}
+
+          {/* Episode video embed (interview posts with a real video ID) */}
+          {staticPost.youtubeVideoId && staticPost.youtubeVideoId !== "TODO_OWNER" && (
+            <div className="mb-10">
+              <p className="font-display text-[10px] uppercase tracking-[0.4em] text-brand-yellow mb-3">
+                Watch the Episode
+              </p>
+              <div className="relative aspect-video border border-brand-yellow/20">
+                <YouTubeFacade videoId={staticPost.youtubeVideoId} title={staticPost.title} />
+              </div>
+            </div>
           )}
 
           {/* Body */}

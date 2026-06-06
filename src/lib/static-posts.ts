@@ -21,6 +21,10 @@ export interface StaticPost {
   body: string; // Plain text / simple markdown-like paragraphs
   faqItems?: FaqItem[]; // Optional FAQ for FAQPage JSON-LD structured data
   isStatic: true;
+  // Interview fields
+  youtubeVideoId?: string; // YouTube video ID (not full URL) — enables embedded player on blog page
+  guestName?: string; // e.g. "Katherine Sowers"
+  guestRole?: string; // e.g. "Head Coach, Italy Women's National Team"
 }
 
 export const staticPosts: StaticPost[] = [
