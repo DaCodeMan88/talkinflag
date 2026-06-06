@@ -9,6 +9,7 @@ import { PlayerCard } from "@/components/players/PlayerCard";
 import CoachViewTracker from "./CoachViewTracker";
 import ShareCardModal from "./ShareCardModal";
 import FollowButton from "@/components/ui/FollowButton";
+import { CompareButton } from "./CompareButton";
 
 export const revalidate = 300;
 
@@ -330,8 +331,9 @@ export default async function PlayerDetailPage({
               )}
             </div>
 
-            {/* Follow + Share */}
+            {/* Follow + Share + Compare */}
             <div className="flex flex-col gap-2 md:self-end">
+              <CompareButton currentId={player.id} />
               <FollowButton
                 followedId={player.id}
                 followedType="player"
