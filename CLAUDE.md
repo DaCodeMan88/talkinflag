@@ -40,6 +40,14 @@
 | 10 | Rankings explainer at `/how-rankings-work`; companion blog post; footer link | ✅ Done |
 | 11 | Results page: Upcoming Events section above archive; Teams page: College Commits panel (Akey/Nebraska, Spandiary/Purdue NW) | ✅ Done |
 
+### Episode-to-Blog + Player SEO (docs/plans/2026-06-06-episode-blog-player-seo.md) ✅ Branch: episode-blog-seo
+| Phase | Work | Status |
+|-------|------|--------|
+| 1 | `StaticPost` gains `youtubeVideoId`/`guestName`/`guestRole`; blog template embeds `YouTubeFacade` (guarded against `TODO_OWNER`) + guest byline | ✅ Done |
+| 2 | 5 interview articles in `static-posts.ts` — Sowers, Clark-Robinson, Krouch, Doucette, Flores (facts web-verified, no invented quotes) | ✅ Done |
+| 3 | Player `generateMetadata` richer title/description + fuller `Person` JSON-LD (sport/affiliation/memberOf/knowsAbout) across all 374 profiles | ✅ Done |
+| — | **Owner action:** supply real YouTube video IDs to replace `TODO_OWNER` in the 5 interview posts once `YOUTUBE_API_KEY` is live | ⏳ Pending |
+
 ### Media / Gallery
 - `/media` page with photo gallery (masonry grid) + 3×3 Instagram embed grid
 - To add photos: drop files in `public/gallery/` and add entry in `src/app/media/page.tsx`
@@ -76,11 +84,10 @@ These 3 items are blocking final polish on the live site:
    ```
 
 ### Build Queue
-1. **Episode-to-Blog + Player SEO** — plan at `docs/plans/2026-06-06-episode-blog-player-seo.md`. Branch: `episode-blog-seo`. Kickoff: *"Read CLAUDE.md and docs/plans/2026-06-06-episode-blog-player-seo.md. Create branch episode-blog-seo off main and execute the plan."*
-2. **Podcast audio widget** — pre-build component now; activate when Spotify show ID is provided.
-3. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
-4. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
-5. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. Needs `RESEND_API_KEY`.
+1. **Podcast audio widget** — pre-build component now; activate when Spotify show ID is provided.
+2. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
+3. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
+4. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. Needs `RESEND_API_KEY`.
 
 ### Other Owner Actions
 | Item | What It Unlocks | Action |
