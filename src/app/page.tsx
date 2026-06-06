@@ -12,6 +12,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Suspense } from "react";
+import { FeaturedAthleteSection } from "@/components/home/FeaturedAthleteSection";
 
 export const revalidate = 3600;
 
@@ -84,6 +85,10 @@ export default async function HomePage() {
       <Hero latestEpisode={episodes[0]} episodeCount={episodes.length} />
       <Suspense fallback={<div className="bg-brand-yellow py-6 h-20" />}>
         <StatsBar episodeCount={episodes.length} />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <FeaturedAthleteSection />
       </Suspense>
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">

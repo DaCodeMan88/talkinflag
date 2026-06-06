@@ -47,6 +47,12 @@ export default async function AdminHomePage() {
       href: "/admin/scouts",
       count: pendingScouts ?? 0,
     },
+    {
+      label: "Featured Athlete",
+      description: "Athlete Profile of the Week",
+      href: "/admin/featured",
+      count: 0,
+    },
   ];
 
   const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0);
