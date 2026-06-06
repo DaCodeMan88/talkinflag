@@ -21,6 +21,7 @@ const platformLinks = [
   { label: "Athlete of the Week", href: "/athletes/featured" },
   { label: "Top 10 Plays", href: "/plays" },
   { label: "Results", href: "/results" },
+  { label: "Find a League", href: "/find-a-league" },
   { label: "Coaches", href: "/coaches" },
   { label: "Events", href: "/events" },
   { label: "Community", href: "/community" },
