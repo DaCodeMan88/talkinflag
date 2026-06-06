@@ -78,6 +78,33 @@ function countryFlag(code: string | null | undefined): string {
     .join("");
 }
 
+/** SEO description shared by generateMetadata and the Person JSON-LD. */
+function playerSeoDescription(p: {
+  first_name: string;
+  last_name: string;
+  position?: string | null;
+  school_or_team?: string | null;
+  level?: string | null;
+  is_verified?: boolean | null;
+}): string {
+  const name = `${p.first_name} ${p.last_name}`;
+  const levelLabel: Record<string, string> = {
+    high_school: "high school",
+    college: "college",
+    national: "national team",
+    international: "international",
+    youth: "youth",
+  };
+  const levelStr = p.level ? levelLabel[p.level] ?? p.level : "";
+  const verifiedStr = p.is_verified ? " Verified athlete." : "";
+  const parts = [
+    p.position ? `${name} — ${p.position}` : name,
+    p.school_or_team || null,
+    levelStr ? `${levelStr} flag football player` : "flag football player",
+  ].filter(Boolean);
+  return `${parts.join(" · ")}. Profile on Talkin Flag.${verifiedStr}`;
+}
+
 // ─── Static params ────────────────────────────────────────────────────────────
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
@@ -101,20 +128,24 @@ export async function generateMetadata({
   const supabase = createServerClient();
   const { data: player } = await supabase
     .from("players")
-    .select("first_name, last_name, position, level, school_or_team, country")
+    .select(
+      "first_name, last_name, position, level, school_or_team, country, state, gender, is_verified, instagram, stats"
+    )
     .eq("id", id)
     .single();
 
   if (!player) return { title: "Player Not Found | Talkin Flag" };
 
   const name = `${player.first_name} ${player.last_name}`;
-  const parts = [player.position, player.school_or_team].filter(Boolean).join(" · ");
-  const description = parts
-    ? `${name} — ${parts}. Flag football player profile on Talkin Flag.`
-    : `${name} — flag football player profile on Talkin Flag.`;
+  const locationParts = [player.school_or_team, player.state].filter(Boolean).join(" · ");
+  const title = player.position
+    ? `${name} — ${player.position}${locationParts ? ` | ${locationParts}` : ""} | Talkin Flag`
+    : `${name}${locationParts ? ` | ${locationParts}` : ""} | Talkin Flag`;
+
+  const description = playerSeoDescription(player);
 
   const base = buildMetadata({
-    title: `${name} | Talkin Flag Players`,
+    title,
     description,
     path: `/players/${id}`,
   });
@@ -208,16 +239,27 @@ export default async function PlayerDetailPage({
     ],
   };
 
+  const igHandle = player.instagram ?? (ext.instagram as string | undefined);
+  const sameAs: string[] = [];
+  if (igHandle) sameAs.push(`https://instagram.com/${String(igHandle).replace(/^@/, "")}`);
+
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: fullName,
     url: `https://talkinflag.com/players/${player.id}`,
+    description: playerSeoDescription(player),
+    sport: "Flag Football",
     ...(player.position && { jobTitle: `Flag Football ${player.position}` }),
     ...(player.country && { nationality: player.country }),
-    ...(player.instagram && {
-      sameAs: [`https://instagram.com/${player.instagram.replace(/^@/, "")}`],
+    ...(sameAs.length > 0 && { sameAs }),
+    ...(player.school_or_team && {
+      affiliation: { "@type": "Organization", name: player.school_or_team },
     }),
+    ...(isNational && player.school_or_team
+      ? { memberOf: { "@type": "SportsTeam", name: player.school_or_team, sport: "Flag Football" } }
+      : {}),
+    knowsAbout: ["Flag Football", "Flag Football Strategy"],
   };
 
   return (
