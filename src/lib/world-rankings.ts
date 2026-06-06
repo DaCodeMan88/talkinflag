@@ -435,6 +435,67 @@ export const HS_RANKINGS: HSTeam[] = [
   { rank: 50, school: "Miami Springs Golden Hawks",  city: "Miami Springs",  state: "FL", stateFull: "Florida",  record: "8-5",  notes: "Miami-Dade program with growing girls flag tradition" },
 ];
 
+// ─── Olympic 2028 ─────────────────────────────────────────────────────────────
+// Flag football debuts as an Olympic sport at Los Angeles 2028.
+// Official national team rosters have not yet been named by USA Football or IFAF.
+
+export interface OlympicTeamInfo {
+  nation: string;
+  gender: "men" | "women";
+  qualificationStatus: string;
+  rosterStatus: "TBD" | "Announced" | "Partial";
+  notes: string;
+  ifafRank?: number;
+}
+
+export const OLYMPIC_2028_TEAMS: OlympicTeamInfo[] = [
+  {
+    nation: "United States",
+    gender: "women",
+    qualificationStatus: "Host nation — automatic berth",
+    rosterStatus: "TBD",
+    ifafRank: 1,
+    notes: "USA Women are the 2x reigning IFAF World Champions (2021, 2024) and enter LA 2028 as the prohibitive favorites. Roster selection TBD by USA Football.",
+  },
+  {
+    nation: "United States",
+    gender: "men",
+    qualificationStatus: "Host nation — automatic berth",
+    rosterStatus: "TBD",
+    ifafRank: 1,
+    notes: "USA Men won the 2024 IFAF World Championship 53-21 over Austria. Roster selection TBD by USA Football.",
+  },
+  {
+    nation: "Mexico",
+    gender: "women",
+    qualificationStatus: "IFAF Americas qualification pathway",
+    rosterStatus: "TBD",
+    ifafRank: 2,
+    notes: "Mexico Women are the #2 ranked team in the world, led by quarterback Diana Flores. Strong Olympic candidates via Americas qualifier.",
+  },
+  {
+    nation: "Austria",
+    gender: "men",
+    qualificationStatus: "IFAF Europe qualification pathway",
+    rosterStatus: "TBD",
+    ifafRank: 2,
+    notes: "Austria Men finished 2nd at the 2024 IFAF World Championship. Top European qualifier candidate.",
+  },
+];
+
+export const OLYMPIC_2028_INFO = {
+  hostCity: "Los Angeles, CA",
+  year: 2028,
+  olympicDebut: true,
+  genders: ["men", "women"] as const,
+  teamsPerGender: 6,
+  format: "Round robin + knockout",
+  qualificationNote:
+    "Six teams per gender will qualify through a combination of host nation automatic berth (USA), continental IFAF championships, and world rankings. Full qualification pathway to be announced by IOC and IFAF.",
+  ifafSource: "https://www.ifaf.org",
+  usaFootballSource: "https://usafootball.com/national-team/",
+};
+
 // ─── College Programs Directory (legacy) ─────────────────────────────────────
 // Source: collegiateflagfootball.com, womenscollegeflagfootball.com, conference sites — May 2026
 export const COLLEGE_PROGRAMS: CollegeProgram[] = [
