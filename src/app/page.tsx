@@ -14,6 +14,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Suspense } from "react";
 import { FeaturedAthleteSection } from "@/components/home/FeaturedAthleteSection";
 import { Top10PlaysTeaser } from "@/components/home/Top10PlaysTeaser";
+import { LatestResultsTeaser } from "@/components/home/LatestResultsTeaser";
 
 export const revalidate = 3600;
 
@@ -153,6 +154,9 @@ export default async function HomePage() {
         </div>
       }>
         <EventsTeaser />
+      </Suspense>
+      <Suspense fallback={null}>
+        <LatestResultsTeaser />
       </Suspense>
       <Suspense fallback={
         <div className="bg-brand-black border-t border-brand-white/5 py-20 px-6">

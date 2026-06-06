@@ -167,6 +167,24 @@ export default async function EventDetailPage({
   const { data: moreEventsRaw } = await moreQuery.limit(3) as { data: EventRow[] | null };
   const moreEvents = moreEventsRaw ?? [];
 
+  // Fetch results for this event
+  const { data: resultsRaw } = await supabase
+    .from("event_results")
+    .select("id, place, team_name, division, score, notes")
+    .eq("event_id", id)
+    .order("place", { ascending: true, nullsFirst: false });
+  const results = (resultsRaw ?? []) as {
+    id: string;
+    place: number | null;
+    team_name: string;
+    division: string | null;
+    score: string | null;
+    notes: string | null;
+  }[];
+
+  // Is this event in the past?
+  const isPast = event.start_date < today;
+
   const location = [event.city, event.country].filter(Boolean).join(", ");
   const levelLabel = event.level ? (LEVEL_LABELS[event.level] ?? event.level.replaceAll("_", " ")) : null;
   const dateRange = formatDateRange(event.start_date, event.end_date);
@@ -396,6 +414,62 @@ export default async function EventDetailPage({
             </div>
           </div>
         )}
+
+        {/* Results section — only if event is past and has results */}
+        {isPast && results.length > 0 && (() => {
+          const divisions = Array.from(new Set(results.map((r) => r.division ?? "General"))).sort();
+          const placeLabel = (p: number | null) => {
+            if (!p) return "—";
+            const medals: Record<number, string> = { 1: "🥇 1st", 2: "🥈 2nd", 3: "🥉 3rd" };
+            return medals[p] ?? `#${p}`;
+          };
+          return (
+            <div className="mt-16 pt-10 border-t border-brand-white/10">
+              <h2 className="font-display text-2xl uppercase text-brand-white mb-8 tracking-wide">
+                Results
+              </h2>
+              <div className="space-y-8">
+                {divisions.map((div) => {
+                  const rows = results
+                    .filter((r) => (r.division ?? "General") === div)
+                    .sort((a, b) => (a.place ?? 99) - (b.place ?? 99));
+                  return (
+                    <div key={div}>
+                      {divisions.length > 1 && (
+                        <p className="text-brand-yellow font-display text-xs uppercase tracking-widest mb-3">
+                          {div}
+                        </p>
+                      )}
+                      <div className="space-y-2">
+                        {rows.map((r) => (
+                          <div
+                            key={r.id}
+                            className="flex items-center gap-4 bg-[#0d0d0d] border border-brand-white/10 px-5 py-3"
+                          >
+                            <span className="font-display text-sm text-brand-yellow w-14 shrink-0">
+                              {placeLabel(r.place)}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-brand-white font-medium">{r.team_name}</p>
+                              {r.notes && (
+                                <p className="text-brand-white/30 text-xs mt-0.5">{r.notes}</p>
+                              )}
+                            </div>
+                            {r.score && (
+                              <span className="text-brand-white/50 font-mono text-sm shrink-0">
+                                {r.score}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Footer CTA */}
         <div className="mt-10 border-t border-brand-white/10 pt-10 flex flex-col sm:flex-row items-center justify-between gap-6">
