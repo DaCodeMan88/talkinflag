@@ -44,8 +44,22 @@ export default async function CoachProfilePage({ params }: Props) {
   const levelFormatted = coach.level?.replaceAll("_", " ").toUpperCase() ?? null;
   const hasRecord = coach.wins !== null || coach.losses !== null;
 
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": `${coach.first_name} ${coach.last_name}`,
+    "jobTitle": coach.title ?? `Flag Football Coach`,
+    "worksFor": coach.team ? { "@type": "SportsOrganization", "name": coach.team } : undefined,
+    "url": `https://talkinflag.com/coaches/${coach.id}`,
+    "description": coach.bio ?? undefined,
+  };
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
       <div className="max-w-2xl mx-auto">
 
         <Link

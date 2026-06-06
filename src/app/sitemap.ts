@@ -24,6 +24,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/recruit`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/players/submit`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE_URL}/events/submit`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/coaches`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/community`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE_URL}/scouts/apply`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   // ── Episode pages ─────────────────────────────────────────────────────────
@@ -63,21 +66,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // ── Player + Event pages (both from Supabase) ─────────────────────────────
+  // ── Player, Event + Coach pages (from Supabase) ───────────────────────────
   let playerPages: MetadataRoute.Sitemap = [];
   let eventPages: MetadataRoute.Sitemap = [];
+  let coachPages: MetadataRoute.Sitemap = [];
   try {
     const supabase = createServerClient();
     const today = new Date().toISOString().split("T")[0];
 
-    const [playersResult, eventsResult] = await Promise.all([
+    const [playersResult, eventsResult, coachesResult] = await Promise.all([
       supabase.from("players").select("id, updated_at").eq("is_verified", true),
       supabase.from("events").select("id, start_date").gte("start_date", today),
+      supabase.from("coaches").select("id, updated_at").eq("is_verified", true),
     ]);
     const players = playersResult.data as Pick<Player, "id" | "updated_at">[] | null;
     const events = eventsResult.data as { id: string; start_date: string }[] | null;
+    const coaches = coachesResult.data as { id: string; updated_at?: string }[] | null;
 
-    // The parallel awaits already happened above; just read the data
     if (players) {
       playerPages = players.map((p) => ({
         url: `${BASE_URL}/players/${p.id}`,
@@ -95,9 +100,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.7,
       }));
     }
+
+    if (coaches) {
+      coachPages = coaches.map((c) => ({
+        url: `${BASE_URL}/coaches/${c.id}`,
+        lastModified: c.updated_at ? new Date(c.updated_at) : now,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      }));
+    }
   } catch {
     // Supabase unavailable
   }
 
-  return [...staticPages, ...episodePages, ...blogPages, ...playerPages, ...eventPages];
+  return [...staticPages, ...episodePages, ...blogPages, ...playerPages, ...eventPages, ...coachPages];
 }

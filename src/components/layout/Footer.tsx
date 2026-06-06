@@ -18,7 +18,10 @@ const mediaLinks = [
 
 const platformLinks = [
   { label: "Players", href: "/players" },
+  { label: "Coaches", href: "/coaches" },
   { label: "Events", href: "/events" },
+  { label: "Community", href: "/community" },
+  { label: "Scouts", href: "/scouts/apply" },
   { label: "Merch", href: "/merch" },
   { label: "Recruit", href: "/recruit" },
   { label: "Submit Profile", href: "/players/submit" },
