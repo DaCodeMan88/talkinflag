@@ -26,55 +26,55 @@
 | F | League Finder | ✅ Live — `/find-a-league` |
 | G | Player Comparison Tool | ✅ Live — `/players/compare`, Compare button on profiles |
 
+### Accuracy & IA Overhaul (docs/plans/2026-06-06-accuracy-and-ia-overhaul.md) ✅ Branch: accuracy-ia-overhaul
+| Phase | Work | Status |
+|-------|------|--------|
+| 1 | Remove 15 fake demo players, dedup HS profiles (Akey/Taylor-Jenkins), normalize country/state | ✅ Done |
+| 2+3 | Tag all 49 national players with roster_year='2024' + team_designation='national_senior'; Olympic 2028 scaffolding in world-rankings.ts | ✅ Done |
+| 4 | Events audit — 8 solid future events already in DB through LA 2028 | ✅ Done |
+| 5 | Nav trimmed to 6 links: Players · Teams · Podcast · Events · Blog · About | ✅ Done |
+| 6 | Footer rebalanced: 5 columns (brand + Watch & Read, Database, Compete, Connect) | ✅ Done |
+| 7 | About page: HostsHero is now photo-only hero; HostCard grid is sole bio source (no duplicates) | ✅ Done |
+| 8 | `/episodes` → `/podcast` rename — all hrefs, metadata, JSON-LD, OG image, sitemap, 301 redirects in next.config.ts | ✅ Done |
+| 9 | flagsonly.com import: 284 new players from Playwright scrape; dedup-aware script in scripts/import-flagsonly.ts | ✅ Done |
+| 10 | Rankings explainer at `/how-rankings-work`; companion blog post; footer link | ✅ Done |
+| 11 | Results page: Upcoming Events section above archive; Teams page: College Commits panel (Akey/Nebraska, Spandiary/Purdue NW) | ✅ Done |
+
 ### Media / Gallery
 - `/media` page with photo gallery (masonry grid) + 3×3 Instagram embed grid
-- **4 most popular** posts (20.4K + 8.5K + 2 more) + **5 most recent** = 9 embeds
-- Official Instagram blockquote embeds — real previews, link to posts
-- Nav + Footer links added
 - To add photos: drop files in `public/gallery/` and add entry in `src/app/media/page.tsx`
-- To swap IG posts: edit the `INSTAGRAM_POSTS` array in that file (use post/reel shortcode)
+- To swap IG posts: edit the `INSTAGRAM_POSTS` array in that file
 
-### Database — What's Been Added
-- **Tournament Results:** 21+ championship events (2024–2026), all sanctioned US states + IFAF
-- **Player Profiles:** 18 named players from championship games with stats
-  - Ariana Akey (Mountain Vista, CO) — QB, Nebraska commit, 4,545 pass yds, 89 TDs
-  - Taimane & Jade Skipps (North Pole, AK) — back-to-back Alaska state champs
-  - Annie Keith (Robinson, FL) — 2025 2A Championship MVP, 42/48, 371 yds
-  - Samaya Taylor-Jenkins (Hamilton, AZ) — NFL Showcase NFC MVP
-  - Shaleah Moore (Campbell, HI) — Tournament MOP, 20 sacks, 5'1" 105 lbs
-  - Aribella Spandiary (Maine South, IL) — IL POY, Purdue NW commit
-  - + 12 more from Maine South, Mahtomedi, Robinson, Whitney Young, Nordonia
-- **107 total players** · 45 high school · 78 female
+### Database — Current State
+- **374 total players** · 41 HS · 206 college · 127 national
+- 284 imported from flagsonly.com (tagged `stats.source='flagsonly'`, `is_verified=false`, `is_claimed=false`)
+- 49 national team players tagged `stats.roster_year='2024'` + `stats.team_designation='national_senior'`
+- Backup tables `_backup_players_20260606` + `_backup_events_20260606` — drop after branch merge
+- Player source conventions: `roster_year` (string year), `team_designation` (national_senior/national_junior/national_youth/olympic_2028), `source` (usafootball.com/flagsonly/submitted)
 
 ---
 
 ## Open Items — Next Session
 
 ### Build Queue
-1. **More images for Gallery** — Ambra & Tika provided images. Drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
-2. **Episode-to-Blog Conversion** — long-form articles from podcast episodes. Start with Vanita Krouch, Katherine Sowers. Each = new SEO page.
-3. **Revisit Top 10 Plays Process** — is player self-submission the right model? Admin notification on new submission? Notify players when featured?
-4. **TF Rankings Algorithm (Phase A)** — needs Ambra & Tika to define the 100-pt rubric weights before building.
-5. **New Growth Roadmap** — monetization, recruiting tools, national team pages, etc.
+1. **Merge accuracy-ia-overhaul branch** — build is clean, ready for PR + Vercel deploy
+2. **Drop backup tables after merge** — `DROP TABLE _backup_players_20260606; DROP TABLE _backup_events_20260606;`
+3. **About page photos from Ambra** — drop in `public/` as `/hosts-hero.jpg`, `/ambra.jpg`, `/tika.jpg`
+4. **Podcast audio widget** — needs Spotify show ID (owner action) for `/podcast` embedded player
+5. **Episode-to-Blog Conversion** — long-form articles from podcast episodes. Start with Vanita Krouch, Katherine Sowers.
+6. **TF Rankings Algorithm (Phase A)** — needs Ambra & Tika to define the 100-pt rubric weights.
+7. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
 
 ### Owner Actions Still Blocking Features
-| Env Var | What It Unlocks | Where to Add |
-|---------|----------------|-------------|
-| `RESEND_API_KEY` | Contact form, welcome email, weekly digest | Vercel → Settings → Environment Variables |
-| `CRON_SECRET` | Secures `/api/digest/send` | Vercel |
-| `ADMIN_EMAILS` | Gates admin scout/verification pages | Vercel |
+| Item | What It Unlocks | Action |
+|------|----------------|--------|
+| Spotify show ID | Podcast audio widget | Send show ID → add to PodcastAudioPlayer |
+| Ambra's photos | About page | Drop `/hosts-hero.jpg`, `/ambra.jpg`, `/tika.jpg` in `public/` |
+| 100-pt TF Rank rubric | TF Rankings Algorithm live scores | Define with Ambra & Tika |
+| `RESEND_API_KEY` | Contact form, welcome email, weekly digest | Vercel → Settings → Env Vars |
 | `YOUTUBE_API_KEY` | Live episode fetching | Vercel |
-| `PRINTFUL_API_KEY` | Merch store (code is done) | Vercel |
-| Amazon affiliate tag | Revenue from equipment blog posts | `src/lib/static-posts.ts` |
-| Domain decision | talkinflag.com vs talkinflagshow.com → update Supabase + Google OAuth | Supabase + Google Console |
-
-### Instagram Embed — Future Upgrade
-- Current: Official blockquote embeds (free, requires posts to stay public)
-- Future option: Behold.so (~$19/mo) for live auto-updating feed — no manual URL updates needed
-- Questions for Ambra & Tika:
-  1. Which account(s) to show? `@talkinflagshow`, personal, or both?
-  2. OK with ~$19/mo for live feed?
-  3. Want the feed on homepage too?
+| `PRINTFUL_API_KEY` | Merch store (code done) | Vercel |
+| Domain decision | talkinflag.com vs talkinflagshow.com | Supabase + Google Console |
 
 ---
 
@@ -84,13 +84,18 @@
 |------|-------|
 | Nav | `src/components/layout/Nav.tsx` |
 | Footer | `src/components/layout/Footer.tsx` |
+| About / HostsHero | `src/app/about/page.tsx`, `src/components/hosts/HostsHero.tsx` |
+| Podcast page | `src/app/podcast/page.tsx` (was episodes/) |
+| Podcast episode page | `src/app/podcast/[id]/page.tsx` |
+| Rankings explainer | `src/app/how-rankings-work/page.tsx` |
 | Media/Gallery page | `src/app/media/page.tsx` |
 | Player types | `src/types/player.ts` |
 | Supabase server client | `src/lib/supabase/server.ts` |
 | Supabase anon client | `src/lib/supabase/index.ts` |
-| Email (Resend) | `src/lib/email.ts` |
 | Static blog posts | `src/lib/static-posts.ts` |
-| World rankings data | `src/lib/world-rankings.ts` |
+| World rankings + Olympic + Commits | `src/lib/world-rankings.ts` |
+| flagsonly import script | `scripts/import-flagsonly.ts` |
+| flagsonly player data | `scripts/data/flagsonly-players.json` |
 | Dev server config | `.claude/launch.json` (port 3000) |
 
 ---
