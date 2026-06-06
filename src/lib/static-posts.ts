@@ -29,6 +29,236 @@ export interface StaticPost {
 
 export const staticPosts: StaticPost[] = [
   {
+    slug: "katherine-sowers-talkin-flag-interview",
+    title: "Katherine Sowers on Coaching, Breaking Barriers, and What Flag Football Needs Next",
+    author: "Talkin Flag",
+    publishedAt: "2026-06-06T00:00:00Z",
+    category: "Interview",
+    guestName: "Katherine Sowers",
+    guestRole: "Flag Football Coach · First Woman to Coach in a Super Bowl",
+    youtubeVideoId: "TODO_OWNER",
+    excerpt:
+      "She made history on the NFL's biggest stage, then brought that pedigree to the flag field. Katherine Sowers sat down with Talkin Flag to talk coaching, building national programs, and where the women's game goes from here.",
+    body: `When Katherine Sowers walked onto the field for Super Bowl LIV in February 2020, she became the first woman — and the first openly gay coach — to coach in a Super Bowl. It was the headline that introduced her to the world. But for Sowers, the moment was never the point. The work was.
+
+That same work ethic is what she has carried into flag football, a sport she now sees as one of the most important growth engines in American football. We sat down with her for a wide-ranging conversation about coaching, barriers, and what the game needs to do next.
+
+**From the Super Bowl Sideline to the Flag Field**
+
+Sowers joined the San Francisco 49ers in 2017 through the Bill Walsh Diversity Coaching Fellowship, then earned a full-time job as an offensive assistant — a role she held through the 2020 season. The NFC Championship run that took the 49ers to Super Bowl LIV put her in the history books.
+
+What is less widely known is what she did next. Between 2023 and 2024 she served as head coach of Italy's women's national flag football team, helping a European program punch above its weight on the international stage. She has also spent years building the women's flag program at Ottawa University, and she is set to join the University of Nebraska's women's flag football staff as associate head coach beginning in the 2027 season.
+
+In other words: Sowers didn't treat flag football as a sideshow after the NFL. She treated it as the next frontier.
+
+**Building a National Program From the Outside**
+
+Coaching a national team that isn't your own country's is a unique challenge. You inherit a culture, a language barrier, and a player pool that may have come to the sport from completely different athletic backgrounds. Sowers' time with [Italy's women's program](/blog/italy-flag-football-global-force) was a lesson in adaptation — taking elite-level structure and translating it for athletes who were still defining what their national identity in the sport would be.
+
+The lesson she keeps coming back to: you build a program by building people first. Systems matter, but belief matters more. A team that trusts its preparation plays faster, freer, and more fearlessly than one relying on raw talent alone.
+
+**What NFL Methodology Teaches Flag**
+
+It would be easy to assume that NFL coaching doesn't transfer cleanly to a five-on-five, no-contact game. Sowers sees it differently. The fundamentals of spacing, leverage, timing, and disguise are universal. What changes is the canvas.
+
+In flag, the field is smaller and the margins are thinner. There is nowhere to hide a missed assignment. The discipline that defines pro football — film study, situational awareness, relentless attention to detail — is arguably even more decisive in flag, where a single broken coverage can end a game in seconds. Bringing that professional rigor to flag rooms is, in her view, one of the fastest ways to raise the ceiling of the sport.
+
+**The Coaching Pipeline for Women**
+
+Sowers is candid about the thing the sport still needs most: more women in coaching roles, at every level. Flag football has opened doors that tackle football kept closed for decades. Girls' high school participation is exploding, college programs are multiplying, and the [women's game is growing faster](/blog/womens-flag-football-rise) than almost any sport in the country.
+
+But players need coaches who look like them and who have walked the path. The pipeline she is helping build — from NFL fellowships to college staffs to national programs — is designed so that the next generation never has to wonder whether there is a place for them on the sideline. There is.
+
+**What Comes Next**
+
+With flag football headed to the [2028 Olympics in Los Angeles](/blog/flag-football-la-2028-olympics), Sowers believes the sport is at an inflection point. The talent is here. The infrastructure is catching up. What it needs now is investment — in coaching education, in youth development, and in giving international programs the resources to compete with the established powers.
+
+Her message to anyone thinking about getting into the game, as a player or a coach: don't wait for permission. The sport is being built right now, in real time, by the people who show up. She would know. She has been one of them at every level.
+
+You can follow the athletes and programs shaping the women's game on our [teams page](/teams) and across the [Talkin Flag player database](/players). And there is much more from coaches like Katherine Sowers on the [podcast](/podcast).`,
+    isStatic: true,
+  },
+  {
+    slug: "amber-clark-robinson-talkin-flag-interview",
+    title: "Amber Clark-Robinson on College Flag, Playing for Team USA, and Doing Both at Once",
+    author: "Talkin Flag",
+    publishedAt: "2026-06-05T00:00:00Z",
+    category: "Interview",
+    guestName: "Amber Clark-Robinson",
+    guestRole: "Head Coach, Univ. of Saint Mary · USA Women's National Team",
+    youtubeVideoId: "TODO_OWNER",
+    excerpt:
+      "She coaches one of the first college women's flag programs in the country — and still suits up for Team USA. Amber Clark-Robinson joined Talkin Flag to talk about living on both sides of the sport at once.",
+    body: `Most people in flag football pick a lane: you play, or you coach. Amber Clark-Robinson refuses to choose. She is the head women's flag football coach at the University of Saint Mary in Kansas, and she is also a defensive back and team captain for the United States women's national team. On any given month she might be game-planning for a college opponent and defending the world title for her country.
+
+We caught up with her to understand what it takes to live on both sides of the sport at the same time.
+
+**A Player and a Coach at the Same Time**
+
+Clark-Robinson has been the head coach at the University of Saint Mary since 2023, leading one of the first NAIA women's flag football programs in the nation. At the same time, she earned spots on the U.S. national team in 2023 and 2024, winning gold at the IFAF Flag Football World Championship both years.
+
+That dual role is rare, and it isn't easy. Coaching requires you to step outside yourself and see the whole field; playing requires you to lock into a single assignment and trust your instincts. Doing both means constantly switching between the two mindsets — and bringing the lessons of each back to the other. Her players get a coach who is still living the game at its highest level. Her national teammates get a defender who thinks like a coordinator.
+
+**Inside College Flag Football**
+
+College flag is one of the most important developments in the sport, and most fans have never seen a game. Clark-Robinson is building a program from close to the ground floor — recruiting athletes, establishing standards, and proving that a college roster spot in flag football is a real, pursuable goal for a high school player.
+
+The NAIA has been an early mover here, giving women's flag a varsity home before larger institutions caught up. For athletes, that matters: it means scholarships, structure, and a competitive pathway that simply did not exist a few years ago. The college game is where the sport's depth will be built, and coaches like Clark-Robinson are laying the foundation.
+
+**The Defensive Back's Mind**
+
+On the national team, Clark-Robinson plays defensive back — and she plays it at an elite level. At the 2023 IFAF Americas Championship she recorded five interceptions in six games, and she sealed the championship with the game-clinching pick in a 26-21 win over Mexico.
+
+Great flag defense, she explains, is about anticipation more than reaction. In a game with no contact and tight spacing, the defender who reads the quarterback's eyes and the receiver's leverage a half-second early is the one who makes the play. That is a teachable skill — and it is exactly the kind of thing she drills into her college players, because she is still doing it herself under the brightest lights.
+
+**Recruiting the Next Generation**
+
+One of the biggest challenges in college flag is that the recruiting map is still being drawn. There is no decades-old scouting infrastructure. Coaches have to find athletes, evaluate them across wildly different high school environments, and sell them on a sport that is still earning its mainstream profile.
+
+For high schoolers who want to be recruited, Clark-Robinson's advice mirrors what scouts across the sport look for: play multiple sports, master your fundamentals, and put your film where coaches can find it. We've broken down [what college flag scouts actually want](/blog/flag-football-recruiting-what-scouts-want) in a companion guide — and her perspective reinforces every point in it.
+
+**Why the College Pathway Matters**
+
+When the Kansas City Chiefs honored Clark-Robinson and her teammates for winning a world championship, it was a glimpse of where the sport is headed: flag football athletes recognized alongside the NFL's biggest stars. She also serves on the USA Flag Football Board of Directors, helping steer the sport's growth nationally.
+
+But her real legacy may be the program she is building one recruit at a time. Every college roster spot she creates is a reason for a young girl to keep playing. With the [2028 Olympics](/blog/flag-football-la-2028-olympics) on the horizon, that pipeline — high school to college to national team — is how the United States stays on top. Clark-Robinson is one of the few people building all three rungs of that ladder at once.
+
+Explore the athletes coming up through the college and national ranks in the [player database](/players) and on the [teams page](/teams) — and hear more from Amber on the [podcast](/podcast).`,
+    isStatic: true,
+  },
+  {
+    slug: "vanita-krouch-talkin-flag-interview",
+    title: "Vanita Krouch: The Most Decorated Quarterback in USA Flag Football History",
+    author: "Talkin Flag",
+    publishedAt: "2026-06-04T00:00:00Z",
+    category: "Interview",
+    guestName: "Vanita Krouch",
+    guestRole: "QB, USA Women's National Team",
+    youtubeVideoId: "TODO_OWNER",
+    excerpt:
+      "Three world titles. A 33-1 international record. They call her the Tom Brady of flag football. Vanita Krouch joined Talkin Flag to talk about quarterbacking a dynasty — and chasing an Olympic dream.",
+    body: `If you want to understand how good the United States women's flag football team has been, start with the woman taking the snap. Vanita Krouch is the most decorated woman in U.S. national team history, the quarterback of a dynasty, and — by reputation across the sport — the Tom Brady of flag football. We sat down with her to talk about a career that has rewritten what is possible for a flag quarterback.
+
+**The Tom Brady of Flag Football**
+
+The nickname isn't marketing. It's a description. Krouch has led Team USA to three IFAF World Championships — in 2018, 2021, and 2024 — anchoring a program that has dominated the international game for the better part of a decade. The most recent title came in Lahti, Finland, in August 2024, when she guided the U.S. women to gold once again.
+
+What makes her special isn't arm strength or flash. It's command. She processes a defense the way the great quarterbacks do — quickly, calmly, and a step ahead. In a sport where a possession can be decided in three seconds, that clarity under pressure is the whole game.
+
+**A 33-1 International Record**
+
+Let that number sit for a moment. Across her international career, Krouch has compiled a 33-1 record. That is not a hot streak; it is a sustained era of excellence that few athletes in any sport ever approach. In 2024 she was named a finalist for The World Games Athlete of the Year — recognition that her brilliance has been noticed well beyond flag football's core community.
+
+She has been the constant through every iteration of the U.S. women's roster, the steady hand that turns elite talent into a championship machine. When teammates rotate in and out, the offense never loses its rhythm, because the person running it has seen every defense the world can throw at her.
+
+**From the Classroom to the World Stage**
+
+Krouch's story is also a reminder of what flag football actually is at its heart: a sport for real people with real lives. She has spent two decades as a physical education teacher, currently at La Villita Elementary in Irving, Texas. A Carrollton, Texas native, she came up as a basketball player at Southern Methodist University from 2000 to 2003, winning a conference championship and reaching the NCAA Tournament.
+
+She didn't pick up flag football until 2006, looking for a competitive outlet in the Dallas area. Two decades later, she is the face of the most successful program in the sport. It is the kind of arc that tells every weekend athlete and every gym teacher: the door is open.
+
+**Playing QB at the Highest Level**
+
+Quarterbacking at the international level, Krouch explains, is a mental discipline as much as a physical one. The windows are tighter, the defenders are faster, and every team you face at a World Championship is the best its country has to offer. Preparation is everything — knowing your reads cold, trusting your receivers, and refusing to let a single bad play snowball.
+
+Her influence now extends beyond the field. She served as an NFC flag coordinator at the NFL Pro Bowl, bringing the sport she has mastered to the league's marquee all-star showcase — another sign of how far the women's game has traveled.
+
+**The Road to LA 2028**
+
+With flag football set to debut at the [2028 Los Angeles Olympics](/blog/flag-football-la-2028-olympics), Krouch is chasing the one thing missing from her résumé: a gold medal on the sport's biggest possible stage. The [U.S. women's national team](/blog/usa-flag-football-national-team) will enter as a favorite, and she has been the engine of that program for years.
+
+For a generation of girls who now grow up playing flag, Krouch is proof of the ceiling — and proof that it can be reached by someone who started as a basketball player from Carrollton and never stopped competing. The [rise of women's flag football](/blog/womens-flag-football-rise) has many authors, but few have written more of the story than the quarterback who keeps winning. You can find Vanita and her teammates in the [Talkin Flag player database](/players), and hear the full conversation on the [podcast](/podcast).`,
+    isStatic: true,
+  },
+  {
+    slug: "darrell-doucette-talkin-flag-interview",
+    title: "Darrell 'Housh' Doucette on Leading Team USA and the Mentality of a Champion",
+    author: "Talkin Flag",
+    publishedAt: "2026-06-03T00:00:00Z",
+    category: "Interview",
+    guestName: 'Darrell "Housh" Doucette III',
+    guestRole: "QB, USA Men's National Team",
+    youtubeVideoId: "TODO_OWNER",
+    excerpt:
+      "He has quarterbacked the United States to the top of the flag football world and kept it there. Darrell 'Housh' Doucette joined Talkin Flag to talk championships, mentality, and the debate over who deserves an Olympic roster spot.",
+    body: `Darrell Doucette goes by "Housh," and in flag football circles the nickname needs no introduction. He has been the quarterback of the United States men's national team since 2020, the on-field general of a program that has spent years at or near the top of the global game. We sat down with him to talk about winning, the mindset it demands, and the conversation the whole sport is having about its Olympic future.
+
+**The Quarterback Who Built a Dynasty**
+
+Doucette took over as the U.S. men's starting quarterback in 2020 and immediately set about establishing American dominance. He led the team to gold at the 2021 IFAF World Championship, then to gold again at the 2022 World Games in Birmingham, Alabama — flag football's debut on that international stage. In 2024 he was back at the controls as the United States defended its world title.
+
+That kind of sustained winning doesn't happen by accident. It is the product of a quarterback who treats every possession as a problem to be solved and every tournament as a standard to be defended. Under Housh, the U.S. men have set the bar that the rest of the world is chasing.
+
+**The Mentality of a Champion**
+
+Ask Doucette what separates a champion and he won't point to a throw. He'll point to a mindset. At the highest level of flag football, the physical gap between national teams is small. What decides games is composure — the ability to stay locked in when the margin is one stop, one conversion, one read.
+
+A New Orleans native who came up at Saint Augustine High School, Doucette carries the edge of someone who has had to prove himself at every level. He brings that chip to the huddle. The standard he sets isn't about talent; it's about refusing to be outworked or out-prepared. That is the culture he has built, and it is why the U.S. keeps finding a way.
+
+**Should NFL Players Take Olympic Roster Spots?**
+
+No conversation about Team USA's future avoids the biggest debate in the sport: when flag football debuts at the 2028 Olympics, who should wear the jersey — the athletes who built the national program, or NFL stars drawn to the Olympic spotlight?
+
+Doucette has been one of the most prominent voices in that discussion. His position is grounded in a simple loyalty: the men and women who grew this sport, who flew around the world to win world championships when no one was watching, have earned the right to be on that field. It is a debate without an easy answer, but it is one the sport needs to have in the open — and Housh has never been shy about leading it.
+
+**Inside the USA Men's Program**
+
+The U.S. men's program is a meritocracy with a brotherhood at its core. Roster spots are fought for, not gifted. What holds it together is a shared understanding of how hard the climb was — and a refusal to take the standard for granted now that they are on top.
+
+For Doucette, quarterbacking that group is about more than play-calling. It is about setting a tone in practice, holding teammates accountable, and making sure that every athlete who pulls on the national jersey understands what it represents. Master the [quarterback position](/blog/flag-football-positions-guide) and you start to appreciate just how much of the job happens before the snap.
+
+**Playing at the Highest Level as an Adult Athlete**
+
+One of the quietly remarkable things about elite flag football is that its stars are grown adults with full lives, competing at a world-class level on heart and discipline. Doucette embodies that. There is no developmental league funneling resources to these athletes; they have built their excellence on their own time, fueled by love of the game.
+
+That is part of why the Olympic moment matters so much to him. It is validation for a generation of players who chased greatness in a sport the mainstream overlooked. With LA 2028 approaching, the [United States men's program](/teams) he leads is determined to make sure the world remembers who got there first. Find the athletes behind Team USA in the [player database](/players), and catch the full interview on the [podcast](/podcast).`,
+    isStatic: true,
+  },
+  {
+    slug: "diana-flores-talkin-flag-interview",
+    title: "Diana Flores: The Global Face of Flag Football",
+    author: "Talkin Flag",
+    publishedAt: "2026-06-02T00:00:00Z",
+    category: "Interview",
+    guestName: "Diana Flores",
+    guestRole: "QB & Captain, Mexico Women's National Team",
+    youtubeVideoId: "TODO_OWNER",
+    excerpt:
+      "From a Super Bowl ad to a World Games gold medal over Team USA, Diana Flores has become the most recognizable athlete in flag football. The Mexico captain joined Talkin Flag to talk about carrying a sport toward the Olympics.",
+    body: `If flag football has a global face, it belongs to Diana Flores. The quarterback and captain of Mexico's women's national team has done something few athletes in any emerging sport manage: she has become a household name before her sport even reaches the Olympics. We sat down with her to talk about leadership, legacy, and the weight of representing a movement.
+
+**Mexico's Rise to the Top of the World**
+
+Mexico's women have established themselves as one of the elite programs on the planet, and Flores has been at the controls for the biggest moments. At the 2022 World Games she led Mexico to a perfect 6-0 record and the gold medal, dismantling the United States 39-6 in the final — a game in which she completed 20 of 28 passes for 210 yards and four touchdowns. She added another World Games gold in 2025 and a silver at the 2024 IFAF World Championship, keeping Mexico in the conversation with the United States at the very top of the sport.
+
+For a country with a deep, passionate flag football culture, Flores has turned national pride into international results. When Mexico takes the field, they are not hoping to compete. They expect to win.
+
+**The Face of a Sport**
+
+Flores' impact reaches far beyond the box score. She appeared in the Super Bowl LVII commercial "Run With It," a spot built around flag football's push toward the Olympics, and she has competed at the NFL Pro Bowl and served as an official NFL ambassador for the sport. For millions of viewers, she was the first flag football player they had ever seen — and she made an unforgettable first impression.
+
+That visibility is a responsibility she takes seriously. Every camera pointed at her is a camera pointed at the sport. She has used that platform to show a global audience that flag football is fast, skillful, and worthy of the world stage.
+
+**Growing Up With a Flag in Her Hand**
+
+Flores' story starts early. She began playing flag football at age eight and joined Mexico's national team at just 14, becoming the youngest player to compete in an international tournament when she debuted at the 2014 IFAF Championship. She did not arrive as a star; she grew into one, on the field, over more than a decade of international competition.
+
+That lifelong relationship with the game gives her a perspective few of her peers share. She has watched flag football transform from a sport she loved in relative obscurity into a global phenomenon headed for the Olympics — and she has been a driving force in that transformation every step of the way.
+
+**The Rivalry That Defines the Era**
+
+You cannot tell the story of women's flag football right now without the Mexico–USA rivalry, and Flores is at the heart of it. The two programs have traded blows at the top of the sport for years: Mexico's golden run at the World Games, the United States' world championship pedigree, and the constant push-and-pull that raises the level of both.
+
+Rivalries like this are what mainstream sports are built on, and flag football now has a genuine one. For Flores, the United States isn't just an opponent — it's the measuring stick that makes every Mexican victory mean more. That competitive fire is exactly what the sport needs as it steps into the global spotlight.
+
+**The Future of International Women's Flag**
+
+With the [2028 Olympics in Los Angeles](/blog/flag-football-la-2028-olympics) on the horizon, Flores understands the stakes better than anyone. An Olympic flag football tournament with Mexico in contention — and with her under center — would be a landmark moment for the sport across Latin America and the world.
+
+She is not just chasing a medal. She is trying to make sure that the next eight-year-old in Mexico City who picks up a flag football grows up believing there is a stage waiting for her. The [international programs to watch heading into 2028](/blog/international-flag-football-teams-to-watch-2028) are deep and getting deeper, but Mexico's captain remains the brightest star in the international game. Explore the global contenders on our [teams page](/teams), and hear the full conversation with Diana on the [podcast](/podcast).`,
+    isStatic: true,
+  },
+  {
     slug: "flag-football-la-2028-olympics",
     title: "Flag Football Is Going to the Olympics. Here's Why It Matters.",
     author: "Talkin Flag",
