@@ -31,7 +31,7 @@ export default function NotFound() {
           Back to Home
         </Link>
         <Link
-          href="/episodes"
+          href="/podcast"
           className="inline-flex items-center justify-center border-2 border-brand-yellow text-brand-yellow font-display uppercase tracking-widest text-sm px-8 py-4 hover:bg-brand-yellow hover:text-brand-black transition-colors"
         >
           Watch Episodes

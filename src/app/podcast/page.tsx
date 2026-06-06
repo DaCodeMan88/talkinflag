@@ -8,24 +8,24 @@ import { Suspense } from "react";
 export const revalidate = 3600;
 
 export const metadata = buildMetadata({
-  title: "Episodes | Talkin Flag — The Flag Football Podcast",
+  title: "Podcast | Talkin Flag — The Flag Football Podcast",
   description: "39+ conversations with elite athletes, coaches, founders, and doctors shaping flag football worldwide.",
-  path: "/episodes",
+  path: "/podcast",
 });
 
-export default async function EpisodesPage() {
+export default async function PodcastPage() {
   const episodes = await getEpisodes(50);
 
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Talkin Flag Episodes",
-    "url": "https://talkinflag.com/episodes",
+    "url": "https://talkinflag.com/podcast",
     "itemListElement": episodes.map((ep, i) => ({
       "@type": "ListItem",
       "position": i + 1,
       "name": ep.guestName ? `${ep.guestName} — ${ep.title}` : ep.title,
-      "url": `https://talkinflag.com/episodes/${ep.id}`,
+      "url": `https://talkinflag.com/podcast/${ep.id}`,
     })),
   };
 
@@ -34,7 +34,7 @@ export default async function EpisodesPage() {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
-      { "@type": "ListItem", "position": 2, "name": "Episodes", "item": "https://talkinflag.com/episodes" },
+      { "@type": "ListItem", "position": 2, "name": "Podcast", "item": "https://talkinflag.com/podcast" },
     ],
   };
 
@@ -43,7 +43,7 @@ export default async function EpisodesPage() {
     "@type": "PodcastSeries",
     "name": "Talkin Flag",
     "description": "The global flag football podcast hosted by Ambra & Tika Marcucci of the Italian National Team. Conversations with elite athletes, coaches, founders, and doctors shaping the sport worldwide.",
-    "url": "https://talkinflag.com/episodes",
+    "url": "https://talkinflag.com/podcast",
     "image": "https://talkinflag.com/og-image.png",
     "inLanguage": "en",
     "numberOfEpisodes": episodes.length,
@@ -79,7 +79,7 @@ export default async function EpisodesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <h1 className="font-display text-5xl md:text-7xl uppercase text-brand-white">
-            Episodes
+            Podcast
           </h1>
           <p className="mt-4 text-brand-white/60 max-w-xl mx-auto">
             {episodes.length}+ conversations with the biggest names shaping flag football worldwide.

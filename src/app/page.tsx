@@ -105,7 +105,7 @@ export default async function HomePage() {
               Latest Episodes
             </h2>
             <Link
-              href="/episodes"
+              href="/podcast"
               className="text-brand-yellow font-display uppercase tracking-widest text-sm hover:underline hidden md:block"
             >
               All Episodes →
@@ -119,7 +119,7 @@ export default async function HomePage() {
           </ScrollReveal>
           <div className="mt-6 text-center md:hidden">
             <Link
-              href="/episodes"
+              href="/podcast"
               className="text-brand-yellow font-display uppercase tracking-widest text-sm hover:underline"
             >
               All Episodes →

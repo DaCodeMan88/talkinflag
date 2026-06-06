@@ -46,9 +46,18 @@ export default async function ResultsPage({
   const { year, level } = await searchParams;
   const supabase = await createClient();
 
-  // Get all events that have results, joined with result counts
   const today = new Date().toISOString().split("T")[0];
 
+  // Upcoming events (future-dated, no results required)
+  const { data: upcomingRaw } = await supabase
+    .from("events")
+    .select("id, title, start_date, end_date, city, country, level, event_type, website_url")
+    .gte("start_date", today)
+    .order("start_date", { ascending: true })
+    .limit(12);
+  const upcomingEvents = upcomingRaw ?? [];
+
+  // Past events with results
   let query = supabase
     .from("events")
     .select("id, title, start_date, city, country, country_code, level, event_results(id, place, team_name)")
@@ -108,6 +117,48 @@ export default async function ResultsPage({
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12">
+        {/* Upcoming Events */}
+        {upcomingEvents.length > 0 && (
+          <section className="mb-14">
+            <h2 className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-6">
+              Upcoming Events
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {upcomingEvents.map((evt) => (
+                <div
+                  key={evt.id}
+                  className="border border-brand-yellow/20 bg-[#111111] p-4 flex flex-col gap-2"
+                >
+                  <p className="font-display text-[10px] uppercase tracking-widest text-brand-yellow">
+                    {evt.event_type ?? evt.level ?? "Event"}
+                  </p>
+                  <p className="font-display text-sm uppercase text-brand-white leading-tight">
+                    {evt.title}
+                  </p>
+                  <p className="text-brand-white/50 text-xs">
+                    {new Date(evt.start_date).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                    {evt.city ? ` · ${evt.city}` : ""}
+                  </p>
+                  {evt.website_url && (
+                    <a
+                      href={evt.website_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:underline mt-auto"
+                    >
+                      Info ↗
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Filters */}
         {(years.length > 1 || levels.length > 1) && (
           <div className="flex flex-wrap gap-3 mb-10">

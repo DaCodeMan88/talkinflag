@@ -5,7 +5,7 @@ import { Play } from "lucide-react";
 
 export function EpisodeCard({ episode }: { episode: Episode }) {
   return (
-    <Link href={`/episodes/${episode.id}`} aria-label={`Watch ${episode.title}`} className="group">
+    <Link href={`/podcast/${episode.id}`} aria-label={`Watch ${episode.title}`} className="group">
       <div className="relative bg-[#222222] border border-brand-white/10 overflow-hidden transition-all duration-300 group-hover:border-brand-yellow/60 group-hover:-translate-y-1 group-hover:shadow-2xl group-hover:shadow-brand-yellow/10">
         <div className="relative aspect-video overflow-hidden">
           <Image

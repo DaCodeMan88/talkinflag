@@ -163,7 +163,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
               <path d="M23.498 2.186a3.016 3.016 0 0 0-2.122-2.136C19.505 0 12 0 12 0S4.495 0 2.622.05A3.017 3.017 0 0 0 .502 2.186C0 4.07 0 8 0 8s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 11.93 24 8 24 8s0-3.93-.502-5.814zM9.545 11.568V4.432L15.818 8l-6.273 3.568z" />
             </svg>
             <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "16px", textTransform: "uppercase", letterSpacing: "0.2em" }}>
-              talkinflag.com/episodes
+              talkinflag.com/podcast
             </span>
           </div>
         </div>

@@ -27,7 +27,7 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
         .join(" — ")
     : "Episode 39 — Phil Cutler: Adria Bowl 2026 Champion";
 
-  const latestHref = latestEpisode ? `/episodes/${latestEpisode.id}` : "/episodes";
+  const latestHref = latestEpisode ? `/podcast/${latestEpisode.id}` : "/podcast";
   const latestAriaLabel = latestEpisode
     ? `Watch ${latestLabel}`
     : "Watch Episode 39 — Phil Cutler: Adria Bowl 2026 Champion";
@@ -86,7 +86,7 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
 
       {/* CTA buttons */}
       <div style={fadeIn(1.05)} className="flex flex-col sm:flex-row gap-4 mt-10">
-        <Link href="/episodes" className="w-full sm:w-auto">
+        <Link href="/podcast" className="w-full sm:w-auto">
           <Button size="lg" className="w-full sm:w-auto">
             <Play size={18} fill="currentColor" className="mr-2" />
             Watch Episodes

@@ -379,7 +379,7 @@ Flag football was officially added to the Los Angeles 2028 Summer Olympics progr
 
 If you're just discovering the sport now, you're entering at exactly the right moment. The sport is growing, the community is welcoming, and the path from beginner to competitive player has never been more clearly defined.
 
-To follow the game at the highest level, explore [episodes of the Talkin Flag podcast](/episodes) and the [global player database](/players).`,
+To follow the game at the highest level, explore [episodes of the Talkin Flag podcast](/podcast) and the [global player database](/players).`,
     faqItems: [
       {
         q: "How many players are on a flag football team?",
@@ -679,7 +679,7 @@ If you're coaching flag football at any level, you have an opportunity to build 
 
 Build something you're proud of. The wins will follow.
 
-For player development resources, visit the [Talkin Flag player database](/players). To explore episodes on coaching and elite performance, [browse the podcast](/episodes).`,
+For player development resources, visit the [Talkin Flag player database](/players). To explore episodes on coaching and elite performance, [browse the podcast](/podcast).`,
     faqItems: [
       {
         q: "How do I start coaching flag football?",
@@ -1326,7 +1326,7 @@ If you're an adult picking up the sport for the first time, don't worry about yo
 
 Flag football isn't just a US sport anymore. With the LA 2028 Olympics approaching, programs are active on every continent. If you're based outside the United States, your national flag football federation is the best starting point for finding organized competition. IFAF maintains a list of all national federations and their contact information on their website.
 
-For international players looking to connect with the global community, the [Talkin Flag podcast](/episodes) and player database have been building connections between the flag football world since our founding. We've talked to players and coaches from Italy, Costa Rica, Sri Lanka, Nigeria, Sweden, and dozens of other countries — and every one of them found their community by starting exactly where you are: looking for a league and taking the first step.
+For international players looking to connect with the global community, the [Talkin Flag podcast](/podcast) and player database have been building connections between the flag football world since our founding. We've talked to players and coaches from Italy, Costa Rica, Sri Lanka, Nigeria, Sweden, and dozens of other countries — and every one of them found their community by starting exactly where you are: looking for a league and taking the first step.
 
 Find your league. Join your team. Welcome to flag football.`,
     faqItems: [
@@ -1544,6 +1544,49 @@ The most effective recruitment profile includes: a short (2-3 minute) highlight 
 The Talkin Flag [player database](/players) allows you to create a profile that's visible to coaches and scouts actively looking for talent. Verified profiles get priority visibility.
 
 For more on the path from competitive player to national team consideration, see the [flag football recruiting guide](/blog/flag-football-recruiting-guide-2026) and the [USA national team overview](/blog/usa-flag-football-national-team).`,
+    isStatic: true,
+  },
+  {
+    slug: "how-talkin-flag-ranks-players",
+    title: "How Talkin Flag Ranks Players — and Why It Matters for the Sport",
+    author: "Talkin Flag",
+    publishedAt: "2026-06-06",
+    category: "Community",
+    excerpt:
+      "The flag football database Talkin Flag has built — and the TF Rank behind it — is designed to give athletes, coaches, and scouts a credible, searchable source of truth for a sport that's growing faster than its infrastructure.",
+    body: `Flag football is growing faster than any other team sport in the United States — and internationally, it's tracking toward its Olympic debut at LA 2028. But the sport still lacks the infrastructure that sports like basketball and soccer take for granted: centralized, accurate, publicly accessible player data.
+
+That's the gap Talkin Flag is building into.
+
+**The Database**
+
+The Talkin Flag player database currently indexes over 374 athletes across high school, college, and national team levels. Every profile is sourced from one of three pipelines:
+
+1. **Official rosters** — USA Football, IFAF, and national federation published rosters. We verify against primary sources and do not invent athletes.
+2. **Public indexes** — Reference profiles sourced from publicly available databases (like flagsonly.com), tagged with their origin and marked unclaimed until an athlete verifies ownership.
+3. **Self-submitted profiles** — Athletes submit their own profiles via our Submit Profile form. Stats can be verified by coaches or scouts.
+
+The goal isn't to be exhaustive from day one. It's to be accurate first, and to build trust so that athletes, coaches, and scouts know that what they find here is real.
+
+**The TF Rank**
+
+The TF Rank is a 0–100 composite score designed to surface the most complete flag football athletes — not just the ones with the biggest social following or the most YouTube views.
+
+It weights three categories:
+
+- **External Recognition (20 pts):** National team selections, all-conference/all-state honors, major tournament MVP awards, and media recognition.
+- **Measurable Performance (30 pts):** Verified stats — passing yards, touchdowns, completion percentage, sacks, flag pulls, 40-yard dash, vertical. Higher verified-stat totals earn higher scores.
+- **Comprehensive Assessment (50 pts):** Holistic evaluation by the Talkin Flag team — position versatility, film review notes, leadership indicators, and recruiting demand. This is the hardest category to game and the most valuable signal.
+
+The full 100-point rubric is being finalized by Ambra and Tika Marcucci, who bring both elite playing experience (24+ international caps between them) and doctoral training in psychology to the evaluation framework. Until the rubric is published, TF Ranks appear as provisional estimates on profiles that have been manually reviewed.
+
+**Why This Matters**
+
+Flag football's growth creates real problems for athletes: there's no obvious way for a college coach to find a high school prospect they've never met, no way for a national team selector to track emerging talent outside their existing network, and no way for an athlete in Panama or Italy to be seen by programs in the US.
+
+The Talkin Flag [player database](/players) and [team rankings](/teams) are our infrastructure answer to that problem. Combined with the [podcast](/podcast) — where we've had 39+ conversations with elite athletes, coaches, founders, and doctors — it creates a complete hub for anyone serious about flag football at the highest levels.
+
+For more on the methodology, visit our [full rankings explainer](/how-rankings-work). To add your profile, use the [Submit Profile](/players/submit) tool.`,
     isStatic: true,
   },
 ];
