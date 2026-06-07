@@ -91,6 +91,11 @@ export default function AboutPage() {
               }}
             />
           </div>
+          <p className="mt-12 text-brand-white/60 text-center text-base leading-relaxed max-w-2xl mx-auto">
+            Together, Ambra and Tika leverage their academic and athletic
+            backgrounds to explore not only how the sport is played, but how
+            athletes think, prepare, and perform under pressure.
+          </p>
         </div>
       </section>
 

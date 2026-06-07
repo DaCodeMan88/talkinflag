@@ -78,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const [playersResult, eventsResult, coachesResult] = await Promise.all([
       supabase.from("players").select("id, updated_at").eq("is_verified", true),
-      supabase.from("events").select("id, start_date").gte("start_date", today),
+      supabase.from("events").select("id, start_date").eq("is_approved", true).gte("start_date", today),
       supabase.from("coaches").select("id, updated_at").eq("is_verified", true),
     ]);
     const players = playersResult.data as Pick<Player, "id" | "updated_at">[] | null;

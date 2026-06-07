@@ -40,6 +40,8 @@ export async function POST(req: NextRequest) {
       event_type: body.event_type?.trim().slice(0, 100) || null,
       website_url: websiteUrl,
       is_featured: false, // Submitted events are not featured until reviewed
+      submitter_email: body.submitter_email?.trim().slice(0, 200) || null,
+      is_approved: false,
     });
 
     if (error) {
