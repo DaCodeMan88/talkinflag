@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Play, ChevronDown } from "lucide-react";
 import type { Episode } from "@/types/episode";
-// Note: Button is used for the CTA links only; the Watch → link is a plain <Link>
 
-// CSS-driven entrance animation — no GSAP dependency
 const fadeIn = (delay: number): React.CSSProperties => ({
   animation: `heroFadeUp 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s both`,
 });
@@ -17,7 +16,6 @@ interface HeroContentProps {
 
 export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
   const countLabel = episodeCount ? `${episodeCount}+` : "39+";
-  // Build the latest episode label — use dynamic data if available
   const latestLabel = latestEpisode
     ? [
         latestEpisode.episodeNumber ? `Episode ${latestEpisode.episodeNumber}` : null,
@@ -31,6 +29,7 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
   const latestAriaLabel = latestEpisode
     ? `Watch ${latestLabel}`
     : "Watch Episode 39 — Phil Cutler: Adria Bowl 2026 Champion";
+
   return (
     <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6 pt-20">
       {/* Badge */}
@@ -41,19 +40,54 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
         </span>
       </div>
 
-      {/* Main title */}
-      <h1
-        style={fadeIn(0.4)}
-        className="font-display text-6xl sm:text-8xl md:text-[10rem] lg:text-[12rem] uppercase leading-none tracking-tight text-brand-white"
-      >
-        TALKIN
-        <span
-          className="block"
-          style={{ WebkitTextStroke: "2px #FDDD58", color: "transparent" }}
+      {/* Title row — twins flank the headline inline */}
+      <div style={fadeIn(0.4)} className="flex items-center justify-center gap-0">
+        {/* Ambra (#16) — gazes right toward text */}
+        <div
+          className="block shrink-0 select-none pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to right, black 75%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, black 75%, transparent 100%)",
+          }}
         >
-          FLAG
-        </span>
-      </h1>
+          <Image
+            src="/twin-left.png"
+            alt="Ambra Marcucci"
+            width={768}
+            height={2048}
+            className="h-[7.5rem] sm:h-[12rem] md:h-[20rem] lg:h-[24rem] w-auto object-contain"
+            priority
+          />
+        </div>
+
+        <h1 className="font-display text-6xl sm:text-8xl md:text-[10rem] lg:text-[12rem] uppercase leading-none tracking-tight text-brand-white">
+          TALKIN
+          <span
+            className="block"
+            style={{ WebkitTextStroke: "2px #FDDD58", color: "transparent" }}
+          >
+            FLAG
+          </span>
+        </h1>
+
+        {/* Tika (#12) — gazes left toward text */}
+        <div
+          className="block shrink-0 select-none pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to left, black 75%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to left, black 75%, transparent 100%)",
+          }}
+        >
+          <Image
+            src="/twin-right.png"
+            alt="Tika Marcucci"
+            width={768}
+            height={2048}
+            className="h-[7.5rem] sm:h-[12rem] md:h-[20rem] lg:h-[24rem] w-auto object-contain"
+            priority
+          />
+        </div>
+      </div>
 
       {/* Subtitle */}
       <p
@@ -108,7 +142,6 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
         <span className="text-sm text-brand-white/80 truncate">
           {latestLabel}
         </span>
-        {/* min-h-[44px] ensures WCAG 2.5.5 touch target size */}
         <Link
           href={latestHref}
           aria-label={latestAriaLabel}
