@@ -8,8 +8,13 @@
 
 ## Active Roadmap
 
+**🎯 Master plan (everything below is now consolidated here):**
+`docs/plans/2026-06-06-community-rankings-platform.md` — the Community Rankings Platform: highlight-clip blogs + Shorts (Phase A), IQ quiz funnel (B), weighted Coaches/Experts/Hosts polls (C), the TF ranking algorithm (D), fundamentals course (E), career-update re-engagement (F), i18n + Mexico depth (G), and the full tabled/parked backlog + owner actions (H).
+
 **To start the next build session, say:**
-> "Read CLAUDE.md and let's continue from the open items."
+> "Read CLAUDE.md and docs/plans/2026-06-06-community-rankings-platform.md, resolve the Decisions Needed section with me, then execute Phase A."
+
+> ⚠️ Do Phase H3 (drop `_backup_*` tables) before any new Phase B migrations. The build-queue/owner-action lists below are retained for reference but are all folded into the master plan.
 
 ---
 
