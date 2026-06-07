@@ -78,6 +78,7 @@ export async function generateStaticParams(): Promise<{ id: string }[]> {
     const { data } = await supabase
       .from("events")
       .select("id")
+      .eq("is_approved", true)
       .gte("start_date", new Date().toISOString().split("T")[0]);
     return (data ?? []).map((row) => ({ id: row.id as string }));
   } catch {
@@ -100,6 +101,7 @@ export async function generateMetadata({
     .from("events")
     .select("title, description, city, country, start_date, level")
     .eq("id", id)
+    .eq("is_approved", true)
     .single();
 
   if (!event) return { title: "Event Not Found | Talkin Flag" };
@@ -144,6 +146,7 @@ export default async function EventDetailPage({
     .from("events")
     .select("*")
     .eq("id", id)
+    .eq("is_approved", true)
     .single() as { data: EventRow | null };
 
   if (!event) notFound();
@@ -153,6 +156,7 @@ export default async function EventDetailPage({
   let moreQuery = supabase
     .from("events")
     .select("id, title, start_date, end_date, city, country, level, event_type, website_url, is_featured")
+    .eq("is_approved", true)
     .gte("start_date", today)
     .neq("id", id)
     .order("start_date", { ascending: true });

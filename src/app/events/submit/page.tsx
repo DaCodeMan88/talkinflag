@@ -205,6 +205,21 @@ export default function SubmitEventPage() {
             />
           </div>
 
+          {/* Submitter Email */}
+          <div>
+            <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2" htmlFor="submitter_email">
+              Your Email <span className="text-brand-white/40">(optional — so we can follow up)</span>
+            </label>
+            <input
+              id="submitter_email"
+              name="submitter_email"
+              type="email"
+              maxLength={200}
+              placeholder="you@example.com"
+              className="w-full bg-[#111111] border border-brand-white/20 text-brand-white px-4 py-3 text-sm focus:border-brand-yellow focus:outline-none placeholder:text-brand-white/25"
+            />
+          </div>
+
           {/* Description */}
           <div>
             <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2" htmlFor="description">

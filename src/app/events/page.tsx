@@ -22,12 +22,14 @@ export default async function EventsPage() {
     supabase
       .from("events")
       .select("*")
+      .eq("is_approved", true)
       .gte("start_date", today)
       .order("start_date", { ascending: true })
       .limit(50),
     supabase
       .from("events")
       .select("id, title, start_date, end_date, city, country, country_code, level, event_type, website_url, is_featured")
+      .eq("is_approved", true)
       .lt("start_date", today)
       .order("start_date", { ascending: false })
       .limit(20),

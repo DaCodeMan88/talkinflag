@@ -52,6 +52,7 @@ export default async function ResultsPage({
   const { data: upcomingRaw } = await supabase
     .from("events")
     .select("id, title, start_date, end_date, city, country, level, event_type, website_url")
+    .eq("is_approved", true)
     .gte("start_date", today)
     .order("start_date", { ascending: true })
     .limit(12);
@@ -61,6 +62,7 @@ export default async function ResultsPage({
   let query = supabase
     .from("events")
     .select("id, title, start_date, city, country, country_code, level, event_results(id, place, team_name)")
+    .eq("is_approved", true)
     .lt("start_date", today)
     .order("start_date", { ascending: false });
 

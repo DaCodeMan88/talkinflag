@@ -42,6 +42,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       .from("events")
       .select("title, city, country, start_date, end_date, level")
       .eq("id", id)
+      .eq("is_approved", true)
       .single();
 
     if (data) {
