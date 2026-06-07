@@ -17,15 +17,15 @@ export function HostsHero() {
       </div>
 
       {/* Hero photo */}
-      <div className="relative flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px]">
+      <div className="relative flex-shrink-0 w-full max-w-[340px] sm:max-w-[520px] md:max-w-[680px]">
         <Image
-          src="/hosts-hero.jpg"
+          src="/hosts-wide.jpg"
           alt="Ambra & Tika Marcucci — Talkin Flag hosts, Italian National Flag Football Team"
-          width={1080}
-          height={1725}
+          width={1280}
+          height={720}
           priority
-          sizes="(max-width: 640px) 85vw, (max-width: 1024px) 55vw, 380px"
-          className="w-full h-auto block"
+          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 680px"
+          className="w-full h-auto block rounded-sm"
         />
         {/* Fade image into section below */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-black to-transparent" />
