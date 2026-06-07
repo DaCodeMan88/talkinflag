@@ -3,6 +3,12 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string
+  ));
+}
+
 export async function POST(req: NextRequest) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -33,15 +39,21 @@ export async function POST(req: NextRequest) {
   if (!ev) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   if (action === "approve") {
-    await admin
+    const { error: updateError } = await admin
       .from("events")
       .update({ is_approved: true, rejected_at: null })
       .eq("id", event_id);
+    if (updateError) {
+      return NextResponse.json({ error: "Update failed" }, { status: 500 });
+    }
   } else {
-    await admin
+    const { error: updateError } = await admin
       .from("events")
       .update({ is_approved: false, rejected_at: new Date().toISOString() })
       .eq("id", event_id);
+    if (updateError) {
+      return NextResponse.json({ error: "Update failed" }, { status: 500 });
+    }
 
     if (notify && ev.submitter_email) {
       await sendEmail({
@@ -49,7 +61,7 @@ export async function POST(req: NextRequest) {
         subject: "About your Talkin Flag event submission",
         html: `
           <div style="font-family: Arial, sans-serif; color: #111; line-height: 1.6;">
-            <p>Thanks so much for submitting <strong>${ev.title}</strong> to the Talkin Flag events calendar.</p>
+            <p>Thanks so much for submitting <strong>${escapeHtml(ev.title ?? "your event")}</strong> to the Talkin Flag events calendar.</p>
             <p>After review, we weren't able to add this one to the calendar at this time. This isn't a reflection on your event — sometimes we need a little more detail, or it falls outside what we're able to feature right now.</p>
             <p>We'd genuinely welcome a resubmission with any additional information (dates, location, an official website, or a short description). You can submit again anytime at <a href="https://talkinflag.com/events/submit">talkinflag.com/events/submit</a>.</p>
             <p>Thanks for helping grow the global flag football community.</p>

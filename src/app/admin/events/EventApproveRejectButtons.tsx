@@ -19,13 +19,20 @@ export default function EventApproveRejectButtons({
     if (action === "reject" && canEmail) {
       notify = window.confirm("Send a rejection email to the submitter?");
     }
-    await fetch("/api/events/approve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event_id: eventId, action, notify }),
-    });
-    setPending(false);
-    router.refresh();
+    try {
+      const res = await fetch("/api/events/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event_id: eventId, action, notify }),
+      });
+      if (!res.ok) {
+        window.alert("Action failed — please try again.");
+        return;
+      }
+      router.refresh();
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
