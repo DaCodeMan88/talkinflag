@@ -27,6 +27,7 @@ const databaseLinks = [
 
 const competeLinks = [
   { label: "Evaluate Talent", href: "/evaluate" },
+  { label: "Flag IQ Quiz", href: "/iq" },
   { label: "Events", href: "/events" },
   { label: "Results", href: "/results" },
   { label: "Find a League", href: "/find-a-league" },

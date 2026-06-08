@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildMetadata } from "@/lib/seo";
 import { loadActiveItems, stripAnswers } from "@/lib/eval/load";
+import { getEligibleRoles } from "@/lib/eval/eligibility";
 import { DIMENSION_LABELS, DimensionKey } from "@/lib/eval/dimensions";
 import EvaluationRunner, { Section } from "@/components/eval/EvaluationRunner";
 
@@ -19,13 +20,7 @@ export default async function EvaluatePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?next=/evaluate");
 
-  const { data: roles } = await supabase
-    .from("member_roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .eq("status", "approved")
-    .in("role", ["host", "coach", "expert"]);
-  const eligibleRoles = (roles ?? []).map((r) => r.role as string);
+  const eligibleRoles = await getEligibleRoles({ id: user.id, email: user.email });
 
   const active = await loadActiveItems();
   if (!active || active.items.length === 0) {

@@ -6,6 +6,7 @@ import { scoreFingerprint, normalizeFingerprint, maxPerDimensionFrom } from "@/l
 import { classifyArchetype } from "@/lib/eval/archetype";
 import { scienceRollup } from "@/lib/eval/science";
 import { aggregateRoleWeights } from "@/lib/eval/aggregate";
+import { getEligibleRoles } from "@/lib/eval/eligibility";
 import { DIMENSION_KEYS, DIMENSION_SCIENCE, Fingerprint } from "@/lib/eval/dimensions";
 
 const ROLES = ["host", "coach", "expert", "player"] as const;
@@ -24,19 +25,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "answers must be an object" }, { status: 400 });
   }
 
-  // Resolve the role this run counts toward. Host/coach/expert require an
-  // approved member_role; otherwise the run is recorded as 'player' (no poll power).
+  // Resolve the role this run counts toward. Host/coach/expert eligibility is
+  // derived from existing systems (admin email / verified coach / approved
+  // scout); otherwise the run is recorded as 'player' (no poll power).
   let role: Role = "player";
   const requested = body.role as Role | undefined;
   if (requested && requested !== "player" && ROLES.includes(requested)) {
-    const { data: mr } = await supabase
-      .from("member_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", requested)
-      .eq("status", "approved")
-      .maybeSingle();
-    if (mr) role = requested;
+    const eligible = await getEligibleRoles({ id: user.id, email: user.email });
+    if (eligible.includes(requested)) role = requested;
   }
 
   const active = await loadActiveItems();
