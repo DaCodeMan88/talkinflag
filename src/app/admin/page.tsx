@@ -76,6 +76,12 @@ export default async function AdminHomePage() {
       href: "/admin/featured",
       count: 0,
     },
+    {
+      label: "TF Rankings",
+      description: "Recompute player rankings (poll weights + verified stats)",
+      href: "/admin/rankings",
+      count: 0,
+    },
   ];
 
   const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0);
