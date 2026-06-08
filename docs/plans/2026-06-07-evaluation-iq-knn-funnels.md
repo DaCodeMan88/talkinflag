@@ -10,6 +10,26 @@
 
 ---
 
+## ✅ BUILD STATUS (updated 2026-06-07 — shipped to production, main)
+
+| Phase | What | Status |
+|---|---|---|
+| 0 | Foundations (drop backups, Vitest, pgvector) | ✅ Done |
+| 1 | **Evaluation Philosophy funnel** `/evaluate` — 100 items, server-scored, archetype + radar + science rollup + elite-ideal gap; aggregates → `ranking_weights` | ✅ **LIVE** |
+| 2 | **Flag IQ funnel** `/iq` + `/iq/general` — 40 evergreen Qs (incl. 7v7), server-scored, explanations | ✅ **LIVE** |
+| 3 | **KNN player similarity** — pgvector HNSW, league-adjusted 10-dim vector, `similar_players()` RPC, "Statistical DNA" on `/players/[id]` | ✅ **LIVE** |
+| — | Role eligibility from existing systems (admin email=host, verified coach, approved scout) — no new admin UI | ✅ Done |
+| — | Dashboard `MemberInsightsCard` (archetype + IQ + CTAs) | ✅ Done |
+| 4 | **TF Rank integration** — consume `ranking_weights` + league-adjusted dims into `players.ranking_national`/`ranking_position`; admin recompute + snapshot; rewrite `/how-rankings-work` + `/rankings` breakdown | ⬜ **NOT BUILT — next** |
+
+**Tests:** 19 vitest passing (`npm test`). **Seeds:** `npx tsx scripts/seed-eval.ts`, `scripts/seed-iq.ts`, `scripts/build-player-vectors.ts`. **Migrations on disk:** `supabase/migrations/002_evaluation_funnel.sql`, `003_flag_iq_funnel.sql`, `004_knn_player_similarity.sql` (all also applied live).
+
+**Owner enablement:** set `ADMIN_EMAILS` (+ `ADMIN_EMAIL`) in Vercel to Ambra's & Tika's login emails → they auto-count as Hosts and gain admin pages. Eval prose (esp. `production` section) is owner-editable in `scripts/data/eval-items.json` then re-seed.
+
+**The remaining gap to "complete":** Phase 4 — nothing yet consumes the aggregated `ranking_weights` into actual player/team ranks. That's the connective tissue that makes the funnels drive the rankings (the "better than MaxPreps" payoff). See Phase 4 tasks below.
+
+---
+
 ## How this fits the existing master plan
 
 This plan **implements and sharpens** Phases B/C/D of `docs/plans/2026-06-06-community-rankings-platform.md`, and **adds** the KNN feature that plan did not cover. Two design decisions from the new owner brief override/refine the master plan:
