@@ -10,6 +10,7 @@ import CoachViewTracker from "./CoachViewTracker";
 import ShareCardModal from "./ShareCardModal";
 import FollowButton from "@/components/ui/FollowButton";
 import { CompareButton } from "./CompareButton";
+import SimilarPlayers from "@/components/player/SimilarPlayers";
 
 export const revalidate = 300;
 
@@ -702,6 +703,8 @@ export default async function PlayerDetailPage({
           {'</>'}  Embed this profile
         </a>
       </div>
+
+      <SimilarPlayers playerId={player.id} />
 
       {isVerifiedCoach && <CoachViewTracker playerId={player.id} />}
       <ShareCardModal

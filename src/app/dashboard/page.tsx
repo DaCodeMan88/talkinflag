@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { buildMetadata } from "@/lib/seo";
 import SignOutButton from "./SignOutButton";
 import { HighlightSubmitForm } from "./HighlightSubmitForm";
+import MemberInsightsCard from "@/components/dashboard/MemberInsightsCard";
 
 export const metadata = buildMetadata({
   title: "Dashboard | Talkin Flag",
@@ -107,6 +108,8 @@ export default async function DashboardPage({
             Profile claimed successfully!
           </div>
         )}
+
+        <MemberInsightsCard userId={user.id} />
 
         {player ? (
           <div className="space-y-4">
