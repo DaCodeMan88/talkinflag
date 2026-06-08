@@ -1,0 +1,3712 @@
+{
+  "_meta": {
+    "questionnaire_version": 1,
+    "title": "How Do You Judge an Athlete? — Talkin Flag Evaluation Philosophy",
+    "source_notebook": "Talkin Flag: Global Insights from the Gridiron (e70d736e-e7f2-4360-97b6-0948f10e16c9)",
+    "grounding": "Each of the 100 items maps to one trait from the Biopsychosocial Architecture of Elite Athletic Performance (100 traits / 6 dimensions) and its 1-100 tier ranking.",
+    "scoring": "option -> {dimension, points}; section score 0-40 raw -> normalized 0-10; fingerprint = 10 practical dims, rolls up to 6 science dims (S1-S6).",
+    "status": "LOCKED v1 (owner-approved 2026-06-07). Mappings and prose final for launch."
+  },
+  "items": [
+    {
+      "ordinal": 1,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player explodes off the line?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 71,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #71 — High Motor Unit Synchronization"
+    },
+    {
+      "ordinal": 2,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player moves fluidly without stiffness?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 72,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #72 — Reduced Antagonist Co-contraction"
+    },
+    {
+      "ordinal": 3,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player accelerates explosively in the first step?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 73,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #73 — High Rate of Force Development"
+    },
+    {
+      "ordinal": 4,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player generates real power on cuts and throws?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 74,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #74 — High Maximal Voluntary Activation"
+    },
+    {
+      "ordinal": 5,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player shows top-end burst and speed?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 75,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #75 — Retained Fast-Twitch Muscle Fibers"
+    },
+    {
+      "ordinal": 6,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player conserves energy yet stays quick late?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 77,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #77 — Neural Efficiency at Submaximal Efforts"
+    },
+    {
+      "ordinal": 7,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player changes direction sharply without slowing?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 79,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #79 — Rapid Kinetic Weight Shifting"
+    },
+    {
+      "ordinal": 8,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player holds position and balance under load?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 80,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #80 — Sustained Isometric Muscle Control"
+    },
+    {
+      "ordinal": 9,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player stays balanced through contact and cuts?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 81,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #81 — Trunk and Core Stabilization Endurance"
+    },
+    {
+      "ordinal": 10,
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player has the lower-body power for jumps and bursts?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "athleticism",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "athleticism",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "athleticism",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "athleticism",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "athleticism",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 97,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #97 — High Muscle Mass Distribution"
+    },
+    {
+      "ordinal": 11,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player chooses the right option in a split second?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 21,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #21 — Rapid Decision-Making"
+    },
+    {
+      "ordinal": 12,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player reacts before the opponent finishes their move?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 22,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #22 — Predictive Anticipation"
+    },
+    {
+      "ordinal": 13,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player sequences a multi-step play correctly?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 25,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #25 — Executive Function Planning"
+    },
+    {
+      "ordinal": 14,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player holds the whole assignment in mind under stress?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 26,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #26 — Working Memory Capacity"
+    },
+    {
+      "ordinal": 15,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player always knows down, distance, and where help is?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 27,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #27 — Spatial-Situational Awareness"
+    },
+    {
+      "ordinal": 16,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player reads the coverage pre-snap?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 28,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #28 — Pattern Recognition"
+    },
+    {
+      "ordinal": 17,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player instantly recognizes a formation as a familiar look?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 29,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #29 — Cognitive Chunking"
+    },
+    {
+      "ordinal": 18,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player keeps up with a fast, no-huddle tempo?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 32,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #32 — Rapid Information Processing"
+    },
+    {
+      "ordinal": 19,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player knows every assignment in the system cold?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 35,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #35 — Domain-Specific Playbook Integration"
+    },
+    {
+      "ordinal": 20,
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player understands the why behind the game plan?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "football_iq",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "football_iq",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "football_iq",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "football_iq",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "football_iq",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 36,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #36 — Strategic Game Plan Formulation"
+    },
+    {
+      "ordinal": 21,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a receiver holds a steady final fixation on the ball before the catch?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 56,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #56 — Quiet Eye Duration"
+    },
+    {
+      "ordinal": 22,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player locks eyes on the target at the right instant?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 57,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #57 — Quiet Eye Onset Precision"
+    },
+    {
+      "ordinal": 23,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's hands track and match the ball's flight?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 58,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #58 — Visuomotor Coordination"
+    },
+    {
+      "ordinal": 24,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a QB scans smoothly from field to target?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 59,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #59 — Saccadic Eye Movement Control"
+    },
+    {
+      "ordinal": 25,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a catcher keeps the ball centered in sharp focus?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 61,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #61 — Foveal Vision Fixation Stability"
+    },
+    {
+      "ordinal": 26,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player tracks a deep ball over the shoulder?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 65,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #65 — Smooth Pursuit Accuracy"
+    },
+    {
+      "ordinal": 27,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a receiver turns head and body in sync with the throw?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 66,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #66 — Head-Ball Rotation Coupling"
+    },
+    {
+      "ordinal": 28,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender fixes on the ball-carrier's hips, not the fakes?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 68,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #68 — Center-of-Mass Ocular Fixation"
+    },
+    {
+      "ordinal": 29,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player catches cleanly with soft, coordinated hands?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 78,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #78 — Fine-Tuned Muscle Coordination"
+    },
+    {
+      "ordinal": 30,
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a QB repeats an accurate throwing motion consistently?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "ball_skills",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "ball_skills",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "ball_skills",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "ball_skills",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "ball_skills",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 84,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #84 — Shoulder Joint Position Sense"
+    },
+    {
+      "ordinal": 31,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player knows their own limits and plays within them?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 15,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #15 — High Self-Awareness"
+    },
+    {
+      "ordinal": 32,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender doesn't bite on play-action or fakes?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 30,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #30 — Inhibitory Control"
+    },
+    {
+      "ordinal": 33,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender keys the QB's eyes and hips?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 33,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #33 — Perceptual Cue Extraction"
+    },
+    {
+      "ordinal": 34,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender stays even-keeled after giving up a score?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 42,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #42 — Low Neuroticism"
+    },
+    {
+      "ordinal": 35,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player avoids dumb penalties and flag-guarding fouls?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 47,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #47 — High Self-Control Capacity"
+    },
+    {
+      "ordinal": 36,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player trusts their assignment instead of freelancing?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 48,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #48 — Process Defense"
+    },
+    {
+      "ordinal": 37,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender's eyes snap to the ball instantly?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 60,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #60 — Rapid Saccadic Reaction Time"
+    },
+    {
+      "ordinal": 38,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender tracks receiver and ball at the same time?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 62,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #62 — Peripheral Vision Utilization"
+    },
+    {
+      "ordinal": 39,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender plays the ball even through traffic?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 67,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #67 — Visual Occlusion Tolerance"
+    },
+    {
+      "ordinal": 40,
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a defender keeps clean eyes in chaotic moments?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "defense",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "defense",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "defense",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "defense",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "defense",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 70,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #70 — Ocular Gaze Stability under Autonomic Stress"
+    },
+    {
+      "ordinal": 41,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player keeps a stable visual anchor while making plays?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 63,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #63 — Gaze Anchoring Capacity"
+    },
+    {
+      "ordinal": 42,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player integrates pivots and vision to create yards?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 64,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #64 — Visual Pivot Integration"
+    },
+    {
+      "ordinal": 43,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's ankle stability holds up while producing?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 82,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #82 — Ankle Joint Proprioceptive Acuity"
+    },
+    {
+      "ordinal": 44,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player cuts safely and powerfully to produce?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 83,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #83 — Knee Joint Position Sense"
+    },
+    {
+      "ordinal": 45,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's core control supports consistent production?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 85,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #85 — Spinal/Core Alignment Proprioception"
+    },
+    {
+      "ordinal": 46,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's conditioning base supports high output?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 93,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #93 — Low Sleeping Resting Heart Rate"
+    },
+    {
+      "ordinal": 47,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's build fits their position's production demands?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 94,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #94 — Positional Somatotype Specification"
+    },
+    {
+      "ordinal": 48,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player has the size and length for their role's output?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 95,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #95 — Structural Somatotypic Optimization"
+    },
+    {
+      "ordinal": 49,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's strength translates to production through contact?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 96,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #96 — Elevated Fat-Free Mass"
+    },
+    {
+      "ordinal": 50,
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's power-to-weight supports explosive output?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "production",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "production",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "production",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "production",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "production",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 98,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #98 — Low Body Fat Percentage"
+    },
+    {
+      "ordinal": 51,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player honestly assesses their tape against elite competition?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 14,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #14 — Realistic Performance Evaluation Capacity"
+    },
+    {
+      "ordinal": 52,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player visualizes reps against top opponents?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 20,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #20 — Dynamic Multi-Sensory Mental Imagery"
+    },
+    {
+      "ordinal": 53,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player out-prepares the level they're competing at?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 43,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #43 — Obsessive Preparation Habit"
+    },
+    {
+      "ordinal": 54,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's work rate separates them from the field?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 44,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #44 — Work Ethic as a Competitive Advantage"
+    },
+    {
+      "ordinal": 55,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player attacks their weaknesses against tougher competition?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 45,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #45 — Double-Downing on Weaknesses"
+    },
+    {
+      "ordinal": 56,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player wins on fundamentals against strong teams?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 49,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #49 — Mastery of Fundamentals Preference"
+    },
+    {
+      "ordinal": 57,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player questions and competes rather than coasting?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 50,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #50 — Low Agreeableness"
+    },
+    {
+      "ordinal": 58,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player resets quickly between high-level reps?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 54,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #54 — Self-Soothed Focus"
+    },
+    {
+      "ordinal": 59,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player measures themselves against the very best?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 55,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #55 — Goal-Oriented Self-Reward Autonomy"
+    },
+    {
+      "ordinal": 60,
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player scans the field in a disciplined order vs good defenses?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "competition",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "competition",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "competition",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "competition",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "competition",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 69,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #69 — Structural Visual Search Pattern Execution"
+    },
+    {
+      "ordinal": 61,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player treats a bad half or blowout as a challenge to attack?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 1,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #1 — Challenge Reframing Mindset"
+    },
+    {
+      "ordinal": 62,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player prepares for pressure situations before they arrive?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 2,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #2 — Proactive Coping Capacity"
+    },
+    {
+      "ordinal": 63,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player adjusts their own game to fix what's going wrong?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 3,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #3 — Problem-Focused Active Coping"
+    },
+    {
+      "ordinal": 64,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player stays composed when calls or bad breaks go against them?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 4,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #4 — Emotion-Focused Coping Flexibility"
+    },
+    {
+      "ordinal": 65,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player sustains intensity through fatigue and adversity?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 5,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #5 — Mental Toughness"
+    },
+    {
+      "ordinal": 66,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player keeps taking bold shots after a drop or interception?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 6,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #6 — Resilience to Failure"
+    },
+    {
+      "ordinal": 67,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player executes complex plays under pressure without hesitation?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 8,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #8 — Robust Self-Confidence"
+    },
+    {
+      "ordinal": 68,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player's body stays calm (no rushed breathing) in big moments?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 9,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #9 — Somatic Anxiety Control"
+    },
+    {
+      "ordinal": 69,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player locks onto their read despite noise and chaos?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 10,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #10 — Focus Control under Pressure"
+    },
+    {
+      "ordinal": 70,
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player shakes off a mistake instead of dwelling on it?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "clutch",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "clutch",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "clutch",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "clutch",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "clutch",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 11,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #11 — Cognitive Worry Suppression"
+    },
+    {
+      "ordinal": 71,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player switches between roles or positions seamlessly?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 23,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #23 — Cognitive Flexibility"
+    },
+    {
+      "ordinal": 72,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player makes hard plays look calm and automatic?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 24,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #24 — Neural Efficiency"
+    },
+    {
+      "ordinal": 73,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player adjusts mid-play when the first option breaks?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 31,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #31 — Real-Time Adaptability"
+    },
+    {
+      "ordinal": 74,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player fixes their own footwork or route without being told?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 34,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #34 — Autonomous Auto-Correction"
+    },
+    {
+      "ordinal": 75,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player improvises and creates when a play breaks down?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 37,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #37 — Creative Play Generation"
+    },
+    {
+      "ordinal": 76,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player offers multiple solutions to a defensive look?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 38,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #38 — Design Fluency"
+    },
+    {
+      "ordinal": 77,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player sustains attention across a long drive?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 39,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #39 — Focus Control"
+    },
+    {
+      "ordinal": 78,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player ignores trash talk and sideline noise?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 40,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #40 — Distraction Suppression"
+    },
+    {
+      "ordinal": 79,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player embraces new schemes and positions?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 51,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #51 — High Openness to Experience"
+    },
+    {
+      "ordinal": 80,
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player energizes and directs the unit vocally?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "versatility",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "versatility",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "versatility",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "versatility",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "versatility",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 52,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #52 — High Extraversion"
+    },
+    {
+      "ordinal": 81,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player holds elite standards without unraveling on errors?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 7,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #7 — Adaptive Perfectionism"
+    },
+    {
+      "ordinal": 82,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player owns their own training and film study?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 12,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #12 — Self-Directed Developmental Control"
+    },
+    {
+      "ordinal": 83,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player is driven by personal goals, not just the scoreboard?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 13,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #13 — Intrinsic Goal Commitment"
+    },
+    {
+      "ordinal": 84,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player absorbs coaching and applies it on the next rep?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 16,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #16 — Coachability"
+    },
+    {
+      "ordinal": 85,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player generates a plan and a pathway when behind?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 17,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #17 — Dynamic Hopefulness"
+    },
+    {
+      "ordinal": 86,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player expects to come through in the clutch?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 18,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #18 — Stable Optimism"
+    },
+    {
+      "ordinal": 87,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player lifts and leverages their teammates?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 19,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #19 — Active Social Support Mobilization"
+    },
+    {
+      "ordinal": 88,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player is reliably prepared, on time, and detail-oriented?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 41,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #41 — High Conscientiousness"
+    },
+    {
+      "ordinal": 89,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player still wants to dominate even when already winning?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 46,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #46 — Competitive Hunger Retention"
+    },
+    {
+      "ordinal": 90,
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player flips a competitive switch on game day?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "intangibles",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "intangibles",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "intangibles",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "intangibles",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "intangibles",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 53,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #53 — Intentional Character Keying-Up"
+    },
+    {
+      "ordinal": 91,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player is just as explosive late in a tournament?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 76,
+      "taxonomy_tier": 5,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #76 — Accelerated Neuromuscular Recovery"
+    },
+    {
+      "ordinal": 92,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player recovers well between games?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 86,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #86 — High Resting Heart Rate Variability (HRV)"
+    },
+    {
+      "ordinal": 93,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player settles down quickly between plays?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 87,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #87 — Parasympathetic Shifting Capacity"
+    },
+    {
+      "ordinal": 94,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player keeps pace deep into a fast game?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 88,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #88 — High Maximal Oxygen Uptake (VO2max)"
+    },
+    {
+      "ordinal": 95,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player sustains repeated sprints without fading?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 89,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #89 — High Anaerobic Threshold Limit"
+    },
+    {
+      "ordinal": 96,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player covers ground efficiently all game long?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 90,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #90 — Superior Movement Economy"
+    },
+    {
+      "ordinal": 97,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player prioritizes the recovery habits behind durability?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 91,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #91 — Prolonged Total Sleep Duration"
+    },
+    {
+      "ordinal": 98,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player shows consistent week-to-week availability?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 92,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #92 — Sleep Maintenance Stability"
+    },
+    {
+      "ordinal": 99,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player manages nutrition and conditioning professionally?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 99,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #99 — Quantitative Nutrition Tracking"
+    },
+    {
+      "ordinal": 100,
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "When you evaluate a player, how much does it matter that a player builds routines that keep them available?",
+      "options": [
+        {
+          "label": "Not at all",
+          "dimension": "consistency",
+          "points": 0
+        },
+        {
+          "label": "Slightly",
+          "dimension": "consistency",
+          "points": 1
+        },
+        {
+          "label": "Moderately",
+          "dimension": "consistency",
+          "points": 2
+        },
+        {
+          "label": "A lot",
+          "dimension": "consistency",
+          "points": 3
+        },
+        {
+          "label": "It's decisive",
+          "dimension": "consistency",
+          "points": 4
+        }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 100,
+      "taxonomy_tier": 6,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) trait #100 — Environmental Habit Optimization"
+    }
+  ]
+}
