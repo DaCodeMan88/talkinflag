@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import VerificationActions from "./VerificationActions";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "daniel@dubsportsentertainment.com";
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Player = {
   first_name: string;
@@ -43,7 +43,7 @@ export default async function VerificationsPage() {
     redirect("/auth/login?next=/admin/verifications");
   }
 
-  if (user.email !== ADMIN_EMAIL) {
+  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
     return (
       <div className="p-8 text-white">
         <p className="text-red-400 font-medium">Not authorized.</p>

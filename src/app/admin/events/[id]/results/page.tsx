@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ResultsForm } from "./ResultsForm";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "daniel@dubsportsentertainment.com";
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Result = {
   id: string;
@@ -24,7 +24,7 @@ export default async function AdminEventResultsPage({
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect(`/auth/login?next=/admin/events/${id}/results`);
-  if (user.email !== ADMIN_EMAIL) {
+  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
     return <div className="p-8 text-white"><p className="text-red-400">Not authorized.</p></div>;
   }
 

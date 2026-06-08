@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { HighlightActions } from "./HighlightActions";
 import { PublishTop10Form } from "./PublishTop10Form";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "daniel@dubsportsentertainment.com";
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Submission = {
   id: string;
@@ -39,7 +39,7 @@ export default async function AdminHighlightsPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/auth/login?next=/admin/highlights");
-  if (user.email !== ADMIN_EMAIL) {
+  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
     return <div className="p-8 text-white"><p className="text-red-400">Not authorized.</p></div>;
   }
 

@@ -2,12 +2,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
-const ADMIN_EMAIL = "daniel@dubsportsentertainment.com";
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com")
+  .split(",").map((e) => e.trim()).filter(Boolean);
 
 export default async function AdminHomePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== ADMIN_EMAIL) redirect("/");
+  if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) redirect("/");
 
   const [
     { count: pendingVerifications },
