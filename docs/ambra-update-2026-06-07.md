@@ -38,8 +38,8 @@ Here's a full picture of where the website stands, what's ready for you to use, 
 
 ## 📋 Your Action Items (in order of priority)
 
-**1. Set up your admin accounts**
-Go to **https://talkinflag.vercel.app** and sign in with Google using the emails you want to use as your admin logins. Let us know both emails and we'll activate your admin access. Once you're in, you'll be able to manage everything from a single dashboard.
+**1. Set up your admin account — you're already in**
+Go to **https://talkinflag.vercel.app** and sign in with Google using **talkinflagshow@gmail.com**. That account already has full admin access. Once you're signed in, click the menu and go to **Admin** to see your dashboard.
 
 **2. Spotify show ID**
 Log into your Spotify for Podcasters dashboard → copy the Show ID from the URL → send it over. That switches on the built-in Spotify player. Takes 2 minutes.
@@ -78,13 +78,17 @@ Here's why: if the partnership agreement with the Talkin Balls network isn't fin
 
 ## 🔑 How to Access Your Admin Panel
 
-Once your accounts are activated, here's what you can do:
+1. Go to **https://talkinflag.vercel.app**
+2. Sign in with Google using **talkinflagshow@gmail.com**
+3. Once signed in, go to **https://talkinflag.vercel.app/admin**
 
-1. Go to **talkinflag.vercel.app/admin**
-2. You'll see a dashboard showing everything pending your approval
-3. From there you can: approve/reject event submissions, review player stat verifications, manage featured athletes and top plays, and trigger a rankings update
+From the admin dashboard you can:
+- **Approve or reject event submissions** — anything submitted through the site waits for your okay before going live
+- **Review player stat verifications** — coaches and scouts flag stats for review; you confirm or reject
+- **Manage featured athletes and top plays** — pick who shows up on the homepage
+- **Recompute player rankings** — updates the TF Rank scores across all 374 players
 
-We'll do a quick walkthrough when you're ready — it's designed to be simple. No technical knowledge needed.
+No technical knowledge needed — everything has a button. We can walk through it together on a quick call whenever you're ready.
 
 ---
 
@@ -128,12 +132,12 @@ Bigger features we've mapped out for later:
 ---
 
 That's the full picture. Main things we need from you right now:
-1. Your admin login emails (so we can activate your access)
-2. Spotify show ID
-3. Photos
-4. Confirmation on Partner links
-5. Decision on YouTube channel for the show
-6. A quick call after June 15th once the Talkin Balls situation is clearer
+1. **Sign in and explore** — go to talkinflag.vercel.app, sign in with talkinflagshow@gmail.com, and take a look around. Let us know what you think and anything you'd like changed.
+2. **Spotify show ID** — unlocks the built-in podcast player
+3. **Photos** — solo shots of each of you (and one together if you have it)
+4. **Confirmation on Partner links** — correct URLs for Flag Football Finder and Athleads
+5. **Decision on YouTube channel** — does Talkin Flag get its own channel?
+6. **Quick call after June 15th** — once the Talkin Balls situation is settled, we finalize the domain and lock everything in
 
 Talk soon,
 Daniel
@@ -142,7 +146,7 @@ Daniel
 
 *— Internal notes (not for the email) —*
 
-**Admin setup:** Set `ADMIN_EMAILS` (comma-separated) in Vercel env vars to both Ambra's and Tika's Google login emails. Also set `ADMIN_EMAIL` (singular) to the primary one. Once set, they auto-get admin access on login — no database changes needed.
+**Admin setup:** ✅ Done. `ADMIN_EMAIL` and `ADMIN_EMAILS` both set to `talkinflagshow@gmail.com` in Vercel production. All admin gates updated to use the multi-email array pattern (commit `dd25ecb`). To add more admins later: update the Vercel env vars to a comma-separated list (e.g. `talkinflagshow@gmail.com,ambra@...`) and redeploy — no code changes needed.
 
 **Talkin Balls contingency:** If the partnership doesn't proceed after 6/15, changes needed are minimal — update `src/app/about/page.tsx` (remove network section), `src/components/layout/Footer.tsx` (remove network mention), and any references in `src/lib/static-posts.ts`. The domain and SEO metadata would also need updating. One focused session, nothing structural breaks.
 
