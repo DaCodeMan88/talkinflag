@@ -20,13 +20,13 @@
 | 3 | **KNN player similarity** — pgvector HNSW, league-adjusted 10-dim vector, `similar_players()` RPC, "Statistical DNA" on `/players/[id]` | ✅ **LIVE** |
 | — | Role eligibility from existing systems (admin email=host, verified coach, approved scout) — no new admin UI | ✅ Done |
 | — | Dashboard `MemberInsightsCard` (archetype + IQ + CTAs) | ✅ Done |
-| 4 | **TF Rank integration** — consume `ranking_weights` + league-adjusted dims into `players.ranking_national`/`ranking_position`; admin recompute + snapshot; rewrite `/how-rankings-work` + `/rankings` breakdown | ⬜ **NOT BUILT — next** |
+| 4 | **TF Rank integration** — consume `ranking_weights` + league-adjusted dims into `players.ranking_national`/`ranking_position`; admin recompute + snapshot; rewrite `/how-rankings-work` + `/rankings` breakdown | ✅ **LIVE** (commit `47473cb`, main) |
 
-**Tests:** 19 vitest passing (`npm test`). **Seeds:** `npx tsx scripts/seed-eval.ts`, `scripts/seed-iq.ts`, `scripts/build-player-vectors.ts`. **Migrations on disk:** `supabase/migrations/002_evaluation_funnel.sql`, `003_flag_iq_funnel.sql`, `004_knn_player_similarity.sql` (all also applied live).
+**Tests:** 34 vitest passing (`npm test`). **Seeds:** `npx tsx scripts/seed-eval.ts`, `scripts/seed-iq.ts`, `scripts/build-player-vectors.ts`. **Migrations on disk:** `supabase/migrations/002_evaluation_funnel.sql`, `003_flag_iq_funnel.sql`, `004_knn_player_similarity.sql`, `005_ranking_snapshots.sql` (all applied live).
 
 **Owner enablement:** set `ADMIN_EMAILS` (+ `ADMIN_EMAIL`) in Vercel to Ambra's & Tika's login emails → they auto-count as Hosts and gain admin pages. Eval prose (esp. `production` section) is owner-editable in `scripts/data/eval-items.json` then re-seed.
 
-**The remaining gap to "complete":** Phase 4 — nothing yet consumes the aggregated `ranking_weights` into actual player/team ranks. That's the connective tissue that makes the funnels drive the rankings (the "better than MaxPreps" payoff). See Phase 4 tasks below.
+**ALL PHASES COMPLETE.** To activate: go to `/admin/rankings` → click "Recompute Rankings Now" to run the first compute pass and populate player ranks.
 
 ---
 
