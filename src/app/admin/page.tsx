@@ -1,14 +1,21 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import GuidedTour from "@/components/onboarding/GuidedTour";
+import ShowAroundButton from "@/components/onboarding/ShowAroundButton";
+import { adminTourSteps } from "@/components/onboarding/steps";
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com")
-  .split(",").map((e) => e.trim()).filter(Boolean);
+export const dynamic = "force-dynamic";
 
-export default async function AdminHomePage() {
+export default async function AdminHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tour?: string }>;
+}) {
+  if (!(await getAdminUser())) redirect("/");
+  const { tour } = await searchParams;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) redirect("/");
 
   const [
     { count: pendingVerifications },
@@ -16,6 +23,7 @@ export default async function AdminHomePage() {
     { count: pendingScouts },
     { count: pendingHighlights },
     { count: pendingEvents },
+    { count: unreadMessages },
   ] = await Promise.all([
     supabase
       .from("stat_verifications")
@@ -38,14 +46,34 @@ export default async function AdminHomePage() {
       .select("id", { count: "exact", head: true })
       .eq("is_approved", false)
       .is("rejected_at", null),
+    supabase
+      .from("contact_submissions")
+      .select("id", { count: "exact", head: true })
+      .eq("is_read", false)
+      .is("archived_at", null),
   ]);
 
-  const sections = [
+  const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
+    {
+      label: "Players",
+      description: "Add, edit, verify, or remove any athlete",
+      href: "/admin/players",
+      count: 0,
+      tour: "admin-players",
+    },
+    {
+      label: "Messages",
+      description: "Contact-form inbox",
+      href: "/admin/messages",
+      count: unreadMessages ?? 0,
+      tour: "admin-messages",
+    },
     {
       label: "Verifications",
       description: "Player stat verification requests",
       href: "/admin/verifications",
       count: pendingVerifications ?? 0,
+      tour: "admin-queues",
     },
     {
       label: "Coaches",
@@ -82,18 +110,23 @@ export default async function AdminHomePage() {
       description: "Recompute player rankings (poll weights + verified stats)",
       href: "/admin/rankings",
       count: 0,
+      tour: "admin-rankings",
     },
   ];
 
-  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0);
+  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">
-      <div className="border-l-4 border-[#FDDD58] pl-6 mb-10">
-        <h1 className="font-display text-4xl uppercase text-white leading-none">Admin</h1>
-        <p className="text-white/40 mt-2 text-sm">
-          {totalPending === 0 ? "All clear — no pending items." : `${totalPending} item${totalPending === 1 ? "" : "s"} pending review`}
-        </p>
+      <GuidedTour tourId="admin" steps={adminTourSteps} autoStart={tour === "1"} />
+      <div className="flex items-start justify-between mb-10">
+        <div className="border-l-4 border-[#FDDD58] pl-6">
+          <h1 className="font-display text-4xl uppercase text-white leading-none">Admin</h1>
+          <p className="text-white/40 mt-2 text-sm">
+            {totalPending === 0 ? "All clear — no pending items." : `${totalPending} item${totalPending === 1 ? "" : "s"} pending review`}
+          </p>
+        </div>
+        <ShowAroundButton tourId="admin" className="text-white/40 text-xs font-display uppercase tracking-widest hover:text-[#FDDD58] transition-colors shrink-0 mt-1" />
       </div>
 
       <div className="space-y-3">
@@ -101,6 +134,7 @@ export default async function AdminHomePage() {
           <Link
             key={s.href}
             href={s.href}
+            data-tour={s.tour}
             className="flex items-center justify-between bg-[#0d0d0d] border border-white/10 hover:border-[#FDDD58]/40 transition-colors p-5 group"
           >
             <div>

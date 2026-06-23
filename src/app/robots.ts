@@ -1,14 +1,16 @@
 import type { MetadataRoute } from "next";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://talkinflag.com";
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/og/"],
+        disallow: ["/api/", "/og/", "/admin/", "/dashboard/", "/welcome", "/auth/"],
       },
     ],
-    sitemap: "https://talkinflag.com/sitemap.xml",
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

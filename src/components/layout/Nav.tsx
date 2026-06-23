@@ -18,10 +18,21 @@ const navLinks = [
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
 
   // Close mobile menu on route change
   useEffect(() => { setOpen(false); }, [pathname]);
+
+  // Show the Admin link only to signed-in admins
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/check")
+      .then((r) => (r.ok ? r.json() : { isAdmin: false }))
+      .then((d) => { if (active) setIsAdmin(!!d.isAdmin); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -68,6 +79,14 @@ export function Nav() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="font-display text-sm tracking-widest uppercase text-brand-yellow/80 hover:text-brand-yellow transition-colors"
+              >
+                Admin
+              </Link>
+            )}
             <Link
               href="/players/submit"
               className="inline-flex items-center justify-center font-display uppercase tracking-wider transition-all duration-200 px-4 py-2 text-sm border-2 border-brand-yellow text-brand-yellow hover:bg-brand-yellow hover:text-brand-black"
@@ -108,6 +127,14 @@ export function Nav() {
               </Link>
             );
           })}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="block font-display text-xl uppercase tracking-widest text-brand-yellow hover:text-brand-yellow/80 transition-colors"
+            >
+              Admin
+            </Link>
+          )}
           <Link
             href="/players/submit"
             className="block text-center font-display uppercase tracking-wider text-sm bg-brand-yellow text-brand-black px-6 py-3 mt-4 hover:bg-yellow-400 transition-colors"

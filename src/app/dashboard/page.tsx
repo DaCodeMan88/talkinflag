@@ -6,6 +6,10 @@ import { buildMetadata } from "@/lib/seo";
 import SignOutButton from "./SignOutButton";
 import { HighlightSubmitForm } from "./HighlightSubmitForm";
 import MemberInsightsCard from "@/components/dashboard/MemberInsightsCard";
+import GuidedTour from "@/components/onboarding/GuidedTour";
+import OnboardingChecklist, { type ChecklistItem } from "@/components/onboarding/OnboardingChecklist";
+import { memberTourSteps } from "@/components/onboarding/steps";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export const metadata = buildMetadata({
   title: "Dashboard | Talkin Flag",
@@ -40,18 +44,18 @@ function missingFields(player: Record<string, unknown>, stats: Record<string, un
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ claimed?: string }>;
+  searchParams: Promise<{ claimed?: string; tour?: string }>;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?next=/dashboard");
 
-  const { claimed } = await searchParams;
+  const { claimed, tour } = await searchParams;
 
   const [{ data: player }, { data: coachApp }] = await Promise.all([
     supabase
       .from("players")
-      .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country")
+      .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified")
       .eq("claimed_by", user.id)
       .eq("is_claimed", true)
       .maybeSingle(),
@@ -89,8 +93,24 @@ export default async function DashboardPage({
     weeklyViews = count ?? 0;
   }
 
+  // Onboarding checklist — derived from real account state.
+  const db = createAdminClient();
+  const [{ data: evalRow }, { data: iqRow }] = await Promise.all([
+    db.from("eval_responses").select("id").eq("user_id", user.id).limit(1).maybeSingle(),
+    db.from("iq_best").select("score_pct").eq("user_id", user.id).eq("category", "general").maybeSingle(),
+  ]);
+
+  const checklist: ChecklistItem[] = [
+    { label: "Claim or create your player profile", done: !!player, href: "/players", cta: "Find" },
+    { label: "Complete your profile (80%+)", done: !!player && pct >= 80, href: "/dashboard/edit", cta: "Edit" },
+    { label: "Take the Athlete Evaluation", done: !!evalRow, href: "/evaluate", cta: "Start" },
+    { label: "Take the Flag IQ quiz", done: !!iqRow, href: "/iq/general", cta: "Start" },
+    { label: "Submit a stat for verification", done: !!player?.is_verified, href: "/dashboard/verify", cta: "Submit" },
+  ];
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
+      <GuidedTour tourId="member" steps={memberTourSteps} autoStart={tour === "1"} />
       <div className="max-w-2xl mx-auto">
 
         <div className="flex items-start justify-between mb-10">
@@ -103,18 +123,23 @@ export default async function DashboardPage({
           <SignOutButton />
         </div>
 
+        <OnboardingChecklist items={checklist} />
+        <div className="h-4" />
+
         {claimed && (
           <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-8 text-brand-yellow text-sm font-display uppercase tracking-widest">
             Profile claimed successfully!
           </div>
         )}
 
-        <MemberInsightsCard userId={user.id} />
+        <div data-tour="insights">
+          <MemberInsightsCard userId={user.id} />
+        </div>
 
         {player ? (
           <div className="space-y-4">
             {/* Profile card */}
-            <div className="bg-[#0d0d0d] border border-brand-white/10 p-6 space-y-5">
+            <div data-tour="profile" className="bg-[#0d0d0d] border border-brand-white/10 p-6 space-y-5">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-xl uppercase text-brand-white">Your Profile</h2>
                 <span className="border border-brand-yellow/40 text-brand-yellow text-xs px-3 py-1 font-display uppercase tracking-widest">
@@ -206,7 +231,7 @@ export default async function DashboardPage({
             </div>
 
             {/* Verification */}
-            <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
+            <div data-tour="verify" className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
               <div>
                 <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
                   Stat Verification

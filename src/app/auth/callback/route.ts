@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // Detect first sign-in and send welcome email (fire-and-forget)
+      let destination = next;
+      // Detect first sign-in: send welcome email + route to the onboarding page.
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user?.email) {
@@ -37,6 +38,9 @@ export async function GET(request: NextRequest) {
           const lastSignIn = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : 0;
           const isFirstLogin = Math.abs(lastSignIn - createdAt) < 60_000;
           if (isFirstLogin) {
+            // Only override the default landing — never hijack an explicit
+            // destination like a profile-claim flow.
+            if (next === "/dashboard") destination = "/welcome";
             await sendEmail({
               to: user.email,
               subject: "Welcome to Talkin Flag 🏈",
@@ -47,7 +51,7 @@ export async function GET(request: NextRequest) {
       } catch {
         // Never block login due to email failure
       }
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${origin}${destination}`);
     }
   }
 
@@ -75,8 +79,8 @@ function welcomeEmailHtml(origin: string): string {
 
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;">
         <tr><td style="padding:0 0 12px;">
-          <a href="${site}/players" style="display:block;background:#FDDD58;color:#000000;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:14px 20px;text-align:center;">
-            Browse Players →
+          <a href="${site}/welcome" style="display:block;background:#FDDD58;color:#000000;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:14px 20px;text-align:center;">
+            Show Me Around →
           </a>
         </td></tr>
         <tr><td style="padding:0 0 12px;">
