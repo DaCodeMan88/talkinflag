@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://talkinflag.com";
+// Canonical production domain. Hardcoded because the domain is now fixed —
+// this keeps canonicals/OG correct regardless of which host serves the app
+// (e.g. *.vercel.app) and avoids depending on a stale NEXT_PUBLIC_SITE_URL.
+export const siteUrl = "https://talkinflag.com";
 
 export function buildMetadata({
   title,
