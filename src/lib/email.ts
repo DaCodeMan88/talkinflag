@@ -20,7 +20,9 @@ export async function sendEmail({
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   const { error } = await resend.emails.send({
-    from: "Talkin Flag <noreply@talkinflag.vercel.app>",
+    // Sender must be on a domain verified in Resend. Override via RESEND_FROM
+    // if you'd rather send from e.g. hello@talkinflag.com.
+    from: process.env.RESEND_FROM || "Talkin Flag <noreply@talkinflag.com>",
     to,
     subject,
     html,
