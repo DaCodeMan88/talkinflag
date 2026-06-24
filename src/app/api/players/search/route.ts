@@ -3,7 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
-  const q = url.searchParams.get("q")?.trim() ?? "";
+  // Strip characters meaningful in a PostgREST .or() filter string (commas
+  // separate conditions, parens group, % is the ilike wildcard) to prevent
+  // filter injection before interpolating the search term below.
+  const q = (url.searchParams.get("q") ?? "").replace(/[,()*\\:%]/g, " ").trim();
   const exclude = url.searchParams.get("exclude") ?? "";
 
   if (q.length < 2) return NextResponse.json({ players: [] });

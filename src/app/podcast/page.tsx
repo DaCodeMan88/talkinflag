@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { getEpisodes } from "@/lib/youtube";
 import { EpisodeCard } from "@/components/episodes/EpisodeCard";
 import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
@@ -72,15 +73,15 @@ export default async function PodcastPage() {
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(podcastSeriesJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(podcastSeriesJsonLd) }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">

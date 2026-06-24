@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { createServerClient } from "@/lib/supabase";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -265,8 +266,8 @@ export default async function PlayerDetailPage({
 
   return (
     <div className="min-h-screen bg-brand-black">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(personJsonLd) }} />
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div className="relative bg-[#0a0a0a] border-b border-brand-white/10 pt-28 pb-12 overflow-hidden">

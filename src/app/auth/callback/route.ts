@@ -6,7 +6,12 @@ import { sendEmail } from "@/lib/email";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  let next = searchParams.get("next") ?? "/dashboard";
+  // Open-redirect guard: only allow local, non-protocol-relative paths.
+  // Blocks values like "@evil.com", "//evil.com", "/\evil.com".
+  if (!next.startsWith("/") || next.startsWith("//") || next.includes("\\") || next.includes("@")) {
+    next = "/dashboard";
+  }
 
   if (code) {
     const cookieStore = await cookies();

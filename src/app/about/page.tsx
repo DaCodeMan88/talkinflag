@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { HostsHero } from "@/components/hosts/HostsHero";
 import { HostCard } from "@/components/hosts/HostCard";
 import { SubscribePanel } from "@/components/hosts/SubscribePanel";
@@ -54,9 +55,9 @@ const breadcrumbJsonLd = {
 export default function AboutPage() {
   return (
     <div className="bg-brand-black">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ambraJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tikaJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(ambraJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(tikaJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
       {/* 1 ─ Twin hero: full photoshoot thumbnail + scrolling bio columns */}
       <HostsHero />
 

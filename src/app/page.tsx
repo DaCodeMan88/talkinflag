@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { Hero } from "@/components/hero/Hero";
 import { StatsBar } from "@/components/home/StatsBar";
 import { NewsletterSignup } from "@/components/home/NewsletterSignup";
@@ -37,7 +38,7 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        dangerouslySetInnerHTML={{ __html: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "Organization",
           "name": "Talkin Flag",
@@ -54,7 +55,7 @@ export default async function HomePage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        dangerouslySetInnerHTML={{ __html: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "WebSite",
           "url": "https://talkinflag.com",
@@ -72,7 +73,7 @@ export default async function HomePage() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        dangerouslySetInnerHTML={{ __html: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "PodcastSeries",
           "name": "Talkin Flag",

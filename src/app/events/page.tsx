@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { createServerClient } from "@/lib/supabase";
 import { EventsFilter } from "@/components/events/EventsFilter";
 import { PastEventsSection } from "@/components/events/PastEventsSection";
@@ -66,12 +67,12 @@ export default async function EventsPage() {
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       {itemListJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }}
         />
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

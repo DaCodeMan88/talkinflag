@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { buildMetadata } from "@/lib/seo";
 import { createServerClient } from "@/lib/supabase";
 import Link from "next/link";
@@ -48,7 +49,7 @@ export default async function HowRankingsWorkPage() {
     <div className="bg-brand-black min-h-screen pt-28 pb-24 px-6">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
 
       <div className="max-w-3xl mx-auto">

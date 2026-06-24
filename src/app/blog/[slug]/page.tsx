@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { getAllPosts, getPostBySlug, sanityConfigured } from "@/lib/sanity";
 import { getStaticPostBySlug, staticPosts } from "@/lib/static-posts";
 import { notFound } from "next/navigation";
@@ -181,16 +182,16 @@ export default async function BlogPostPage({
       <div className="min-h-screen bg-brand-black pt-24 pb-20">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(articleJsonLd) }}
         />
         {faqJsonLd && (
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
           />
         )}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">

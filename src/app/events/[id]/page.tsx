@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { createServerClient } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -161,9 +162,13 @@ export default async function EventDetailPage({
     .neq("id", id)
     .order("start_date", { ascending: true });
 
-  // Prefer same country or same level
+  // Prefer same country or same level. Sanitize values before interpolating
+  // into the PostgREST .or() filter string (defense-in-depth: these come from
+  // submitted events).
   if (event.country) {
-    moreQuery = moreQuery.or(`country.eq.${event.country},level.eq.${event.level}`);
+    const oc = String(event.country).replace(/[,()\\]/g, "");
+    const ol = String(event.level ?? "").replace(/[,()\\]/g, "");
+    moreQuery = moreQuery.or(`country.eq.${oc},level.eq.${ol}`);
   } else if (event.level) {
     moreQuery = moreQuery.eq("level", event.level);
   }
@@ -242,11 +247,11 @@ export default async function EventDetailPage({
     <div className="min-h-screen bg-brand-black pt-24 pb-20">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">

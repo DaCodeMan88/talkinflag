@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { ContactForm } from "./ContactForm";
@@ -22,7 +23,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-brand-black pt-24 pb-24">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
+import { isAdminEmail } from "@/lib/admin";
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => (
@@ -14,9 +15,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Admin check
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim());
-  if (!adminEmails.includes(user.email ?? "")) {
+  if (!isAdminEmail(user.email)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

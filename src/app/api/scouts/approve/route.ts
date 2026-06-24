@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
+import { isAdminEmail } from "@/lib/admin";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Admin check
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim());
-  if (!adminEmails.includes(user.email ?? "")) {
+  if (!isAdminEmail(user.email)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

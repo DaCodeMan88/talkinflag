@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@/lib/jsonld";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -58,7 +59,7 @@ export default async function CoachProfilePage({ params }: Props) {
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(personJsonLd) }}
       />
       <div className="max-w-2xl mx-auto">
 
