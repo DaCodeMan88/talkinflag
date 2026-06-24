@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
+import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 
 const VALID_POSITIONS = ["QB", "WR", "DB", "Rusher"];
 const VALID_LEVELS = ["high_school", "college", "national", "international", "youth"];
@@ -7,7 +8,24 @@ const VALID_GENDERS = ["male", "female"];
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const { success, reset } = rateLimit(`players-submit:${ip}`, {
+      limit: 5,
+      windowMs: 60_000,
+    });
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again shortly." },
+        { status: 429, headers: { "Retry-After": String(retryAfterSeconds(reset)) } }
+      );
+    }
+
     const body = await req.json();
+
+    // Honeypot: real users never fill this hidden field.
+    if (typeof body?.website === "string" && body.website.trim() !== "") {
+      return NextResponse.json({ success: true });
+    }
 
     if (!body.first_name?.trim()) return NextResponse.json({ error: "First name is required" }, { status: 400 });
     if (!body.last_name?.trim())  return NextResponse.json({ error: "Last name is required" }, { status: 400 });

@@ -104,6 +104,12 @@ export default function SubmitPlayerPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
+          {/* Honeypot — hidden from real users, catches bots */}
+          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="player-website">Leave this field empty</label>
+            <input id="player-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+          </div>
+
           {/* ── Identity ─────────────────────────────────────────── */}
           <SectionLabel>Identity</SectionLabel>
 

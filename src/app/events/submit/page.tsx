@@ -89,6 +89,12 @@ export default function SubmitEventPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
 
+          {/* Honeypot — hidden from real users, catches bots */}
+          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="event-website">Leave this field empty</label>
+            <input id="event-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+          </div>
+
           {/* Event Name */}
           <div>
             <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2" htmlFor="title">

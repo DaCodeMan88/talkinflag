@@ -1,11 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
+import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 
 const VALID_LEVELS = ["youth", "high_school", "college", "pro", "national", "international", "olympics"];
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const { success, reset } = rateLimit(`events-submit:${ip}`, {
+      limit: 5,
+      windowMs: 60_000,
+    });
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again shortly." },
+        { status: 429, headers: { "Retry-After": String(retryAfterSeconds(reset)) } }
+      );
+    }
+
     const body = await req.json();
+
+    // Honeypot: real users never fill this hidden field (distinct from the
+    // real website_url field below).
+    if (typeof body?.website === "string" && body.website.trim() !== "") {
+      return NextResponse.json({ success: true });
+    }
 
     // Basic validation
     if (!body.title?.trim()) {
