@@ -111,6 +111,22 @@ export function getFlag(nation: string): string {
   return COUNTRY_FLAGS[nation] ?? "🏳️";
 }
 
+// Maps DB country strings to the IFAF ranking `nation` label.
+const NATION_ALIASES: Record<string, string> = {
+  "united states": "usa",
+  "us": "usa",
+  "u.s.a.": "usa",
+  "great britain": "great britain",
+  "united kingdom": "great britain",
+  "uk": "great britain",
+};
+
+/** Normalize any country/nation string to a comparable key. */
+export function nationKey(value: string | null | undefined): string {
+  const v = (value ?? "").trim().toLowerCase();
+  return NATION_ALIASES[v] ?? v;
+}
+
 // ─── World Rankings ───────────────────────────────────────────────────────────
 // Source: IFAF World Rankings — americanfootball.sport/ifaf-world-rankings/
 // Last updated: 2025
