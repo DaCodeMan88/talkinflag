@@ -1,7 +1,42 @@
 # Security Hardening Plan — 2026-06-23
 
 Goal: prioritize safety and data protection. Fix **all** remaining issues from the
-2026-06-23 security review. **Status: PLANNED — not started.**
+2026-06-23 security review. **Status: EXECUTED 2026-06-23 (P1–P3).**
+
+## Execution summary (2026-06-23)
+- **P1 — abuse protection (DONE, commit `ecec0b9`):** per-IP rate limiter
+  (`src/lib/rate-limit.ts`, 5/min, 429+Retry-After; in-memory per-instance, auto-
+  upgrades to Upstash if `UPSTASH_REDIS_REST_URL`/`_TOKEN` are set) on `/api/contact`
+  + `/api/newsletter`; honeypot `website` field on both forms; newsletter real email
+  regex + 254-char cap; contact admin-email HTML-escaped. +6 unit tests.
+- **P2 — route audit + caps (DONE, commit `69023e1`):** audited every service-role
+  route. Finding: `/api/players/submit` and `/api/events/submit` are ALSO public
+  service-role writers (plan wrongly assumed only contact+newsletter). Added the
+  same rate-limit + honeypot to both. All other service-role routes are gated —
+  admin (`isAdminEmail`), user-scoped (`auth.getUser`), or `CRON_SECRET` (digest).
+  Input caps on bio/names/school_or_team/instagram + range-validated stats were
+  already present.
+- **P3 — Supabase config (PARTIAL):**
+  - DONE: dropped the `contact_submissions.service_insert` policy
+    (`TO public WITH CHECK (true)`) — it let any anon-key client insert directly
+    via PostgREST, bypassing the rate limit. Migration
+    `drop_permissive_contact_insert_policy`. Cleared the `rls_policy_always_true`
+    WARN. Contact form still works (route uses service role, bypasses RLS).
+  - DEFERRED (owner decision 2026-06-23): move `vector` out of `public`. Practical
+    exploit risk ~nil here (only trusted roles can CREATE in public); moving it on
+    the live DB risks breaking `similar_players()` / SimilarPlayers with no staging.
+    Left as an accepted WARN-level lint.
+  - OWNER ACTION: enable leaked-password protection (Supabase → Auth → Policies).
+    Low relevance (passwordless: magic-link + Google) but flip it on. Not
+    MCP/SQL-reachable — dashboard only.
+
+**Advisor state after P1–P3:** 2 WARNs remain by design — `extension_in_public`
+(vector, deferred) and `auth_leaked_password_protection` (owner dashboard toggle).
+The 10× `rls_enabled_no_policy` are expected INFO from the service-role architecture.
+
+---
+
+## Original plan (for reference)
 
 Already fixed in commit `a878780` (do NOT redo): stored XSS via JSON-LD
 (`src/lib/jsonld.ts` `safeJsonLd()` across all 15 sites), open redirect in
