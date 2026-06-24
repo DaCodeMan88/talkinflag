@@ -5,6 +5,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot — must stay empty
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   async function handleSubmit(e: React.FormEvent) {
@@ -14,7 +15,7 @@ export function NewsletterSignup() {
     try {
       const res = await fetch("/api/newsletter", {
         method: "POST",
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, website }),
         headers: { "Content-Type": "application/json" },
       });
       setStatus(res.ok ? "success" : "error");
@@ -39,6 +40,19 @@ export function NewsletterSignup() {
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-8 space-y-3" aria-label="Newsletter signup form">
+            {/* Honeypot — hidden from real users, catches bots */}
+            <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+              <label htmlFor="newsletter-website">Leave this field empty</label>
+              <input
+                id="newsletter-website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+              />
+            </div>
             <div className="flex gap-3 max-w-sm mx-auto">
               <label htmlFor="newsletter-email" className="sr-only">Email address</label>
               <input

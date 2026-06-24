@@ -150,6 +150,12 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
+      {/* Honeypot — hidden from real users, catches bots */}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+        <label htmlFor="contact-website">Leave this field empty</label>
+        <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
       {/* Subject cards */}
       <fieldset className="mb-10">
         <legend className="font-display text-xs uppercase tracking-widest text-brand-white/50 mb-4">
