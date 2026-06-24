@@ -7,6 +7,7 @@ import {
   COLLEGE_RANKINGS,
   HS_RANKINGS,
   getFlag,
+  nationKey,
   type WorldTeam,
 } from "@/lib/world-rankings";
 
@@ -26,7 +27,9 @@ type NationalPlayer = {
   last_name: string;
   position: string | null;
   country: string | null;
+  gender?: "male" | "female" | null;
   school_or_team: string | null;
+  stats?: Record<string, unknown> | null;
 };
 
 type Tab = "highschool" | "college" | "world";
@@ -295,19 +298,25 @@ function WorldTeamRow({
   onToggle,
   coaches,
   players,
+  genderFilter,
 }: {
   team: WorldTeam;
   expanded: boolean;
   onToggle: () => void;
   coaches: NationalCoach[];
   players: NationalPlayer[];
+  genderFilter: "male" | "female";
 }) {
   const matchedCoaches = coaches.filter((c) =>
-    c.team?.toLowerCase().includes(team.nation.toLowerCase())
+    c.team ? nationKey(c.team).includes(nationKey(team.nation)) : false
   );
-  const matchedPlayers = players.filter((p) =>
-    p.country?.toLowerCase() === team.nation.toLowerCase()
-  );
+  const matchedPlayers = players
+    .filter((p) => nationKey(p.country) === nationKey(team.nation) && p.gender === genderFilter)
+    .sort((a, b) => {
+      const ja = Number((a.stats as Record<string, unknown>)?.jersey ?? 999);
+      const jb = Number((b.stats as Record<string, unknown>)?.jersey ?? 999);
+      return ja - jb;
+    });
   const hasProfile = !!(
     team.yearEstablished ||
     team.accomplishments?.length ||
@@ -416,7 +425,7 @@ function WorldTeamRow({
                     Roster ({matchedPlayers.length})
                   </div>
                   <ul className="space-y-1">
-                    {matchedPlayers.slice(0, 8).map((p) => (
+                    {matchedPlayers.slice(0, 14).map((p) => (
                       <li key={p.id}>
                         <Link
                           href={`/players/${p.id}`}
@@ -427,8 +436,8 @@ function WorldTeamRow({
                         </Link>
                       </li>
                     ))}
-                    {matchedPlayers.length > 8 && (
-                      <li className="text-brand-white/30 text-[11px]">+{matchedPlayers.length - 8} more</li>
+                    {matchedPlayers.length > 14 && (
+                      <li className="text-brand-white/30 text-[11px]">+{matchedPlayers.length - 14} more</li>
                     )}
                   </ul>
                 </div>
@@ -452,6 +461,7 @@ function WorldTab({ coaches, players }: { coaches: NationalCoach[]; players: Nat
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const rankings = gender === "mens" ? MENS_WORLD_RANKINGS : WOMENS_WORLD_RANKINGS;
+  const dbGender = gender === "mens" ? "male" : "female";
 
   function toggle(nation: string) {
     setExpanded((prev) => (prev === nation ? null : nation));
@@ -511,6 +521,7 @@ function WorldTab({ coaches, players }: { coaches: NationalCoach[]; players: Nat
                 onToggle={() => toggle(team.nation)}
                 coaches={coaches}
                 players={players}
+                genderFilter={dbGender}
               />
             ))}
           </tbody>
