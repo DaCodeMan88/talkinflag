@@ -1,0 +1,83 @@
+# Security Hardening Plan — 2026-06-23
+
+Goal: prioritize safety and data protection. Fix **all** remaining issues from the
+2026-06-23 security review. **Status: PLANNED — not started.**
+
+Already fixed in commit `a878780` (do NOT redo): stored XSS via JSON-LD
+(`src/lib/jsonld.ts` `safeJsonLd()` across all 15 sites), open redirect in
+`/auth/callback`, PostgREST filter injection in `/api/players/search` +
+`events/[id]`, admin-check unification on `isAdminEmail()`, and DB migration
+`security_hardening_storage_and_functions` (dropped `player-photos` listing
+policy, revoked EXECUTE on `rls_auto_enable`, pinned `similar_players`
+search_path).
+
+---
+
+## Context: the security model (read first)
+RLS is enabled on all tables with ~no policies, so the public **anon key cannot
+read/write any app table**. ALL data access goes through the Next.js server using
+the **service-role key** (server-only, `SUPABASE_SERVICE_ROLE_KEY`, not committed).
+Consequence: **there is no DB safety net** — every route/server action is solely
+responsible for its own authz. Keep this in mind for every change below.
+
+---
+
+## Priority 1 — Abuse protection on public write endpoints (do first)
+These are unauthenticated POST routes that write to the DB with the service role.
+
+- [ ] **Rate limiting.** Add per-IP throttling to `/api/contact` and
+  `/api/newsletter` (and the magic-link request path if feasible). Options:
+  Upstash Redis ratelimit (works on Vercel edge/serverless) or a lightweight
+  in-memory/Vercel KV limiter. Decide on a store; Upstash is the standard pick.
+- [ ] **Newsletter input validation** (`src/app/api/newsletter/route.ts`):
+  replace the `email.includes("@")` check with a real email regex, cap length
+  (e.g. ≤ 254 chars), reject obviously bogus input.
+- [ ] **Contact form** (`src/app/api/contact/route.ts`): confirm field length
+  caps exist on name/subject/message; add a **honeypot** hidden field and/or
+  lightweight CAPTCHA (e.g. Cloudflare Turnstile) to both public forms.
+- [ ] Consider tightening the `contact_submissions` `service_insert` RLS policy
+  (currently `WITH CHECK true`). It's needed for the public form, so the real
+  mitigation is the rate limit + honeypot above; document the decision.
+
+## Priority 2 — Input validation / defense in depth
+- [ ] Add server-side length/content caps on user-editable fields that get
+  stored and re-displayed: player `bio`, `school_or_team`, names, instagram,
+  `stats` JSON (cap size). Output XSS is already handled, but bounded input
+  prevents storage abuse and oversized JSON-LD.
+- [ ] Audit every `createServerClient()` (service-role) usage for: (a) is the
+  route auth-gated where it should be, (b) is any user input used to build a
+  query without scoping. Re-confirm `/api/newsletter` and `/api/contact` are the
+  only intentionally-public service-role writers.
+
+## Priority 3 — Supabase config / low severity
+- [ ] **Enable leaked-password protection** (Supabase Auth → Policies). Low
+  relevance today (passwordless: magic-link + Google) but enable for safety.
+- [ ] **Move `vector` extension out of `public`** into a dedicated schema
+  (e.g. `extensions`). CAUTION: `similar_players()` and the `profile_vector`
+  column depend on it — test the KNN query + `/players/[id]` SimilarPlayers
+  after moving. Possibly defer if risky.
+- [ ] Re-run `get_advisors(security)` after each change; target zero WARN-level
+  findings. The 10× `rls_enabled_no_policy` INFO notices are expected from the
+  service-role architecture and can stay (or be replaced with explicit policies
+  — see Priority 4).
+
+## Priority 4 — Optional architectural improvement
+- [ ] Consider adding **explicit RLS policies** (public read on public tables,
+  owner-scoped writes) instead of relying solely on "service-role for
+  everything". This restores a DB safety net so a single missing route check is
+  no longer a full compromise. Large change — scope separately; only if time
+  allows.
+
+---
+
+## Verification for each change
+1. `npm run build` clean + `npm test` (34 tests) green.
+2. `get_advisors(security)` shows the targeted finding cleared.
+3. Manually exercise the affected endpoint (e.g. spam the contact form to confirm
+   the rate limit returns 429; submit a valid newsletter signup still works).
+4. Commit per-fix with a clear message; push to `main` (auto-deploys).
+
+## Secrets note
+Hygiene is currently clean: `.env*` gitignored, no keys committed, service-role
+key server-only. Keep it that way — never add a secret to client (`NEXT_PUBLIC_`)
+env or to the repo.

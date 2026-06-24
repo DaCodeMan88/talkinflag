@@ -69,6 +69,12 @@
 
 ## Open Items — Next Session
 
+> 🔒 **Security hardening plan (PLANNED, not started):** `docs/plans/2026-06-23-security-hardening.md`
+> — fix ALL remaining review findings (rate limiting on public POST routes, newsletter/contact
+> validation + honeypot, input caps, leaked-password protection, vector extension). The 2026-06-23
+> XSS/redirect/injection/admin fixes + DB hardening are already shipped (`a878780`). Site launched on
+> talkinflag.com. Resend (welcome email) deferred to Ambra's to-do list.
+
 ### 🚨 Owner Actions — Needed Now
 These 3 items are blocking final polish on the live site:
 
