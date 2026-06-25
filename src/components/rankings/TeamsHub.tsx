@@ -311,7 +311,13 @@ function WorldTeamRow({
     c.team ? nationKey(c.team).includes(nationKey(team.nation)) : false
   );
   const matchedPlayers = players
-    .filter((p) => nationKey(p.country) === nationKey(team.nation) && p.gender === genderFilter)
+    .filter(
+      (p) =>
+        nationKey(p.country) === nationKey(team.nation) &&
+        p.gender === genderFilter &&
+        // Only the curated official squad — excludes unofficial flagsonly imports tagged level='national'
+        (p.stats as Record<string, unknown>)?.team_designation === "national_senior",
+    )
     .sort((a, b) => {
       const ja = Number((a.stats as Record<string, unknown>)?.jersey ?? 999);
       const jb = Number((b.stats as Record<string, unknown>)?.jersey ?? 999);

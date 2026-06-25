@@ -266,10 +266,10 @@ export const MENS_WORLD_RANKINGS: WorldTeam[] = [
   {
     rank: 3, nation: "Mexico", points: 6871,
     yearEstablished: 2005,
-    accomplishments: ["Multiple IFAF World Championship podium finishes", "Americas Championship winners"],
+    accomplishments: ["Multiple IFAF Americas Championship podium finishes", "4th — 2024 IFAF World Championship"],
     headCoach: "Fernando Alfaro",
-    recentRecord: "Bronze — 2024 IFAF World Championship",
-    notes: "Mexico's men's program is the strongest in Latin America, buoyed by huge domestic enthusiasm and a well-organized national federation.",
+    recentRecord: "4th — 2024 IFAF World Championship (lost bronze game to Switzerland)",
+    notes: "Mexico's men's program is the strongest in Latin America, buoyed by huge domestic enthusiasm and a well-organized national federation. At the 2024 IFAF World Championship in Lahti, Finland, Mexico finished 4th, falling to Switzerland in the bronze-medal game.",
   },
   {
     rank: 4, nation: "Italy", points: 6248,
