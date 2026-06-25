@@ -2,6 +2,9 @@ import { safeJsonLd } from "@/lib/jsonld";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
+import { loadOneCoachCredibility } from "@/lib/eval/coachCredibility";
+import { coachInfluenceLabel } from "@/lib/eval/coachWeight";
 import { buildMetadata } from "@/lib/seo";
 import FollowButton from "@/components/ui/FollowButton";
 import CareerUpdates from "@/components/career/CareerUpdates";
@@ -45,6 +48,11 @@ export default async function CoachProfilePage({ params }: Props) {
 
   const levelFormatted = coach.level?.replaceAll("_", " ").toUpperCase() ?? null;
   const hasRecord = coach.wins !== null || coach.losses !== null;
+
+  // Coach IQ + voting influence (how much this coach's evaluation vote weighs).
+  const credibility = await loadOneCoachCredibility(createAdminClient(), coach.user_id);
+  const coachIq = credibility?.input.iqPct ?? null;
+  const influenceLabel = credibility ? coachInfluenceLabel(credibility.weight) : null;
 
   const personJsonLd = {
     "@context": "https://schema.org",
@@ -116,6 +124,36 @@ export default async function CoachProfilePage({ params }: Props) {
                 <p className="text-brand-white/30 text-xs font-display uppercase tracking-widest mt-1">Years Coaching</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Coach IQ + voting influence */}
+        {credibility && (
+          <div className="bg-[#0d0d0d] border border-brand-white/10 p-6 mb-4">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-brand-white/30 text-xs font-display uppercase tracking-widest mb-1">Coach IQ</p>
+                <p className="font-display text-3xl text-brand-white leading-none">
+                  {coachIq != null ? coachIq.toFixed(0) : <span className="text-brand-white/30 text-xl">Not taken</span>}
+                  {coachIq != null && <span className="text-brand-white/30 text-base"> / 100</span>}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-brand-white/30 text-xs font-display uppercase tracking-widest mb-1">Voting Influence</p>
+                <p className="font-display text-2xl text-brand-yellow leading-none">
+                  {influenceLabel}
+                  <span className="text-brand-white/40 text-sm font-body"> ·{" "}
+                    {credibility.weight.toFixed(2)}×</span>
+                </p>
+              </div>
+            </div>
+            <p className="text-brand-white/40 text-xs mt-3 leading-relaxed">
+              A verified coach&apos;s evaluation vote is weighted by credibility — Coach IQ (primary), level, win
+              percentage, experience, and postseason record.{" "}
+              <Link href="/how-rankings-work" className="text-brand-yellow/80 hover:text-brand-yellow underline">
+                How rankings work
+              </Link>
+            </p>
           </div>
         )}
 

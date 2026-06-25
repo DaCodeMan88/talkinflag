@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
+import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
+
+type CareerDraft = { kind: string; detail: Record<string, string>; evidenceUrl: string };
 
 interface KindOption {
   kind: string;
@@ -59,6 +63,13 @@ export default function CareerUpdateForm({
 
   const selected = kinds.find((k) => k.kind === kind);
 
+  // Save & resume the in-progress career update.
+  const draft = useAutosaveDraft<CareerDraft>({
+    kind: "career_update",
+    value: { kind, detail, evidenceUrl },
+    isEmpty: (v) => Object.values(v.detail).every((x) => !x?.trim()) && !v.evidenceUrl?.trim(),
+  });
+
   function selectKind(k: string) {
     setKind(k);
     setDetail({});
@@ -83,6 +94,7 @@ export default function CareerUpdateForm({
     setDone(true);
     setDetail({});
     setEvidenceUrl("");
+    draft.clear();
     router.refresh();
     setTimeout(() => setDone(false), 4000);
   }
@@ -93,6 +105,23 @@ export default function CareerUpdateForm({
         <div className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-sm px-4 py-3 font-display uppercase tracking-widest">
           Submitted — we&apos;ll review and update your profile shortly.
         </div>
+      )}
+
+      {draft.resumable && (
+        <ResumeBanner
+          updatedAt={draft.resumable.updatedAt}
+          source={draft.resumable.source}
+          label="this update"
+          onResume={() => {
+            const v = draft.resume();
+            if (v) {
+              if (v.kind) setKind(v.kind);
+              setDetail(v.detail ?? {});
+              setEvidenceUrl(v.evidenceUrl ?? "");
+            }
+          }}
+          onDismiss={draft.dismissResume}
+        />
       )}
 
       <form onSubmit={handleSubmit} className="bg-[#0d0d0d] border border-brand-white/10 p-5 space-y-5">
@@ -176,7 +205,8 @@ export default function CareerUpdateForm({
           aria-hidden="true"
         />
 
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-4">
+          <SaveIndicator status={draft.status} />
           <button
             type="submit"
             disabled={loading}
