@@ -111,6 +111,22 @@ export function getFlag(nation: string): string {
   return COUNTRY_FLAGS[nation] ?? "🏳️";
 }
 
+// Maps DB country strings to the IFAF ranking `nation` label.
+const NATION_ALIASES: Record<string, string> = {
+  "united states": "usa",
+  "us": "usa",
+  "u.s.a.": "usa",
+  "great britain": "great britain",
+  "united kingdom": "great britain",
+  "uk": "great britain",
+};
+
+/** Normalize any country/nation string to a comparable key. */
+export function nationKey(value: string | null | undefined): string {
+  const v = (value ?? "").trim().toLowerCase();
+  return NATION_ALIASES[v] ?? v;
+}
+
 // ─── World Rankings ───────────────────────────────────────────────────────────
 // Source: IFAF World Rankings — americanfootball.sport/ifaf-world-rankings/
 // Last updated: 2025
@@ -120,7 +136,8 @@ export const WOMENS_WORLD_RANKINGS: WorldTeam[] = [
     rank: 1, nation: "Mexico", points: 10987,
     yearEstablished: 2010,
     accomplishments: ["2022 IFAF World Championship Gold", "2024 IFAF World Championship Gold", "2x Americas Championship"],
-    keyPlayers: ["Valeria Ortiz", "Diana Flores (QB)", "Karina Ortiz"],
+    keyPlayers: ["Valeria Ortiz", "Diana Flores (QB)", "Karina Ortiz", "Ana Rojano (DB)", "Tania Rincón (QB)", "Rebeca Landa (Rusher)"],
+    headCoach: "Fernando Alfaro",
     recentRecord: "Gold — 2024 IFAF World Championship",
     notes: "Mexico's women's program is the most dominant in the world, led by quarterback Diana Flores who became a global face of flag football ahead of the 2028 Olympics.",
   },
@@ -137,6 +154,8 @@ export const WOMENS_WORLD_RANKINGS: WorldTeam[] = [
     rank: 3, nation: "Great Britain", points: 8879,
     yearEstablished: 2012,
     accomplishments: ["2x IFAF European Championship", "2022 IFAF World Championship Bronze"],
+    keyPlayers: ["Brittany Botterill (QB)", "Phoebe Schecter (C)", "Sarah Wakelin (Rusher)"],
+    headCoach: "Dean Whittingslow",
     recentRecord: "Bronze — 2024 IFAF World Championship",
     notes: "Great Britain's women's program has been the top European flag football nation, with strong organizational support from British American Football Association.",
   },
@@ -239,15 +258,18 @@ export const MENS_WORLD_RANKINGS: WorldTeam[] = [
     rank: 2, nation: "Austria", points: 7109,
     yearEstablished: 2003,
     accomplishments: ["2x IFAF World Championship Silver", "4x IFAF European Championship"],
+    keyPlayers: ["Felix Wasshuber (QB)", "Martin Stur (C)", "Daniel Hochleitner (WR)"],
+    headCoach: "Michael Salamon",
     recentRecord: "Silver — 2024 IFAF World Championship",
     notes: "Austria is the premier flag football nation outside North America, with a dominant European Championship record and consistent World Championship podium finishes.",
   },
   {
     rank: 3, nation: "Mexico", points: 6871,
     yearEstablished: 2005,
-    accomplishments: ["Multiple IFAF World Championship podium finishes", "Americas Championship winners"],
-    recentRecord: "Bronze — 2024 IFAF World Championship",
-    notes: "Mexico's men's program is the strongest in Latin America, buoyed by huge domestic enthusiasm and a well-organized national federation.",
+    accomplishments: ["Multiple IFAF Americas Championship podium finishes", "4th — 2024 IFAF World Championship"],
+    headCoach: "Fernando Alfaro",
+    recentRecord: "4th — 2024 IFAF World Championship (lost bronze game to Switzerland)",
+    notes: "Mexico's men's program is the strongest in Latin America, buoyed by huge domestic enthusiasm and a well-organized national federation. At the 2024 IFAF World Championship in Lahti, Finland, Mexico finished 4th, falling to Switzerland in the bronze-medal game.",
   },
   {
     rank: 4, nation: "Italy", points: 6248,

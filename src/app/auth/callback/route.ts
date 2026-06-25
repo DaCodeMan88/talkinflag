@@ -94,8 +94,8 @@ function welcomeEmailHtml(origin: string): string {
           </a>
         </td></tr>
         <tr><td style="padding:0 0 12px;">
-          <a href="https://discord.gg/talkinflag" style="display:block;background:transparent;color:#ffffff80;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:14px 20px;text-align:center;border:1px solid #ffffff20;">
-            Join the Discord Community →
+          <a href="${site}/podcast" style="display:block;background:transparent;color:#ffffff80;text-decoration:none;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;padding:14px 20px;text-align:center;border:1px solid #ffffff20;">
+            Listen to the Podcast →
           </a>
         </td></tr>
       </table>

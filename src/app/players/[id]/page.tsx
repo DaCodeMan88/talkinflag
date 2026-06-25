@@ -12,6 +12,7 @@ import ShareCardModal from "./ShareCardModal";
 import FollowButton from "@/components/ui/FollowButton";
 import { CompareButton } from "./CompareButton";
 import SimilarPlayers from "@/components/player/SimilarPlayers";
+import { formatHeight, formatWeight } from "@/lib/measurements";
 
 export const revalidate = 300;
 
@@ -63,13 +64,6 @@ function formatLevel(level: string | null): string {
     youth: "Youth",
   };
   return map[level] ?? level.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function formatHeight(inches: number | null): string {
-  if (!inches) return "";
-  const ft = Math.floor(inches / 12);
-  const inch = inches % 12;
-  return `${ft}'${inch}"`;
 }
 
 function countryFlag(code: string | null | undefined): string {
@@ -440,7 +434,7 @@ export default async function PlayerDetailPage({
               {player.weight_lbs && (
                 <DetailRow
                   label="Weight"
-                  value={`${player.weight_lbs} lbs`}
+                  value={formatWeight(player.weight_lbs)}
                   verified={verifiedStats.has("weight_lbs")}
                   selfReported={player.is_claimed && !verifiedStats.has("weight_lbs")}
                 />
@@ -679,18 +673,18 @@ export default async function PlayerDetailPage({
             </div>
           </div>
         )}
-        {/* Community CTA */}
+        {/* Podcast CTA */}
         <div className="mt-16 bg-[#0d0d0d] border border-brand-white/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <p className="text-brand-white font-display uppercase tracking-widest text-sm">Join the Talkin Flag Community</p>
-            <p className="text-brand-white/40 text-xs mt-1">Players, coaches, and fans on Discord.</p>
+            <p className="text-brand-white font-display uppercase tracking-widest text-sm">The Talkin Flag Show</p>
+            <p className="text-brand-white/40 text-xs mt-1">Listen to the podcast and follow along @talkinflagshow.</p>
           </div>
-          <a
-            href="/community"
+          <Link
+            href="/podcast"
             className="flex-shrink-0 border border-brand-yellow/40 text-brand-yellow font-display uppercase tracking-widest text-xs py-2 px-5 hover:bg-brand-yellow hover:text-brand-black transition-colors"
           >
-            Join Discord →
-          </a>
+            Listen to the Podcast →
+          </Link>
         </div>
       </div>
       {/* Embed link */}

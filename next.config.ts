@@ -5,6 +5,8 @@ const config: NextConfig = {
     return [
       { source: "/episodes", destination: "/podcast", permanent: true },
       { source: "/episodes/:id", destination: "/podcast/:id", permanent: true },
+      // /community retired (Discord feature paused) — redirect indexed URL to podcast
+      { source: "/community", destination: "/podcast", permanent: true },
     ];
   },
   experimental: {

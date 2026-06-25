@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildMetadata } from "@/lib/seo";
 import { CompareShareButton } from "./CompareShareButton";
+import { formatHeight, formatWeight } from "@/lib/measurements";
 
 export const revalidate = 0; // always fresh — URL params drive content
 
@@ -42,10 +43,6 @@ export async function generateMetadata({ searchParams }: Props) {
     description: `Side-by-side flag football comparison: ${nameA} vs ${nameB}. Stats, ranking, and measurables.`,
     path: "/players/compare",
   });
-}
-
-function formatHeight(h: number): string {
-  return `${Math.floor(h / 12)}'${h % 12}"`;
 }
 
 function formatLevel(level: string | null): string {
@@ -98,8 +95,8 @@ function buildStatRows(a: ComparePlayer, b: ComparePlayer): StatRow[] {
   if (a.weight_lbs || b.weight_lbs) {
     rows.push({
       label: "Weight",
-      aVal: a.weight_lbs ? `${a.weight_lbs} lbs` : null,
-      bVal: b.weight_lbs ? `${b.weight_lbs} lbs` : null,
+      aVal: a.weight_lbs ? formatWeight(a.weight_lbs) : null,
+      bVal: b.weight_lbs ? formatWeight(b.weight_lbs) : null,
       aNum: a.weight_lbs,
       bNum: b.weight_lbs,
     });
