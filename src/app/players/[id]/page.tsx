@@ -679,18 +679,18 @@ export default async function PlayerDetailPage({
             </div>
           </div>
         )}
-        {/* Community CTA */}
+        {/* Podcast CTA */}
         <div className="mt-16 bg-[#0d0d0d] border border-brand-white/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <p className="text-brand-white font-display uppercase tracking-widest text-sm">Join the Talkin Flag Community</p>
-            <p className="text-brand-white/40 text-xs mt-1">Players, coaches, and fans on Discord.</p>
+            <p className="text-brand-white font-display uppercase tracking-widest text-sm">The Talkin Flag Show</p>
+            <p className="text-brand-white/40 text-xs mt-1">Listen to the podcast and follow along @talkinflagshow.</p>
           </div>
-          <a
-            href="/community"
+          <Link
+            href="/podcast"
             className="flex-shrink-0 border border-brand-yellow/40 text-brand-yellow font-display uppercase tracking-widest text-xs py-2 px-5 hover:bg-brand-yellow hover:text-brand-black transition-colors"
           >
-            Join Discord →
-          </a>
+            Listen to the Podcast →
+          </Link>
         </div>
       </div>
       {/* Embed link */}

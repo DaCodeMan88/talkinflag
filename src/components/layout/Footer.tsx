@@ -39,7 +39,6 @@ const connectLinks = [
   { label: "About", href: "/about" },
   { label: "Coaches", href: "/coaches" },
   { label: "Scouts", href: "/scouts/apply" },
-  { label: "Community", href: "/community" },
   { label: "Merch", href: "/merch" },
   { label: "Contact", href: "/contact" },
 ];
