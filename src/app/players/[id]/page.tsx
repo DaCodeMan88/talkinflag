@@ -12,6 +12,7 @@ import ShareCardModal from "./ShareCardModal";
 import FollowButton from "@/components/ui/FollowButton";
 import { CompareButton } from "./CompareButton";
 import SimilarPlayers from "@/components/player/SimilarPlayers";
+import { formatHeight, formatWeight } from "@/lib/measurements";
 
 export const revalidate = 300;
 
@@ -63,13 +64,6 @@ function formatLevel(level: string | null): string {
     youth: "Youth",
   };
   return map[level] ?? level.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function formatHeight(inches: number | null): string {
-  if (!inches) return "";
-  const ft = Math.floor(inches / 12);
-  const inch = inches % 12;
-  return `${ft}'${inch}"`;
 }
 
 function countryFlag(code: string | null | undefined): string {
@@ -440,7 +434,7 @@ export default async function PlayerDetailPage({
               {player.weight_lbs && (
                 <DetailRow
                   label="Weight"
-                  value={`${player.weight_lbs} lbs`}
+                  value={formatWeight(player.weight_lbs)}
                   verified={verifiedStats.has("weight_lbs")}
                   selfReported={player.is_claimed && !verifiedStats.has("weight_lbs")}
                 />

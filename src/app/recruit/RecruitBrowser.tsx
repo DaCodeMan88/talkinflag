@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { formatHeight, formatWeight } from "@/lib/measurements";
 
 type Player = {
   id: string; first_name: string; last_name: string; position?: string | null;
@@ -24,12 +25,6 @@ type Props = {
 };
 
 const POSITIONS = ["All", "QB", "WR", "DB", "Rusher"];
-
-function formatHeight(inches: number): string {
-  const feet = Math.floor(inches / 12);
-  const remaining = inches % 12;
-  return `${feet}'${remaining}"`;
-}
 
 export default function RecruitBrowser({
   players,
@@ -119,7 +114,7 @@ export default function RecruitBrowser({
 
           const physical: string[] = [];
           if (player.height_in) physical.push(formatHeight(player.height_in));
-          if (player.weight_lbs) physical.push(`${player.weight_lbs} lbs`);
+          if (player.weight_lbs) physical.push(formatWeight(player.weight_lbs));
 
           return (
             <div

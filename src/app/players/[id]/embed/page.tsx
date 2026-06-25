@@ -1,13 +1,10 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { formatHeight, formatWeight } from "@/lib/measurements";
 
 export const revalidate = 3600;
 
 type Props = { params: Promise<{ id: string }> };
-
-function formatHeight(h: number): string {
-  return `${Math.floor(h / 12)}'${h % 12}"`;
-}
 
 function formatLevel(level: string | null): string {
   if (!level) return "";
@@ -38,7 +35,7 @@ export default async function PlayerEmbedPage({ params }: Props) {
   const stats = (player.stats ?? {}) as Record<string, string | number>;
   const keyStats: { label: string; value: string }[] = [];
   if (player.height_in) keyStats.push({ label: "Height", value: formatHeight(player.height_in) });
-  if (player.weight_lbs) keyStats.push({ label: "Weight", value: `${player.weight_lbs} lbs` });
+  if (player.weight_lbs) keyStats.push({ label: "Weight", value: formatWeight(player.weight_lbs) });
   if (stats.forty_yard) keyStats.push({ label: "40-Yd", value: `${stats.forty_yard}s` });
 
   const displayStats = keyStats.slice(0, 3);

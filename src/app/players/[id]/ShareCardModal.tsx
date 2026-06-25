@@ -18,7 +18,8 @@ type Props = {
   verticalJump: string | null;
 };
 
-function formatHeight(h: number): string {
+// card width constraint — imperial only (dual-unit strings overflow the fixed card)
+function formatHeightImperial(h: number): string {
   const ft = Math.floor(h / 12);
   const inch = h % 12;
   return `${ft}'${inch}"`;
@@ -103,7 +104,8 @@ export default function ShareCardModal(props: Props) {
     : null;
 
   const statsRow = [
-    showHeight && heightIn ? formatHeight(heightIn) : null,
+    // card width constraint — imperial only
+    showHeight && heightIn ? formatHeightImperial(heightIn) : null,
     showWeight && weightLbs ? `${weightLbs} lbs` : null,
     showForty && fortyYard ? `${fortyYard}s 40yd` : null,
     showVertical && verticalJump ? `${verticalJump} vert` : null,
