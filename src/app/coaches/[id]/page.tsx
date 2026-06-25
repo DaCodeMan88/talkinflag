@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { buildMetadata } from "@/lib/seo";
 import FollowButton from "@/components/ui/FollowButton";
+import CareerUpdates from "@/components/career/CareerUpdates";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -35,7 +36,7 @@ export default async function CoachProfilePage({ params }: Props) {
 
   const { data: coach } = await supabase
     .from("coaches")
-    .select("id, first_name, last_name, team, level, title, years_coaching, wins, losses, philosophy, bio, is_verified")
+    .select("id, user_id, first_name, last_name, team, level, title, years_coaching, wins, losses, philosophy, bio, is_verified")
     .eq("id", id)
     .eq("is_verified", true)
     .single();
@@ -135,6 +136,9 @@ export default async function CoachProfilePage({ params }: Props) {
             <p className="text-brand-white/70 leading-relaxed whitespace-pre-line">{coach.bio}</p>
           </div>
         )}
+
+        {/* Career updates */}
+        <CareerUpdates userId={coach.user_id} heading="Recent Activity" />
 
         {/* Share */}
         <div className="border-t border-brand-white/5 pt-8 text-center">

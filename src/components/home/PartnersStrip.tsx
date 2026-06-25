@@ -1,6 +1,6 @@
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-// NOTE (owner action): confirm/replace these URLs with Ambra before publishing.
+// Confirmed partners (2026-06-25).
 const PARTNERS: { name: string; url: string }[] = [
   { name: "Flag Football Finder", url: "https://flagfootballfinder.com" },
   { name: "Athleads", url: "https://athleads.com" },

@@ -214,7 +214,7 @@ export default async function HowRankingsWorkPage() {
             <p>tf_score  = raw_score × verification_factor</p>
           </div>
           <p className="text-brand-white/40 text-xs mt-4">
-            Rankings are recomputed nightly at 02:00 UTC and any time an admin triggers a manual recompute.
+            Rankings are recomputed once a week, on Sundays at 02:00 UTC, and any time an admin triggers a manual recompute.
             Snapshot history is retained in{" "}
             <code className="text-brand-yellow/60">ranking_snapshots</code>.
           </p>

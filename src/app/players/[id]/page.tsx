@@ -12,6 +12,8 @@ import ShareCardModal from "./ShareCardModal";
 import FollowButton from "@/components/ui/FollowButton";
 import { CompareButton } from "./CompareButton";
 import SimilarPlayers from "@/components/player/SimilarPlayers";
+import CareerUpdates from "@/components/career/CareerUpdates";
+import FlagIQBadge from "@/components/player/FlagIQBadge";
 import { formatHeight, formatWeight } from "@/lib/measurements";
 
 export const revalidate = 300;
@@ -698,6 +700,10 @@ export default async function PlayerDetailPage({
           {'</>'}  Embed this profile
         </a>
       </div>
+
+      <FlagIQBadge userId={player.claimed_by} />
+
+      <CareerUpdates userId={player.claimed_by} />
 
       <SimilarPlayers playerId={player.id} />
 

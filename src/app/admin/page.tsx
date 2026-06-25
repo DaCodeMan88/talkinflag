@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { getAdminUser } from "@/lib/admin";
 import GuidedTour from "@/components/onboarding/GuidedTour";
 import ShowAroundButton from "@/components/onboarding/ShowAroundButton";
@@ -52,6 +53,12 @@ export default async function AdminHomePage({
       .eq("is_read", false)
       .is("archived_at", null),
   ]);
+
+  // career_updates is RLS-locked (no policy) → count via the service-role client.
+  const { count: pendingCareer } = await createAdminClient()
+    .from("career_updates")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
 
   const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
     {
@@ -106,6 +113,12 @@ export default async function AdminHomePage({
       count: 0,
     },
     {
+      label: "Career Updates",
+      description: "Championships, postseason, role changes, clinics",
+      href: "/admin/credentials",
+      count: pendingCareer ?? 0,
+    },
+    {
       label: "TF Rankings",
       description: "Recompute player rankings (poll weights + verified stats)",
       href: "/admin/rankings",
@@ -114,7 +127,7 @@ export default async function AdminHomePage({
     },
   ];
 
-  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0);
+  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">

@@ -248,6 +248,24 @@ export default async function DashboardPage({
               </Link>
             </div>
 
+            {/* Career updates */}
+            <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
+              <div>
+                <p className="text-brand-white/60 text-sm font-display uppercase tracking-widest">
+                  Career Updates
+                </p>
+                <p className="text-brand-white/25 text-xs mt-1">
+                  New title, postseason run, role change, or clinic
+                </p>
+              </div>
+              <Link
+                href="/dashboard/credentials"
+                className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+              >
+                Add →
+              </Link>
+            </div>
+
             {/* Following */}
             <div className="bg-[#0d0d0d] border border-brand-white/10 p-5 flex items-center justify-between">
               <div>
