@@ -145,6 +145,33 @@ export default async function HowRankingsWorkPage() {
           <p className="text-brand-white/40 text-xs border-l-2 border-brand-yellow/30 pl-4 italic">
             Blend fractions are admin-adjustable as the community grows. More verified coaches = more coaching weight.
           </p>
+
+          {/* Coach voting influence */}
+          <div className="mt-8 border border-brand-white/10 bg-[#111111] p-6">
+            <h3 className="font-display text-sm uppercase tracking-widest text-brand-white mb-3">
+              Not every coach&apos;s vote weighs the same
+            </h3>
+            <p className="text-brand-white/60 text-xs leading-relaxed mb-4">
+              Within the Coaches constituency, each verified coach&apos;s vote is weighted by their
+              demonstrated credibility — so a battle-tested coach who knows the game moves the
+              rankings more than a brand-new account. Credibility is built from:
+            </p>
+            <ul className="space-y-2 text-brand-white/55 text-xs leading-relaxed mb-4">
+              <li><span className="text-brand-yellow font-display uppercase tracking-widest text-[10px]">Coach IQ</span> — the primary lever. A coach must clear a minimum{" "}
+                <Link href="/iq/coach" className="text-brand-yellow hover:underline">Coach IQ</Link>{" "}
+                score to earn any extra influence.</li>
+              <li><span className="text-brand-yellow font-display uppercase tracking-widest text-[10px]">Level</span> — national, college, or high school.</li>
+              <li><span className="text-brand-yellow font-display uppercase tracking-widest text-[10px]">Win %</span> — a winning record (over a minimum number of games).</li>
+              <li><span className="text-brand-yellow font-display uppercase tracking-widest text-[10px]">Experience</span> — years coaching, with diminishing returns.</li>
+              <li><span className="text-brand-yellow font-display uppercase tracking-widest text-[10px]">Postseason</span> — championships, title games, and playoff runs from approved career updates.</li>
+            </ul>
+            <p className="text-brand-white/40 text-xs leading-relaxed">
+              Influence scales from a standard <span className="text-brand-white/70">1.00×</span> up to a capped{" "}
+              <span className="text-brand-white/70">2.00×</span>. A coach who hasn&apos;t taken the Coach IQ quiz
+              votes at the standard weight — never penalized, just not boosted. You can see any coach&apos;s
+              Coach IQ and voting influence on their profile.
+            </p>
+          </div>
         </section>
 
         {/* Section 3: The 10 Dimensions */}

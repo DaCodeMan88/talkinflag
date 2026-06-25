@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
+import { loadCoachCredibility } from "@/lib/eval/coachCredibility";
+import { coachInfluenceLabel } from "@/lib/eval/coachWeight";
 import CoachApproveRejectButtons from "./ApproveRejectButtons";
 
 export const metadata = { title: "Coach Applications | Admin" };
@@ -15,11 +18,17 @@ export default async function AdminCoachesPage() {
 
   const { data: coaches } = await supabase
     .from("coaches")
-    .select("id, first_name, last_name, email, team, level, title, bio, years_coaching, status, created_at")
+    .select("id, user_id, first_name, last_name, email, team, level, title, bio, years_coaching, status, created_at")
     .order("created_at", { ascending: false });
 
   const pending = (coaches ?? []).filter((c) => c.status === "pending");
   const reviewed = (coaches ?? []).filter((c) => c.status !== "pending");
+
+  // Voting influence for approved coaches (those with a linked account).
+  const credibility = await loadCoachCredibility(
+    createAdminClient(),
+    reviewed.map((c) => c.user_id).filter((id): id is string => !!id)
+  );
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
@@ -75,21 +84,31 @@ export default async function AdminCoachesPage() {
           <>
             <h2 className="font-display text-lg uppercase text-brand-white/30 mb-4">Reviewed</h2>
             <div className="space-y-2">
-              {reviewed.map((coach) => (
-                <div key={coach.id} className="bg-[#0d0d0d] border border-brand-white/5 p-4 flex items-center justify-between">
+              {reviewed.map((coach) => {
+                const cred = coach.user_id ? credibility.get(coach.user_id) : null;
+                return (
+                <div key={coach.id} className="bg-[#0d0d0d] border border-brand-white/5 p-4 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-brand-white/60 text-sm">{coach.first_name} {coach.last_name} · {coach.team}</p>
                     <p className="text-brand-white/30 text-xs">{coach.email}</p>
                   </div>
-                  <span className={`text-xs font-display uppercase tracking-widest px-3 py-1 border ${
-                    coach.status === "approved"
-                      ? "border-brand-yellow/40 text-brand-yellow"
-                      : "border-red-500/30 text-red-400"
-                  }`}>
-                    {coach.status}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {coach.status === "approved" && cred && (
+                      <span className="text-[10px] font-display uppercase tracking-widest px-2 py-1 border border-brand-white/15 text-brand-white/50">
+                        IQ {cred.input.iqPct != null ? cred.input.iqPct.toFixed(0) : "—"} · {coachInfluenceLabel(cred.weight)} {cred.weight.toFixed(2)}×
+                      </span>
+                    )}
+                    <span className={`text-xs font-display uppercase tracking-widest px-3 py-1 border ${
+                      coach.status === "approved"
+                        ? "border-brand-yellow/40 text-brand-yellow"
+                        : "border-red-500/30 text-red-400"
+                    }`}>
+                      {coach.status}
+                    </span>
+                  </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}

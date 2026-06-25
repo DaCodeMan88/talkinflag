@@ -7,9 +7,11 @@
 //   5. Snapshot to ranking_snapshots
 
 import { createAdminClient } from "@/lib/eval/admin-client";
-import { aggregateRoleWeights } from "@/lib/eval/aggregate";
+import { aggregateRoleWeights, aggregateRoleWeightsWeighted } from "@/lib/eval/aggregate";
 import type { Fingerprint } from "@/lib/eval/dimensions";
 import { DIMENSION_KEYS } from "@/lib/eval/dimensions";
+import { loadCoachCredibility } from "@/lib/eval/coachCredibility";
+import { BASELINE_WEIGHT } from "@/lib/eval/coachWeight";
 import { buildPlayerVector } from "@/lib/knn/profile";
 import { computeTfRank } from "./tfRank";
 
@@ -56,23 +58,45 @@ async function rebuildPlayerVectors(db: ReturnType<typeof createAdminClient>) {
 // ── Step 2: Aggregate eval responses → ranking_weights ────────────────────
 
 async function recomputeEvalWeights(db: ReturnType<typeof createAdminClient>) {
-  // Load all approved eval responses grouped by role
+  // Load all approved eval responses grouped by role. user_id lets us weight
+  // coach votes by each coach's credibility.
   const { data: responses } = await db
     .from("eval_responses")
-    .select("role_at_submit, fingerprint");
+    .select("role_at_submit, fingerprint, user_id");
   if (!responses?.length) return;
 
-  const byRole: Record<Role, Fingerprint[]> = { coach: [], expert: [], host: [] };
+  const expertHost: Record<"expert" | "host", Fingerprint[]> = { expert: [], host: [] };
+  const coachEntries: { fingerprint: Fingerprint; userId: string | null }[] = [];
   for (const r of responses) {
     const role = r.role_at_submit as Role;
-    if (ROLES.includes(role)) {
-      byRole[role].push(r.fingerprint as Fingerprint);
+    if (role === "coach") {
+      coachEntries.push({ fingerprint: r.fingerprint as Fingerprint, userId: (r.user_id as string | null) ?? null });
+    } else if (role === "expert" || role === "host") {
+      expertHost[role].push(r.fingerprint as Fingerprint);
     }
   }
 
+  // Coach role: weight each vote by the coach's credibility (Coach IQ +
+  // level + win% + experience + championships/postseason). A coach with no
+  // verified row or sub-threshold IQ contributes at BASELINE_WEIGHT.
+  const credibility = await loadCoachCredibility(
+    db,
+    coachEntries.map((e) => e.userId).filter((id): id is string => !!id)
+  );
+  const coachWeighted = coachEntries.map((e) => ({
+    fingerprint: e.fingerprint,
+    weight: (e.userId && credibility.get(e.userId)?.weight) || BASELINE_WEIGHT,
+  }));
+
+  const aggByRole: Record<Role, Fingerprint> = {
+    coach: aggregateRoleWeightsWeighted(coachWeighted),
+    expert: aggregateRoleWeights(expertHost.expert),
+    host: aggregateRoleWeights(expertHost.host),
+  };
+
   const upserts = [];
   for (const role of ROLES) {
-    const agg = aggregateRoleWeights(byRole[role]);
+    const agg = aggByRole[role];
     for (const dim of DIMENSION_KEYS) {
       upserts.push({
         key: `dim.${role}.${dim}`,
