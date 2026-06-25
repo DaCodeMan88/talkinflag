@@ -2,9 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useAutosaveDraft, type DraftKind } from "@/hooks/useAutosaveDraft";
+import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 
 export type IQItem = { id: string; ordinal: number; prompt: string; choices: string[] };
 type Result = { id: string; ordinal: number; correct_index: number; chosen: number | null; correct: boolean; explanation: string | null };
+type QuizDraft = { index: number; answers: Record<string, number> };
 
 export default function IQQuizRunner({
   category,
@@ -26,6 +29,16 @@ export default function IQQuizRunner({
   const answeredCount = Object.keys(answers).length;
   const byId = useMemo(() => Object.fromEntries(questions.map((x) => [x.id, x])), [questions]);
 
+  // Save & resume — only the coach/general quizzes have a draft kind.
+  const draftKind: DraftKind | null =
+    category === "coach" ? "quiz:coach" : category === "general" ? "quiz:general" : null;
+  const draft = useAutosaveDraft<QuizDraft>({
+    kind: (draftKind ?? "quiz:general"),
+    value: { index, answers },
+    enabled: !!draftKind && !scored,
+    isEmpty: (v) => Object.keys(v.answers).length === 0,
+  });
+
   const submit = useCallback(async (finalAnswers: Record<string, number>) => {
     setSubmitting(true);
     setError(null);
@@ -38,12 +51,13 @@ export default function IQQuizRunner({
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Submission failed");
       const data = await res.json();
       setScored({ pct: data.score_pct, raw: data.raw, max: data.max, results: data.results });
+      draft.clear();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setSubmitting(false);
     }
-  }, [category]);
+  }, [category, draft]);
 
   const choose = useCallback((choiceIdx: number) => {
     if (!q) return;
@@ -104,15 +118,33 @@ export default function IQQuizRunner({
   // --- question ---
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 text-brand-white min-h-[80vh] flex flex-col">
-      <div className="sticky top-0 pt-2 pb-3 bg-brand-black/80 backdrop-blur">
+      <div className="sticky top-0 pt-2 pb-3 bg-brand-black/80 backdrop-blur z-10">
         <div className="flex justify-between text-[11px] uppercase tracking-widest text-white/60">
           <span className="text-brand-yellow">{title}</span>
-          <span>{answeredCount}/{total}</span>
+          <span className="flex items-center gap-3">
+            <SaveIndicator status={draft.status} />
+            <span>{answeredCount}/{total}</span>
+          </span>
         </div>
         <div className="mt-2 h-1.5 rounded bg-white/10 overflow-hidden">
           <div className="h-full bg-brand-yellow transition-all duration-300" style={{ width: `${(answeredCount / total) * 100}%` }} />
         </div>
       </div>
+
+      {draft.resumable && (
+        <div className="mt-4">
+          <ResumeBanner
+            updatedAt={draft.resumable.updatedAt}
+            source={draft.resumable.source}
+            label="your quiz progress"
+            onResume={() => {
+              const v = draft.resume();
+              if (v) { setAnswers(v.answers ?? {}); setIndex(Math.min(v.index ?? 0, total - 1)); }
+            }}
+            onDismiss={draft.dismissResume}
+          />
+        </div>
+      )}
 
       <div key={q.id} className="flex-1 flex flex-col justify-center py-8 animate-[fadeIn_240ms_ease]">
         <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">Question {index + 1} of {total}</p>

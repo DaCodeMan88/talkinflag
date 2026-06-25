@@ -3,6 +3,14 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
+import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
+
+type ProfileDraft = {
+  heightFt: string; heightIn: string; bio: string; instagram: string; highlightUrl: string;
+  weightLbs: string; wingspanIn: string; fortyYard: string; verticalJump: string;
+  yearsActive: string; gradYear: string; occupation: string; education: string;
+};
 
 interface PlayerFormData {
   id: string;
@@ -65,6 +73,25 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Save & resume profile edits (per-player draft). Photo is not part of the draft.
+  const draft = useAutosaveDraft<ProfileDraft>({
+    kind: "profile",
+    ref: player.id,
+    value: {
+      heightFt, heightIn, bio, instagram, highlightUrl, weightLbs, wingspanIn,
+      fortyYard, verticalJump, yearsActive, gradYear, occupation, education,
+    },
+  });
+
+  function applyDraft(v: ProfileDraft) {
+    setHeightFt(v.heightFt ?? ""); setHeightIn(v.heightIn ?? "");
+    setBio(v.bio ?? ""); setInstagram(v.instagram ?? ""); setHighlightUrl(v.highlightUrl ?? "");
+    setWeightLbs(v.weightLbs ?? ""); setWingspanIn(v.wingspanIn ?? "");
+    setFortyYard(v.fortyYard ?? ""); setVerticalJump(v.verticalJump ?? "");
+    setYearsActive(v.yearsActive ?? ""); setGradYear(v.gradYear ?? "");
+    setOccupation(v.occupation ?? ""); setEducation(v.education ?? "");
+  }
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -138,6 +165,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     } else {
       setSaved(true);
       setPhotoFile(null);
+      draft.clear();
       router.refresh();
     }
   }
@@ -159,13 +187,26 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   return (
     <form onSubmit={handleSave} className="space-y-10" noValidate>
 
+      {draft.resumable && (
+        <ResumeBanner
+          updatedAt={draft.resumable.updatedAt}
+          source={draft.resumable.source}
+          label="your profile edits"
+          onResume={() => { const v = draft.resume(); if (v) applyDraft(v); }}
+          onDismiss={draft.dismissResume}
+        />
+      )}
+
       {/* ── Progress ─────────────────────────────────────────────────── */}
       <div className="bg-[#0d0d0d] border border-brand-white/10 p-5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-display uppercase tracking-widest text-brand-white/40">
             Profile Complete
           </span>
-          <span className="text-xs font-display text-brand-yellow">{completionPct}%</span>
+          <span className="flex items-center gap-3">
+            <SaveIndicator status={draft.status} />
+            <span className="text-xs font-display text-brand-yellow">{completionPct}%</span>
+          </span>
         </div>
         <div className="h-1 bg-brand-white/10 rounded-full overflow-hidden">
           <div

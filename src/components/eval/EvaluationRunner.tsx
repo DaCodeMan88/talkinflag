@@ -2,6 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import PerspectiveSummary, { EvalResult } from "./PerspectiveSummary";
+import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
+import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
+
+type EvalDraft = { role: string; started: boolean; index: number; answers: Record<string, number> };
 
 export type RunnerItem = {
   id: string;
@@ -43,6 +47,14 @@ export default function EvaluationRunner({
   const sectionIndex = sections.findIndex((s) => s.key === item?.section_key) + 1;
   const answeredCount = Object.keys(answers).length;
 
+  // Save & resume across the whole evaluation flow.
+  const draft = useAutosaveDraft<EvalDraft>({
+    kind: "eval",
+    value: { role, started, index, answers },
+    enabled: !result,
+    isEmpty: (v) => Object.keys(v.answers).length === 0,
+  });
+
   const submit = useCallback(
     async (finalAnswers: Record<string, number>) => {
       setSubmitting(true);
@@ -55,13 +67,14 @@ export default function EvaluationRunner({
         });
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Submission failed");
         setResult(await res.json());
+        draft.clear();
       } catch (e) {
         setError(e instanceof Error ? e.message : "Something went wrong");
       } finally {
         setSubmitting(false);
       }
     },
-    [role]
+    [role, draft]
   );
 
   const choose = useCallback(
@@ -105,6 +118,26 @@ export default function EvaluationRunner({
           for talent. Takes about 6 minutes. Tap or press 1–5.
         </p>
 
+        {draft.resumable && (
+          <div className="mt-6 text-left">
+            <ResumeBanner
+              updatedAt={draft.resumable.updatedAt}
+              source={draft.resumable.source}
+              label="your evaluation"
+              onResume={() => {
+                const v = draft.resume();
+                if (v) {
+                  setAnswers(v.answers ?? {});
+                  setIndex(Math.min(v.index ?? 0, total - 1));
+                  if (v.role) setRole(v.role);
+                  setStarted(v.started ?? true);
+                }
+              }}
+              onDismiss={draft.dismissResume}
+            />
+          </div>
+        )}
+
         <div className="mt-8 text-left rounded-2xl bg-brand-gray border border-white/10 p-5">
           <p className="font-display uppercase tracking-widest text-xs text-brand-yellow">Answer as</p>
           <div className="mt-3 grid gap-2">
@@ -147,7 +180,10 @@ export default function EvaluationRunner({
           <span>
             Section {sectionIndex}/10 · <span className="text-brand-yellow">{sectionLabel}</span>
           </span>
-          <span>{answeredCount}/{total}</span>
+          <span className="flex items-center gap-3">
+            <SaveIndicator status={draft.status} />
+            <span>{answeredCount}/{total}</span>
+          </span>
         </div>
         <div className="mt-2 h-1.5 rounded bg-white/10 overflow-hidden">
           <div className="h-full bg-brand-yellow transition-all duration-300" style={{ width: `${(answeredCount / total) * 100}%` }} />
