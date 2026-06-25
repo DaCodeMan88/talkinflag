@@ -110,57 +110,74 @@ async function main() {
 
   let totalInserted = 0;
   let totalSkipped = 0;
+  const failures: string[] = [];
 
-  for (const r of rosters) {
-    let inserted = 0;
-    let skipped = 0;
-    const rows: Record<string, unknown>[] = [];
+  try {
+    for (const r of rosters) {
+      let inserted = 0;
+      let skipped = 0;
+      const rows: Record<string, unknown>[] = [];
 
-    for (const p of r.players) {
-      if (await existsAlready(p, r.country, r.gender)) {
-        skipped++;
-        if (DRY_RUN) console.log(`   ⏭️  skip (exists): ${p.first_name} ${p.last_name}`);
-        continue;
+      for (const p of r.players) {
+        if (await existsAlready(p, r.country, r.gender)) {
+          skipped++;
+          if (DRY_RUN) console.log(`   ⏭️  skip (exists): ${p.first_name} ${p.last_name}`);
+          continue;
+        }
+        const stats: Record<string, unknown> = {
+          team_designation: r.team_designation,
+          roster_year: r.roster_year,
+          source: r.source,
+          seed_batch: SEED_BATCH,
+        };
+        if (p.jersey) stats.jersey = p.jersey;
+        if (p.club) stats.club = p.club;
+
+        rows.push({
+          first_name: p.first_name,
+          last_name: p.last_name,
+          position: p.position,
+          gender: r.gender,
+          country: r.country,
+          level: "national",
+          is_verified: false,
+          is_claimed: false,
+          stats,
+        });
+        inserted++;
+        if (DRY_RUN) console.log(`   ➕ would insert: ${p.first_name} ${p.last_name} (${p.position})`);
       }
-      const stats: Record<string, unknown> = {
-        team_designation: r.team_designation,
-        roster_year: r.roster_year,
-        source: r.source,
-        seed_batch: SEED_BATCH,
-      };
-      if (p.jersey) stats.jersey = p.jersey;
-      if (p.club) stats.club = p.club;
 
-      rows.push({
-        first_name: p.first_name,
-        last_name: p.last_name,
-        position: p.position,
-        gender: r.gender,
-        country: r.country,
-        level: "national",
-        is_verified: false,
-        is_claimed: false,
-        stats,
-      });
-      inserted++;
-      if (DRY_RUN) console.log(`   ➕ would insert: ${p.first_name} ${p.last_name} (${p.position})`);
+      // Isolate each team's insert so one failure doesn't hide what already landed.
+      if (!DRY_RUN && rows.length) {
+        const { error } = await db.from("players").insert(rows);
+        if (error) {
+          failures.push(`${r.country} ${r.gender}: ${error.message}`);
+          console.error(`❌ ${r.country} ${r.gender}: insert failed — ${error.message}`);
+          continue;
+        }
+      }
+
+      console.log(
+        `${r.country} ${r.gender}: ${inserted} ${DRY_RUN ? "would insert" : "inserted"}, ${skipped} skipped (of ${r.players.length}).`,
+      );
+      totalInserted += inserted;
+      totalSkipped += skipped;
     }
-
-    if (!DRY_RUN && rows.length) {
-      const { error } = await db.from("players").insert(rows);
-      if (error) throw error;
-    }
-
+  } finally {
     console.log(
-      `${r.country} ${r.gender}: ${inserted} ${DRY_RUN ? "would insert" : "inserted"}, ${skipped} skipped (of ${r.players.length}).`,
+      `\n── Summary (${DRY_RUN ? "DRY RUN — no writes" : "LIVE"}): ${totalInserted} ${DRY_RUN ? "to insert" : "inserted"}, ${totalSkipped} skipped across ${rosters.length} rosters. ──`,
     );
-    totalInserted += inserted;
-    totalSkipped += skipped;
+    if (failures.length) {
+      console.error(`⚠️  ${failures.length} team(s) failed to insert:`);
+      for (const f of failures) console.error(`   - ${f}`);
+      console.error(`Re-run is safe (idempotent dedup guard); rollback this batch with: DELETE FROM players WHERE stats->>'seed_batch' = '${SEED_BATCH}';\n`);
+    } else {
+      console.log("");
+    }
   }
 
-  console.log(
-    `\n── Summary (${DRY_RUN ? "DRY RUN — no writes" : "LIVE"}): ${totalInserted} ${DRY_RUN ? "to insert" : "inserted"}, ${totalSkipped} skipped across ${rosters.length} rosters. ──\n`,
-  );
+  if (failures.length) process.exit(1);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
