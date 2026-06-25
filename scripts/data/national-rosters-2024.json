@@ -1,0 +1,101 @@
+{
+  "_about": "Top-3 IFAF national flag-football rosters not yet in the DB (Phase 3). All player data is verified from the cited per-team sources — no invented names, numbers, clubs, or coaches. Positions are mapped to the players.position CHECK set: QB | WR | DB | LB | C | Rusher | Utility. 'country' values exactly match the IFAF ranking labels in src/lib/world-rankings.ts.",
+  "rosters": [
+    {
+      "country": "Mexico",
+      "gender": "female",
+      "roster_year": "2024",
+      "team_designation": "national_senior",
+      "source": "https://www.americanfootballinternational.com/ifaf-flag-football-wc-team-mexico-veterans-and-new-promises-a-winning-combination/ (jersey numbers + positions); roster cross-checked against http://agenciajrf.com/2024/08/24/la-seleccion-mexicana-presenta-su-roster-de-flag-football-femenil-e-varonil-para-el-mundial-de-finlandia-2024/",
+      "head_coach": "Fernando Alfaro",
+      "key_players": ["Diana Flores (QB)", "Ana Rojano (DB)", "Tania Rincón (QB)", "Rebeca Landa (Rusher)"],
+      "_note": "Full 12-player 2024 IFAF World Championship (Lahti, FIN) roster from americanfootballinternational team feature, which lists jersey numbers and positions. The Agencia JRF federation announcement lists 11 of these names (it omits Ana Aguayo) and uses minor spelling variants (Valery Carranza / Elizabeth Bourde); spellings here follow the dedicated team feature.",
+      "players": [
+        { "first_name": "Diana", "last_name": "Flores", "position": "QB", "jersey": "33" },
+        { "first_name": "Tania", "last_name": "Rincón", "position": "QB", "jersey": "31" },
+        { "first_name": "Ana", "last_name": "Rojano", "position": "DB", "jersey": "15" },
+        { "first_name": "Ángela", "last_name": "Funes", "position": "DB", "jersey": "99" },
+        { "first_name": "Shantal", "last_name": "Bravo", "position": "DB", "jersey": "21" },
+        { "first_name": "Elizabeth", "last_name": "Bouade", "position": "DB", "jersey": "11" },
+        { "first_name": "Victoria", "last_name": "Chávez", "position": "DB", "jersey": "2" },
+        { "first_name": "Rebeca", "last_name": "Landa", "position": "Rusher", "jersey": "12" },
+        { "first_name": "Silvia", "last_name": "Contreras", "position": "WR", "jersey": "3" },
+        { "first_name": "Ana", "last_name": "Aguayo", "position": "WR", "jersey": "9" },
+        { "first_name": "Valeria", "last_name": "Carranza", "position": "WR", "jersey": "18" },
+        { "first_name": "Andrea", "last_name": "Martínez", "position": "WR", "jersey": "13" }
+      ]
+    },
+    {
+      "country": "Mexico",
+      "gender": "male",
+      "roster_year": "2024",
+      "team_designation": "national_senior",
+      "source": "http://agenciajrf.com/2024/08/24/la-seleccion-mexicana-presenta-su-roster-de-flag-football-femenil-e-varonil-para-el-mundial-de-finlandia-2024/",
+      "head_coach": "Fernando Alfaro",
+      "key_players": [],
+      "_note": "12 verified players from the Agencia JRF federation roster presentation for the 2024 IFAF World Championship (Lahti, FIN). The source lists names only — no jersey numbers, positions, or clubs were published — so every player is mapped to position 'Utility' and jersey/club are omitted (not guessed). Mexico men finished 4th in 2024.",
+      "players": [
+        { "first_name": "Víctor", "last_name": "Balderramos", "position": "Utility" },
+        { "first_name": "Bruno", "last_name": "Quijano", "position": "Utility" },
+        { "first_name": "Damián", "last_name": "Chirinos", "position": "Utility" },
+        { "first_name": "Brett", "last_name": "Reyes", "position": "Utility" },
+        { "first_name": "Iván", "last_name": "Orozco", "position": "Utility" },
+        { "first_name": "Jorge", "last_name": "Landeros", "position": "Utility" },
+        { "first_name": "Christopher", "last_name": "Cardona", "position": "Utility" },
+        { "first_name": "Diego", "last_name": "Yáñez", "position": "Utility" },
+        { "first_name": "Sergio", "last_name": "Gonzáles", "position": "Utility" },
+        { "first_name": "Alexis", "last_name": "Ortega", "position": "Utility" },
+        { "first_name": "Alonso", "last_name": "Gaxiola", "position": "Utility" },
+        { "first_name": "Harold", "last_name": "Garibay", "position": "Utility" }
+      ]
+    },
+    {
+      "country": "Great Britain",
+      "gender": "female",
+      "roster_year": "2024",
+      "team_designation": "national_senior",
+      "source": "https://www.insidebritball.co.uk/post/great-britain-women-s-flag-football-set-to-compete-at-the-ifaf-world-championships ; squad announcement: https://www.britishamericanfootball.org/2024/07/flag-world-championships-gb-womens-squad-named/",
+      "head_coach": "Dean Whittingslow",
+      "key_players": ["Brittany Botterill (QB)", "Phoebe Schecter (C)", "Sarah Wakelin (Rusher)"],
+      "_note": "12-player 2024 IFAF World Championship (Lahti, FIN) squad from insidebritball, which lists each player's position; no jersey numbers or clubs were published. The article states original selection Kellie Barrett was replaced by Kate Bruinvels due to injury, so the travelling squad here uses Bruinvels (DB) in place of Barrett. 'Blitz' position mapped to Rusher per schema.",
+      "players": [
+        { "first_name": "Brittany", "last_name": "Botterill", "position": "QB" },
+        { "first_name": "Phoebe", "last_name": "Schecter", "position": "C" },
+        { "first_name": "Marta", "last_name": "Mathews", "position": "WR" },
+        { "first_name": "Grace", "last_name": "Conway", "position": "WR" },
+        { "first_name": "Emily", "last_name": "Kemp", "position": "WR" },
+        { "first_name": "Amy", "last_name": "Wells", "position": "WR" },
+        { "first_name": "Kate", "last_name": "Bruinvels", "position": "DB" },
+        { "first_name": "Natasha", "last_name": "Linton", "position": "DB" },
+        { "first_name": "Ellie", "last_name": "Thorpe", "position": "DB" },
+        { "first_name": "Emma", "last_name": "Dedicoat", "position": "DB" },
+        { "first_name": "Lottie", "last_name": "Laidler", "position": "DB" },
+        { "first_name": "Sarah", "last_name": "Wakelin", "position": "Rusher" }
+      ]
+    },
+    {
+      "country": "Austria",
+      "gender": "male",
+      "roster_year": "2024",
+      "team_designation": "national_senior",
+      "source": "https://de.wikipedia.org/wiki/%C3%96sterreichisches_Herren_Flag-Football-Nationalteam (section \"WM-Kader 2024\")",
+      "head_coach": "Michael Salamon",
+      "key_players": ["Felix Wasshuber (QB)", "Martin Stur (C)", "Daniel Hochleitner (WR)"],
+      "_note": "Full 12-player 2024 IFAF World Championship (Lahti, FIN) roster from the German Wikipedia 'WM-Kader 2024' table, which lists jersey number, position and club for each player. Austria finished 2nd (Silver), losing the final 53-21 to USA. David Tescher had no club listed in the source, so his club is omitted.",
+      "players": [
+        { "first_name": "Felix", "last_name": "Wasshuber", "position": "QB", "jersey": "9", "club": "Vienna Vipers" },
+        { "first_name": "Martin", "last_name": "Stur", "position": "C", "jersey": "13", "club": "Vienna Vipers" },
+        { "first_name": "Gregor", "last_name": "Bräuer", "position": "WR", "jersey": "20", "club": "St. Valentin Veterans" },
+        { "first_name": "Daniel", "last_name": "Hochleitner", "position": "WR", "jersey": "11", "club": "Vienna Vipers" },
+        { "first_name": "Paul", "last_name": "Steidl", "position": "WR", "jersey": "5", "club": "Salzburg Ducks" },
+        { "first_name": "David", "last_name": "Tescher", "position": "WR", "jersey": "6" },
+        { "first_name": "Michael", "last_name": "Bräuer", "position": "DB", "jersey": "17", "club": "St. Valentin Veterans" },
+        { "first_name": "Alexander", "last_name": "Hauch", "position": "DB", "jersey": "4", "club": "Salzburg Ducks" },
+        { "first_name": "Max", "last_name": "Hillebrand", "position": "DB", "jersey": "7", "club": "Vienna Vipers" },
+        { "first_name": "Daniel", "last_name": "Kindl", "position": "DB", "jersey": "2", "club": "Vienna Constables" },
+        { "first_name": "Benedikt", "last_name": "Wolf", "position": "DB", "jersey": "3", "club": "Vienna Vipers" },
+        { "first_name": "Sebastian", "last_name": "Wolf", "position": "DB", "jersey": "8", "club": "Vienna Vipers" }
+      ]
+    }
+  ]
+}
