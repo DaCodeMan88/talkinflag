@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
+import { cmToInches, kgToLbs } from "@/lib/measurements";
 
 const VALID_POSITIONS = ["QB", "WR", "DB", "Rusher"];
 const VALID_LEVELS = ["high_school", "college", "national", "international", "youth"];
@@ -64,8 +65,18 @@ export async function POST(req: NextRequest) {
 
     // Weight
     const weight_lbs_raw = parseInt(body.weight_lbs ?? "");
-    const weight_lbs = !isNaN(weight_lbs_raw) && weight_lbs_raw >= 80 && weight_lbs_raw <= 400
+    let weight_lbs = !isNaN(weight_lbs_raw) && weight_lbs_raw >= 80 && weight_lbs_raw <= 400
       ? weight_lbs_raw : null;
+
+    // Metric path: convert to the canonical imperial columns, overriding the imperial parse.
+    if (body.unit === "metric") {
+      height_in = null;
+      weight_lbs = null;
+      const cm = parseInt(body.height_cm ?? "");
+      if (!isNaN(cm) && cm >= 120 && cm <= 244) height_in = cmToInches(cm);
+      const kg = parseInt(body.weight_kg ?? "");
+      if (!isNaN(kg) && kg >= 36 && kg <= 181) weight_lbs = kgToLbs(kg);
+    }
 
     // Grad year
     const grad_year_raw = parseInt(body.grad_year ?? "");

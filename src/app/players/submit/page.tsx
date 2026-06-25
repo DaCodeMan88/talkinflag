@@ -30,6 +30,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export default function SubmitPlayerPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [unit, setUnit] = useState<"imperial" | "metric">("imperial");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -206,28 +207,67 @@ export default function SubmitPlayerPage() {
           {/* ── Measurables ──────────────────────────────────────── */}
           <SectionLabel>Measurables (optional)</SectionLabel>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2">Height</label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input type="number" name="height_ft" min={4} max={7} placeholder="5" className={inputCls + " pr-8"} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">ft</span>
-                </div>
-                <div className="relative flex-1">
-                  <input type="number" name="height_in_rem" min={0} max={11} placeholder="8" className={inputCls + " pr-8"} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">in</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2">Weight</label>
-              <div className="relative">
-                <input type="number" name="weight_lbs" min={80} max={400} placeholder="145" className={inputCls + " pr-10"} />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">lbs</span>
-              </div>
-            </div>
+          {/* Unit toggle — always submit the active unit so the API parses correctly */}
+          <input type="hidden" name="unit" value={unit} />
+          <div className="flex gap-2">
+            {(["imperial", "metric"] as const).map((u) => (
+              <button
+                key={u}
+                type="button"
+                onClick={() => setUnit(u)}
+                className={
+                  "px-4 py-2 font-display uppercase tracking-widest text-xs transition-colors " +
+                  (unit === u
+                    ? "bg-brand-yellow text-brand-black"
+                    : "border border-brand-white/20 text-brand-white/60 hover:border-brand-yellow")
+                }
+              >
+                {u === "imperial" ? "Imperial" : "Metric"}
+              </button>
+            ))}
           </div>
+
+          {unit === "imperial" ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2">Height</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input type="number" name="height_ft" min={4} max={7} placeholder="5" className={inputCls + " pr-8"} />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">ft</span>
+                  </div>
+                  <div className="relative flex-1">
+                    <input type="number" name="height_in_rem" min={0} max={11} placeholder="8" className={inputCls + " pr-8"} />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">in</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2">Weight</label>
+                <div className="relative">
+                  <input type="number" name="weight_lbs" min={80} max={400} placeholder="145" className={inputCls + " pr-10"} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">lbs</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2">Height</label>
+                <div className="relative">
+                  <input type="number" name="height_cm" min={120} max={244} placeholder="168" className={inputCls + " pr-10"} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">cm</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2">Weight</label>
+                <div className="relative">
+                  <input type="number" name="weight_kg" min={36} max={181} placeholder="58" className={inputCls + " pr-10"} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs pointer-events-none">kg</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-3 gap-4">
             <div>
