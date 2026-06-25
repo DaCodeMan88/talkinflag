@@ -62,7 +62,6 @@
 - **374 total players** · 41 HS · 206 college · 127 national
 - 284 imported from flagsonly.com (tagged `stats.source='flagsonly'`, `is_verified=false`, `is_claimed=false`)
 - 49 national team players tagged `stats.roster_year='2024'` + `stats.team_designation='national_senior'`
-- Backup tables `_backup_players_20260606` + `_backup_events_20260606` — drop after branch merge
 - Player source conventions: `roster_year` (string year), `team_designation` (national_senior/national_junior/national_youth/olympic_2028), `source` (usafootball.com/flagsonly/submitted)
 
 ---
@@ -76,23 +75,13 @@
 > talkinflag.com. Resend (welcome email) deferred to Ambra's to-do list.
 
 ### 🚨 Owner Actions — Needed Now
-These 3 items are blocking final polish on the live site:
+See `docs/ambra-update-2026-06-25.md` for the current, authoritative owner to-do list. Top unlocks:
 
-1. **Ambra's host photos** — Drop 3 files into `public/`:
-   - `public/hosts-hero.jpg` — twin photoshoot hero image
-   - `public/ambra.jpg` — Ambra solo headshot
-   - `public/tika.jpg` — Tika solo headshot
-   - Once dropped in, they will appear automatically on `/about`
+1. **`CRON_SECRET`** (Vercel) — makes the **weekly** ranking refresh auto-fire (Sundays 02:00 UTC) and secures the digest cron.
+2. **`RESEND_API_KEY`** (Vercel) — welcome email, contact copies, weekly digest, and career-update approval emails.
+3. **Spotify / YouTube / Apple IDs** — from the new separate Talkin Flag channels; wire in once they exist.
 
-2. **Spotify show ID** — Audio widget on `/podcast` is now **pre-built** (`SpotifyPlayer` component, wired into the page behind an env gate)
-   - Find: open your Spotify for Podcasters dashboard → copy the Show ID from the URL
-   - Activate: set `NEXT_PUBLIC_SPOTIFY_SHOW_ID` in Vercel (or send the ID and I'll hard-code it). Until set, the "Listen on Spotify" section stays hidden.
-
-3. **Drop DB backup tables** — After confirming the live site looks correct, run these two SQL statements in the Supabase dashboard (SQL Editor):
-   ```sql
-   DROP TABLE IF EXISTS _backup_players_20260606;
-   DROP TABLE IF EXISTS _backup_events_20260606;
-   ```
+> ✅ Done / dropped: host photos (none needed), DB backup tables (already gone), partner URLs (confirmed). Password protection + login CAPTCHA: deferred ("add later").
 
 ### Build Queue
 1. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
@@ -108,12 +97,10 @@ These 3 items are blocking final polish on the live site:
 | YouTube video IDs (×5) | Episode-to-Blog embeds | After YOUTUBE_API_KEY is live, replace `TODO_OWNER` in the 5 interview posts in `static-posts.ts` |
 | Spotify show ID (or `NEXT_PUBLIC_SPOTIFY_SHOW_ID`) | Podcast audio widget on `/podcast` (already built) | Set env var in Vercel, or send the ID |
 | Episode transcripts | Q&A upgrade of the 5 interview blog posts | Provide transcripts → real quotes get woven into the articles |
-| Drop backup tables | Clean Supabase schema | Run `DROP TABLE IF EXISTS _backup_players_20260606; DROP TABLE IF EXISTS _backup_events_20260606;` in SQL Editor |
-| 100-pt TF Rank rubric | TF Rankings Algorithm live scores | Define with Ambra & Tika |
-| `RESEND_API_KEY` | Contact form, welcome email, profile claim outreach | Vercel → Settings → Env Vars |
+| `CRON_SECRET` | Weekly auto ranking refresh + digest cron | Vercel → Settings → Env Vars |
+| `RESEND_API_KEY` | Contact form, welcome email, digest, career-update approval emails | Vercel → Settings → Env Vars |
 | `YOUTUBE_API_KEY` | Live episode fetching + video IDs for blog | Vercel |
 | `PRINTFUL_API_KEY` | Merch store (code done) | Vercel |
-| Domain decision | talkinflag.com vs talkinflagshow.com | Supabase + Google Console |
 
 ---
 

@@ -27,8 +27,6 @@ These are set in **Vercel → Project Settings → Environment Variables** (or j
 | 5 | **Apple Podcasts URL** | "Listen on Apple Podcasts" link | From the new Apple channel |
 | 6 | **`PRINTFUL_API_KEY`** | Merch store (fully built — products appear automatically) | Printful → Vercel |
 | 7 | **Amazon Associates tag** | Swap placeholder `talkinflag-20` for your real affiliate tag | Once approved |
-| 8 | **Leaked-password protection** (optional) | A security best-practice toggle. *No real effect today* since sign-in is passwordless (magic link + Google), but harmless to turn on | Supabase → Authentication → Attack Protection |
-| 9 | **Host photos** (if not already up) | `/about` hero — drop `hosts-hero.jpg`, `ambra.jpg`, `tika.jpg` into the site's `public/` folder | Send the files |
 
 **Most impactful first:** #1 (`CRON_SECRET`) and #2 (`RESEND_API_KEY`) unlock the most — automatic weekly rankings and all the email loops.
 
@@ -43,9 +41,13 @@ These are set in **Vercel → Project Settings → Environment Variables** (or j
 
 ---
 
-## Still parked (not started — flag if you want them prioritized)
+## Next up
 
-- IQ quiz **variants** for Coaches / Experts / Players (today there's one general quiz).
+- **Coach IQ quiz** — building a coach-specific quiz with real purpose: it establishes coaching credibility and feeds the coach poll weight (not just trivia). *Expert and Player quiz variants aren't planned.*
+
+## Parked (by your call)
+
+- Password protection + login CAPTCHA — adding later (site is already secure).
 - International expansion: Spanish translation + Mexico's top women's league depth (Phase G).
 - Gallery redesign + TikTok embeds (need a TikTok handle).
-- A couple of security best-practices (CAPTCHA on login, an extra database-policy safety net) — low priority, the site is already secure.
+- Host photos — no more needed.
