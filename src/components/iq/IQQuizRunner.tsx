@@ -23,6 +23,10 @@ export default function IQQuizRunner({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [scored, setScored] = useState<{ pct: number; raw: number; max: number; results: Result[] } | null>(null);
+  const [shared, setShared] = useState(false);
+
+  const isCoach = category === "coach";
+  const iqLabel = isCoach ? "Coach IQ" : "Flag Football IQ";
 
   const total = questions.length;
   const q = questions[index];
@@ -74,6 +78,7 @@ export default function IQQuizRunner({
     const onKey = (e: KeyboardEvent) => {
       if (q && e.key >= "1" && e.key <= String(Math.min(9, q.choices.length))) choose(Number(e.key) - 1);
       else if (e.key === "ArrowLeft" && index > 0) setIndex((i) => i - 1);
+      else if (e.key === "ArrowRight" && index < total - 1) setIndex((i) => i + 1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -82,11 +87,42 @@ export default function IQQuizRunner({
   // --- results screen ---
   if (scored) {
     const grade = scored.pct >= 85 ? "Elite" : scored.pct >= 70 ? "Sharp" : scored.pct >= 50 ? "Solid" : "Rookie";
+    const share = async () => {
+      const text = `I scored ${scored.pct.toFixed(0)}/100 on the Talkin Flag ${iqLabel} quiz.`;
+      const url = (typeof window !== "undefined" ? window.location.origin : "https://talkinflag.com") + "/iq";
+      try {
+        if (typeof navigator !== "undefined" && navigator.share) {
+          await navigator.share({ title: `Talkin Flag — ${iqLabel}`, text, url });
+        } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+          await navigator.clipboard.writeText(`${text} ${url}`);
+          setShared(true);
+          setTimeout(() => setShared(false), 2000);
+        }
+      } catch { /* user cancelled */ }
+    };
     return (
       <div className="mx-auto max-w-2xl px-4 py-10 text-brand-white">
         <p className="font-display uppercase tracking-widest text-brand-yellow text-sm">{title}</p>
-        <h1 className="font-display uppercase tracking-widest text-5xl mt-2">{scored.pct.toFixed(0)}<span className="text-2xl text-white/50"> / 100</span></h1>
-        <p className="mt-1 text-white/80">Flag Football IQ: <span className="text-brand-yellow">{grade}</span> · {scored.raw}/{scored.max} correct</p>
+        <h1 className="font-display uppercase tracking-widest text-6xl mt-2 inline-block animate-[popIn_400ms_ease]">
+          {scored.pct.toFixed(0)}<span className="text-2xl text-white/50"> / 100</span>
+        </h1>
+        <p className="mt-1 text-white/80">{iqLabel}: <span className="text-brand-yellow">{grade}</span> · {scored.raw}/{scored.max} correct</p>
+
+        {isCoach && (
+          <div className="mt-6 rounded-xl border border-brand-yellow/30 bg-brand-yellow/10 p-5 animate-[fadeIn_300ms_ease]">
+            <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">What this unlocks</p>
+            <p className="mt-2 text-sm text-white/80 leading-relaxed">
+              Voting influence. For verified coaches, your Coach IQ is the primary driver of how much your
+              evaluation vote weighs in the TF Rankings — credible coaches move the rankings more.{" "}
+              <Link href="/how-rankings-work" className="text-brand-yellow underline">See how it works</Link>.
+            </p>
+            <p className="mt-2 text-xs text-white/50">
+              Not a verified coach yet?{" "}
+              <Link href="/coaches/apply" className="text-brand-yellow/90 underline">Apply as a coach</Link>{" "}
+              to put your score to work.
+            </p>
+          </div>
+        )}
 
         <div className="mt-6 space-y-3">
           {scored.results.map((r) => {
@@ -107,9 +143,12 @@ export default function IQQuizRunner({
           })}
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href={`/iq/${category}`} className="rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3">Retake</Link>
-          <Link href="/iq" className="rounded-full border border-white/20 font-display uppercase tracking-widest text-sm px-6 py-3">All quizzes</Link>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Link href={`/iq/${category}`} className="rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-brand-yellow/90 transition">Retake</Link>
+          <button type="button" onClick={share} className="rounded-full border border-white/20 font-display uppercase tracking-widest text-sm px-6 py-3 hover:border-brand-yellow/70 transition">
+            {shared ? "Copied ✓" : "Share"}
+          </button>
+          <Link href="/iq" className="rounded-full border border-white/20 font-display uppercase tracking-widest text-sm px-6 py-3 hover:border-brand-yellow/70 transition">All quizzes</Link>
         </div>
       </div>
     );
@@ -126,7 +165,14 @@ export default function IQQuizRunner({
             <span>{answeredCount}/{total}</span>
           </span>
         </div>
-        <div className="mt-2 h-1.5 rounded bg-white/10 overflow-hidden">
+        <div
+          className="mt-2 h-1.5 rounded bg-white/10 overflow-hidden"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={answeredCount}
+          aria-label="Quiz progress"
+        >
           <div className="h-full bg-brand-yellow transition-all duration-300" style={{ width: `${(answeredCount / total) * 100}%` }} />
         </div>
       </div>
@@ -167,7 +213,7 @@ export default function IQQuizRunner({
         <button onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={index === 0} className="disabled:opacity-30">← Back</button>
         {submitting && <span className="text-brand-yellow">Scoring…</span>}
         {error && <span className="text-red-400 normal-case tracking-normal">{error} — <button className="underline" onClick={() => submit(answers)}>retry</button></span>}
-        <span>Press 1–{Math.min(4, q.choices.length)}</span>
+        <span className="hidden sm:inline">Press 1–{Math.min(9, q.choices.length)} · ← → to move</span>
       </div>
     </div>
   );

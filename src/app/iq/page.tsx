@@ -16,17 +16,38 @@ export default async function IQLandingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let best: number | null = null;
+  let bestGeneral: number | null = null;
+  let bestCoach: number | null = null;
   if (user) {
     const admin = createAdminClient();
     const { data } = await admin
       .from("iq_best")
-      .select("score_pct")
+      .select("category, score_pct")
       .eq("user_id", user.id)
-      .eq("category", "general")
-      .maybeSingle();
-    best = data ? Number(data.score_pct) : null;
+      .in("category", ["general", "coach"]);
+    for (const row of data ?? []) {
+      if (row.category === "general") bestGeneral = Number(row.score_pct);
+      else if (row.category === "coach") bestCoach = Number(row.score_pct);
+    }
   }
+
+  const cards = [
+    {
+      href: "/iq/general",
+      title: "Core IQ",
+      meta: "40 questions · rules, strategy, 5v5 & 7v7",
+      blurb: "How well do you really know the game?",
+      best: bestGeneral,
+    },
+    {
+      href: "/iq/coach",
+      title: "Coach IQ",
+      meta: "32 questions · scheme, situational calls, evaluation",
+      blurb: "Establish coaching credibility — your score feeds your voting influence in the rankings.",
+      best: bestCoach,
+      badge: "Counts toward coach influence",
+    },
+  ];
 
   return (
     <main className="bg-brand-black min-h-screen text-brand-white">
@@ -34,31 +55,42 @@ export default async function IQLandingPage() {
         <p className="font-display uppercase tracking-widest text-brand-yellow text-sm">Talkin Flag</p>
         <h1 className="font-display uppercase tracking-widest text-5xl sm:text-6xl mt-2 leading-none">Flag Football IQ</h1>
         <p className="mt-5 text-white/80 max-w-xl mx-auto">
-          How well do you really know the game? 40 questions on rules, strategy, route concepts, and the 5v5 and 7v7
-          formats — drawn from official rulebooks and the Talkin Flag research library.
+          Test your knowledge of the game — drawn from official rulebooks and the Talkin Flag research library.
+          Your progress saves automatically, so you can pick up where you left off.
         </p>
 
-        <div className="mt-10 rounded-2xl bg-brand-gray border border-white/10 p-6 text-left max-w-md mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-display uppercase tracking-widest text-xl">Core IQ</h2>
-              <p className="text-white/60 text-sm">40 questions · rules, strategy, 5v5 & 7v7</p>
-            </div>
-            {best !== null && (
-              <div className="text-right">
-                <p className="text-[10px] uppercase tracking-widest text-white/50">Your best</p>
-                <p className="font-display text-2xl text-brand-yellow">{best.toFixed(0)}</p>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 max-w-2xl mx-auto text-left">
+          {cards.map((c) => (
+            <div key={c.href} className="flex flex-col rounded-2xl bg-brand-gray border border-white/10 p-6 transition hover:border-brand-yellow/50">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display uppercase tracking-widest text-xl">{c.title}</h2>
+                  <p className="text-white/60 text-sm mt-0.5">{c.meta}</p>
+                </div>
+                {c.best !== null && (
+                  <div className="text-right shrink-0">
+                    <p className="text-[10px] uppercase tracking-widest text-white/50">Your best</p>
+                    <p className="font-display text-2xl text-brand-yellow leading-none">{c.best.toFixed(0)}</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <Link
-            href="/iq/general"
-            className="mt-5 block text-center rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest px-8 py-3"
-          >
-            {best !== null ? "Improve your score" : "Start the quiz"}
-          </Link>
-          {!user && <p className="mt-3 text-center text-[11px] text-white/40">You&apos;ll sign in first so we can save your IQ.</p>}
+              <p className="text-white/50 text-xs mt-3 leading-relaxed flex-1">{c.blurb}</p>
+              {c.badge && (
+                <p className="mt-3 inline-block self-start text-[10px] font-display uppercase tracking-widest text-brand-yellow border border-brand-yellow/30 rounded-full px-2 py-1">
+                  {c.badge}
+                </p>
+              )}
+              <Link
+                href={c.href}
+                className="mt-5 block text-center rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest px-8 py-3 hover:bg-brand-yellow/90 transition"
+              >
+                {c.best !== null ? "Improve your score" : "Start the quiz"}
+              </Link>
+            </div>
+          ))}
         </div>
+
+        {!user && <p className="mt-5 text-center text-[11px] text-white/40">You&apos;ll sign in first so we can save your IQ.</p>}
 
         <p className="mt-8 text-xs text-white/40">
           Want to shape the rankings instead? Take the{" "}
