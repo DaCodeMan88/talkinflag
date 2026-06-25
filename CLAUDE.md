@@ -20,6 +20,17 @@
 
 ## Completed Work — All Shipped ✅
 
+### Coach IQ Quiz + Universal Save-&-Resume (docs/plans/2026-06-25-coach-iq-quiz-and-save-resume.md) ✅ Branch: coach-iq-quiz
+| Phase | Work | Status |
+|-------|------|--------|
+| 1 | Coach IQ quiz seeded (`category='coach'`, 32 Qs) — `scripts/seed-iq-coach.ts` + `scripts/data/iq-questions-coach.json`. Answer key server-only. | ✅ Done |
+| 2 | Per-coach credibility weighting (`src/lib/eval/coachWeight.ts` pure + tested; `coachCredibility.ts` loader; weighted aggregate in `recompute.ts`). Coach role only; expert/host stay equal-weight. Surfaced on coach profile, `/admin/coaches`, `/how-rankings-work`. | ✅ Done |
+| 3 | Universal save-&-resume — `008_form_drafts.sql` (RLS no-policy), `/api/drafts`, `useAutosaveDraft` hook (localStorage + debounced cross-device). Wired into IQ runner, eval runner, profile edit, career-update form. | ✅ Done |
+| 4 | A+++ polish — Coach IQ card on `/iq`, animated results + "what this unlocks" coach explainer + Share, resume banner / "Saved ✓", reduced-motion + aria. | ✅ Done |
+| — | **Owner action:** set `CRON_SECRET` in Vercel so the weekly recompute auto-applies coach weights (manual admin recompute works regardless). | ⏳ Pending |
+| — | **Owner action:** confirm each Coach IQ `correct_index` (DRAFT) before it formally counts toward voting influence. | ⏳ Pending |
+
+
 ### Traffic Growth Roadmap (docs/plans/2026-06-05-traffic-growth-roadmap.md)
 | Phase | Feature | Status |
 |-------|---------|--------|
