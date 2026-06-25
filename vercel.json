@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/admin/recompute-rankings",
+      "schedule": "0 2 * * 0"
+    },
+    {
       "path": "/api/digest/send",
       "schedule": "0 9 * * 0"
     }

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getRankingsStaleInfo } from "@/lib/career/service";
 import RankingsRecomputePanel from "./RankingsRecomputePanel";
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "")
@@ -26,11 +27,14 @@ export default async function AdminRankingsPage() {
     .limit(1)
     .maybeSingle();
 
+  const { stale } = await getRankingsStaleInfo();
+
   return (
     <RankingsRecomputePanel
       totalPlayers={totalPlayers ?? 0}
       rankedPlayers={rankedPlayers ?? 0}
       lastRun={latestSnapshot?.snapshotted_at ?? null}
+      stale={stale}
     />
   );
 }

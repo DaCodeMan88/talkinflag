@@ -6,9 +6,10 @@ interface Props {
   totalPlayers: number;
   rankedPlayers: number;
   lastRun: string | null;
+  stale?: boolean;
 }
 
-export default function RankingsRecomputePanel({ totalPlayers, rankedPlayers, lastRun }: Props) {
+export default function RankingsRecomputePanel({ totalPlayers, rankedPlayers, lastRun, stale }: Props) {
   const [status, setStatus] = useState<"idle" | "running" | "done" | "error">("idle");
   const [result, setResult] = useState<{ rankedCount?: number; error?: string } | null>(null);
 
@@ -44,6 +45,16 @@ export default function RankingsRecomputePanel({ totalPlayers, rankedPlayers, la
         </p>
       </div>
 
+      {stale && status !== "done" && (
+        <div className="border border-[#FDDD58]/40 bg-[#FDDD58]/5 p-4 mb-8 flex items-center gap-3">
+          <span className="text-[#FDDD58] text-lg">⟳</span>
+          <p className="text-white/70 text-sm">
+            Ranking-relevant career updates have been approved since the last recompute.{" "}
+            <span className="text-[#FDDD58]">Recompute recommended.</span>
+          </p>
+        </div>
+      )}
+
       {/* Status cards */}
       <div className="grid grid-cols-3 gap-3 mb-8">
         {[
@@ -70,7 +81,7 @@ export default function RankingsRecomputePanel({ totalPlayers, rankedPlayers, la
           <li>Snapshot top 100 to <code className="text-[#FDDD58]">ranking_snapshots</code></li>
         </ol>
         <p className="text-white/25 text-xs mt-4">
-          Runs automatically at 02:00 UTC nightly via pg_cron when configured.
+          Runs automatically once a week, Sundays at 02:00 UTC, when the cron is configured.
         </p>
       </div>
 
