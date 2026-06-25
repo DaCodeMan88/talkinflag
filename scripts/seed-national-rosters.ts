@@ -140,7 +140,10 @@ async function main() {
           gender: r.gender,
           country: r.country,
           level: "national",
-          is_verified: false,
+          // Curated official national-team rosters from cited federation sources — verified like the
+          // existing USA/Italy squads. /teams filters players to is_verified=true, so this is required
+          // for the roster to render on the World tab.
+          is_verified: true,
           is_claimed: false,
           stats,
         });
