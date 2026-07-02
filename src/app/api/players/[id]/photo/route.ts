@@ -43,13 +43,13 @@ export async function POST(
   const bytes = await file.arrayBuffer();
 
   // Delete old photo first (ignore error if none exists)
-  await authClient.storage.from("player-photos").remove([
+  await db.storage.from("player-photos").remove([
     `${id}/avatar.jpg`,
     `${id}/avatar.png`,
     `${id}/avatar.webp`,
   ]);
 
-  const { error: uploadError } = await authClient.storage
+  const { error: uploadError } = await db.storage
     .from("player-photos")
     .upload(path, bytes, { contentType: file.type, upsert: true });
 
@@ -57,14 +57,19 @@ export async function POST(
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
 
-  const { data: { publicUrl } } = authClient.storage
+  const { data: { publicUrl } } = db.storage
     .from("player-photos")
     .getPublicUrl(path);
 
   // Cache-bust with timestamp
   const photoUrl = `${publicUrl}?t=${Date.now()}`;
 
-  await db.from("players").update({ photo_url: photoUrl }).eq("id", id);
+  const { error } = await db.from("players").update({ photo_url: photoUrl }).eq("id", id);
+
+  if (error) {
+    console.error("Player photo update error:", error.message);
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+  }
 
   return NextResponse.json({ photo_url: photoUrl });
 }
