@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -6,12 +7,14 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createClient();
+  const authClient = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await authClient.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: player } = await supabase
+  const db = createServerClient();
+
+  const { data: player } = await db
     .from("players")
     .select("id, claimed_by, is_claimed, stats")
     .eq("id", id)
@@ -86,12 +89,15 @@ export async function PATCH(
     identity.grad_year = isNaN(v) || v < 2024 || v > 2032 ? null : v;
   }
 
-  const { error } = await supabase
+  const { error } = await db
     .from("players")
     .update({ ...identity, stats: mergedStats })
     .eq("id", id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Player profile update error:", error.message);
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
