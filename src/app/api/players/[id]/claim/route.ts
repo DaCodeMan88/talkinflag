@@ -25,7 +25,10 @@ export async function POST(
     .select("id")
     .maybeSingle();
 
-  if (error) return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+  if (error) {
+    console.error("Player claim error:", error.message);
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+  }
   if (!updated) return NextResponse.json({ error: "This profile has already been claimed." }, { status: 409 });
 
   return NextResponse.json({ ok: true });
