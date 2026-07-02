@@ -69,7 +69,7 @@ export async function POST(
   }
 
   // Check for existing pending submission for same stat
-  const { data: existing } = await supabase
+  const { data: existing } = await db
     .from("stat_verifications")
     .select("id, status")
     .eq("player_id", id)
@@ -84,7 +84,7 @@ export async function POST(
     return NextResponse.json({ error: msg }, { status: 409 });
   }
 
-  const { error } = await supabase.from("stat_verifications").insert({
+  const { error } = await db.from("stat_verifications").insert({
     player_id: id,
     stat_key,
     stat_value,
