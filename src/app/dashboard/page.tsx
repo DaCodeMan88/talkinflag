@@ -52,8 +52,10 @@ export default async function DashboardPage({
 
   const { claimed, tour } = await searchParams;
 
+  const db = createAdminClient();
+
   const [{ data: player }, { data: coachApp }] = await Promise.all([
-    supabase
+    db
       .from("players")
       .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified")
       .eq("claimed_by", user.id)
@@ -94,7 +96,6 @@ export default async function DashboardPage({
   }
 
   // Onboarding checklist — derived from real account state.
-  const db = createAdminClient();
   const [{ data: evalRow }, { data: iqRow }] = await Promise.all([
     db.from("eval_responses").select("id").eq("user_id", user.id).limit(1).maybeSingle(),
     db.from("iq_best").select("score_pct").eq("user_id", user.id).eq("category", "general").maybeSingle(),
