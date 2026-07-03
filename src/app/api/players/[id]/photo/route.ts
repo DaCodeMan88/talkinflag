@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
@@ -6,13 +7,15 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const supabase = await createClient();
+  const authClient = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await authClient.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const db = createServerClient();
+
   // Verify this player is claimed by this user
-  const { data: player } = await supabase
+  const { data: player } = await db
     .from("players")
     .select("id, claimed_by, is_claimed")
     .eq("id", id)
@@ -40,13 +43,13 @@ export async function POST(
   const bytes = await file.arrayBuffer();
 
   // Delete old photo first (ignore error if none exists)
-  await supabase.storage.from("player-photos").remove([
+  await db.storage.from("player-photos").remove([
     `${id}/avatar.jpg`,
     `${id}/avatar.png`,
     `${id}/avatar.webp`,
   ]);
 
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError } = await db.storage
     .from("player-photos")
     .upload(path, bytes, { contentType: file.type, upsert: true });
 
@@ -54,14 +57,19 @@ export async function POST(
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
 
-  const { data: { publicUrl } } = supabase.storage
+  const { data: { publicUrl } } = db.storage
     .from("player-photos")
     .getPublicUrl(path);
 
   // Cache-bust with timestamp
   const photoUrl = `${publicUrl}?t=${Date.now()}`;
 
-  await supabase.from("players").update({ photo_url: photoUrl }).eq("id", id);
+  const { error } = await db.from("players").update({ photo_url: photoUrl }).eq("id", id);
+
+  if (error) {
+    console.error("Player photo update error:", error.message);
+    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+  }
 
   return NextResponse.json({ photo_url: photoUrl });
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 
 const VALID_STAT_KEYS = [
   "height_in", "weight_lbs", "wingspan_in",
@@ -21,7 +22,9 @@ export async function POST(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: player } = await supabase
+  const db = createServerClient();
+
+  const { data: player } = await db
     .from("players")
     .select("id, claimed_by, is_claimed, stats, height_in, weight_lbs")
     .eq("id", id)
@@ -66,7 +69,7 @@ export async function POST(
   }
 
   // Check for existing pending submission for same stat
-  const { data: existing } = await supabase
+  const { data: existing } = await db
     .from("stat_verifications")
     .select("id, status")
     .eq("player_id", id)
@@ -81,7 +84,7 @@ export async function POST(
     return NextResponse.json({ error: msg }, { status: 409 });
   }
 
-  const { error } = await supabase.from("stat_verifications").insert({
+  const { error } = await db.from("stat_verifications").insert({
     player_id: id,
     stat_key,
     stat_value,

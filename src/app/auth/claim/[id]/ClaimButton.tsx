@@ -27,20 +27,13 @@ export default function ClaimButton({
       return;
     }
 
-    const { error } = await supabase
-      .from("players")
-      .update({
-        is_claimed: true,
-        claimed_by: user.id,
-        claimed_at: new Date().toISOString(),
-      })
-      .eq("id", playerId)
-      .eq("is_claimed", false); // prevent race condition overwrite
+    const res = await fetch(`/api/players/${playerId}/claim`, { method: "POST" });
+    const json = await res.json().catch(() => ({}));
 
     setLoading(false);
 
-    if (error) {
-      setError("Something went wrong. Please try again.");
+    if (!res.ok) {
+      setError(json.error || "Something went wrong. Please try again.");
     } else {
       router.push(`/dashboard?claimed=${playerId}`);
     }
