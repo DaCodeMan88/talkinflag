@@ -54,11 +54,13 @@ export default async function AdminHomePage({
       .is("archived_at", null),
   ]);
 
-  // career_updates + profile_reports are RLS-locked (no policy) → count via the service-role client.
+  // career_updates + profile_reports + pending player registrations are RLS-locked
+  // (no policy) → count via the service-role client.
   const adminDb = createAdminClient();
-  const [{ count: pendingCareer }, { count: openReports }] = await Promise.all([
+  const [{ count: pendingCareer }, { count: openReports }, { count: pendingPlayers }] = await Promise.all([
     adminDb.from("career_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
     adminDb.from("profile_reports").select("id", { count: "exact", head: true }).eq("status", "open"),
+    adminDb.from("players").select("id", { count: "exact", head: true }).eq("is_approved", false),
   ]);
 
   const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
@@ -66,7 +68,7 @@ export default async function AdminHomePage({
       label: "Players",
       description: "Add, edit, verify, or remove any athlete",
       href: "/admin/players",
-      count: 0,
+      count: pendingPlayers ?? 0,
       tour: "admin-players",
     },
     {
@@ -140,7 +142,7 @@ export default async function AdminHomePage({
     },
   ];
 
-  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0);
+  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0) + (pendingPlayers ?? 0);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">

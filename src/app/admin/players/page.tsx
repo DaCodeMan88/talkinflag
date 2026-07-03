@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 import { getAdminUser } from "@/lib/admin";
+import PendingReviewActions from "./PendingReviewActions";
 
 export const dynamic = "force-dynamic";
 
@@ -14,19 +15,22 @@ const LEVEL_LABEL: Record<string, string> = {
 export default async function AdminPlayersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; tab?: string }>;
 }) {
   if (!(await getAdminUser())) redirect("/");
-  const { q } = await searchParams;
-  const supabase = await createClient();
+  const { q, tab } = await searchParams;
+  const pending = tab === "pending";
+  const supabase = createServerClient();
 
   let query = supabase
     .from("players")
-    .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed")
-    .order("last_name", { ascending: true })
+    .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed, is_approved, claimed_by, created_at")
+    .order(pending ? "created_at" : "last_name", { ascending: pending })
     .limit(100);
 
-  if (q?.trim()) {
+  if (pending) {
+    query = query.eq("is_approved", false);
+  } else if (q?.trim()) {
     const term = `%${q.trim()}%`;
     query = query.or(
       `first_name.ilike.${term},last_name.ilike.${term},school_or_team.ilike.${term}`
@@ -34,9 +38,10 @@ export default async function AdminPlayersPage({
   }
 
   const { data: players } = await query;
-  const { count: total } = await supabase
-    .from("players")
-    .select("id", { count: "exact", head: true });
+  const [{ count: total }, { count: pendingCount }] = await Promise.all([
+    supabase.from("players").select("id", { count: "exact", head: true }),
+    supabase.from("players").select("id", { count: "exact", head: true }).eq("is_approved", false),
+  ]);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
@@ -54,30 +59,57 @@ export default async function AdminPlayersPage({
         </Link>
       </div>
 
-      <form method="get" className="mb-6">
-        <input
-          name="q"
-          defaultValue={q ?? ""}
-          placeholder="Search by name or team…"
-          className="w-full bg-[#111] border border-white/10 text-white placeholder-white/25 px-4 py-3 text-sm focus:outline-none focus:border-[#FDDD58]/50 transition-colors"
-        />
-      </form>
+      <div className="flex items-center gap-1 mb-6 border-b border-white/10">
+        <Link
+          href="/admin/players"
+          className={`px-4 py-2 text-xs font-display uppercase tracking-widest border-b-2 transition-colors ${
+            !pending ? "border-[#FDDD58] text-[#FDDD58]" : "border-transparent text-white/40 hover:text-white/70"
+          }`}
+        >
+          All
+        </Link>
+        <Link
+          href="/admin/players?tab=pending"
+          className={`px-4 py-2 text-xs font-display uppercase tracking-widest border-b-2 transition-colors flex items-center gap-2 ${
+            pending ? "border-[#FDDD58] text-[#FDDD58]" : "border-transparent text-white/40 hover:text-white/70"
+          }`}
+        >
+          Pending Review
+          {(pendingCount ?? 0) > 0 && (
+            <span className="bg-[#FDDD58] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pendingCount}</span>
+          )}
+        </Link>
+      </div>
 
-      {q?.trim() && (
+      {!pending && (
+        <form method="get" className="mb-6">
+          <input
+            name="q"
+            defaultValue={q ?? ""}
+            placeholder="Search by name or team…"
+            className="w-full bg-[#111] border border-white/10 text-white placeholder-white/25 px-4 py-3 text-sm focus:outline-none focus:border-[#FDDD58]/50 transition-colors"
+          />
+        </form>
+      )}
+
+      {!pending && q?.trim() && (
         <p className="text-white/30 text-xs mb-4">
           Showing matches for &ldquo;{q.trim()}&rdquo;{" "}
           <Link href="/admin/players" className="text-[#FDDD58] hover:underline">clear</Link>
         </p>
       )}
 
+      {pending && (players ?? []).length === 0 && (
+        <p className="text-white/50 text-sm py-8 text-center">No pending registrations. ✓</p>
+      )}
+
       <div className="space-y-2">
         {(players ?? []).map((p) => (
-          <Link
+          <div
             key={p.id}
-            href={`/admin/players/${p.id}/edit`}
             className="flex items-center justify-between bg-[#0d0d0d] border border-white/10 hover:border-[#FDDD58]/40 transition-colors px-4 py-3 group"
           >
-            <div className="min-w-0">
+            <Link href={`/admin/players/${p.id}/edit`} className="min-w-0 flex-1">
               <p className="text-white text-sm font-semibold group-hover:text-[#FDDD58] transition-colors truncate">
                 {p.first_name} {p.last_name}
               </p>
@@ -86,24 +118,28 @@ export default async function AdminPlayersPage({
                   .filter(Boolean)
                   .join(" · ")}
               </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 ml-3">
+            </Link>
+            <div className="flex items-center gap-3 shrink-0 ml-3">
               {p.is_verified && (
                 <span className="text-[#FDDD58] text-[10px] font-display uppercase tracking-widest">✓ Verified</span>
               )}
-              {p.is_claimed && (
+              {p.is_claimed && !pending && (
                 <span className="text-white/30 text-[10px] font-display uppercase tracking-widest">Claimed</span>
               )}
-              <span className="text-white/20 group-hover:text-[#FDDD58] transition-colors">→</span>
+              {pending ? (
+                <PendingReviewActions playerId={p.id} />
+              ) : (
+                <Link href={`/admin/players/${p.id}/edit`} className="text-white/20 group-hover:text-[#FDDD58] transition-colors">→</Link>
+              )}
             </div>
-          </Link>
+          </div>
         ))}
-        {(players ?? []).length === 0 && (
+        {!pending && (players ?? []).length === 0 && (
           <p className="text-white/30 text-sm py-8 text-center">No players found.</p>
         )}
       </div>
 
-      {(players ?? []).length === 100 && (
+      {!pending && (players ?? []).length === 100 && (
         <p className="text-white/25 text-xs mt-4 text-center">
           Showing first 100. Use search to narrow down.
         </p>

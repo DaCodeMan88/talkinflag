@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase";
 import { getAdminUser } from "@/lib/admin";
 import { logClaimEvent } from "@/lib/claims";
+import { sendEmail } from "@/lib/email";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS = ["high_school", "college", "national"];
@@ -97,6 +98,40 @@ export async function updatePlayer(id: string, formData: FormData) {
   revalidatePath("/admin/players");
   revalidatePath(`/admin/players/${id}/edit`);
   revalidatePath(`/players/${id}`);
+  revalidatePath("/players");
+}
+
+export async function approvePlayer(id: string) {
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createServerClient();
+
+  const { data: player, error } = await db
+    .from("players")
+    .update({ is_approved: true })
+    .eq("id", id)
+    .select("first_name, last_name, claimed_by")
+    .single();
+  if (error) throw new Error(error.message);
+
+  if (player?.claimed_by) {
+    const { data: userData } = await db.auth.admin.getUserById(player.claimed_by);
+    const email = userData?.user?.email;
+    if (email) {
+      await sendEmail({
+        to: email,
+        subject: "Your Talkin Flag profile is live!",
+        html: `
+          <div style="font-family:sans-serif;max-width:600px">
+            <h2 style="color:#FDDD58">You're Live!</h2>
+            <p>Hi ${player.first_name}, your profile on Talkin Flag has been approved and is now visible to coaches, scouts, and national team selectors.</p>
+            <p><a href="https://talkinflag.com/dashboard">View your dashboard →</a></p>
+          </div>
+        `,
+      });
+    }
+  }
+
+  revalidatePath("/admin/players");
   revalidatePath("/players");
 }
 
