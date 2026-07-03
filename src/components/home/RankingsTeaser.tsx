@@ -16,6 +16,7 @@ export async function RankingsTeaser() {
   const { data: players } = await supabase
     .from("players")
     .select("id, first_name, last_name, position, school_or_team, state, grad_year, level, ranking_national, is_verified, gender")
+    .eq("is_approved", true)
     .not("ranking_national", "is", null)
     .eq("level", "high_school")
     .eq("gender", "female")

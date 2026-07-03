@@ -10,6 +10,7 @@ export async function PlayersSpotlight() {
   const { data: players } = await supabase
     .from("players")
     .select("*")
+    .eq("is_approved", true)
     .not("ranking_national", "is", null)
     .order("ranking_national", { ascending: true })
     .limit(4) as { data: Player[] | null };

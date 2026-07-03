@@ -13,9 +13,9 @@ export async function StatsBar({ episodeCount }: StatsBarProps) {
   try {
     const supabase = createServerClient();
     const [playersRes, coachesRes, countriesRes] = await Promise.all([
-      supabase.from("players").select("id", { count: "exact", head: true }),
+      supabase.from("players").select("id", { count: "exact", head: true }).eq("is_approved", true),
       supabase.from("coaches").select("id", { count: "exact", head: true }),
-      supabase.from("players").select("country").not("country", "is", null),
+      supabase.from("players").select("country").eq("is_approved", true).not("country", "is", null),
     ]);
     memberCount = (playersRes.count ?? 0) + (coachesRes.count ?? 0);
     const uniqueCountries = new Set(

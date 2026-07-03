@@ -25,6 +25,7 @@ export default async function SimilarPlayers({ playerId }: { playerId: string })
   const { data: players } = await supabase
     .from("players")
     .select("id, first_name, last_name, position, level, country_code, league_key, photo_url, is_verified, ranking_national")
+    .eq("is_approved", true)
     .in("id", ids);
   if (!players || players.length === 0) return null;
 

@@ -15,6 +15,7 @@ import { buildMetadata } from "@/lib/seo";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Suspense } from "react";
 import { FeaturedAthleteSection } from "@/components/home/FeaturedAthleteSection";
+import { JoinCTA } from "@/components/home/JoinCTA";
 import { Top10PlaysTeaser } from "@/components/home/Top10PlaysTeaser";
 import { LatestResultsTeaser } from "@/components/home/LatestResultsTeaser";
 
@@ -90,6 +91,8 @@ export default async function HomePage() {
       <Suspense fallback={<div className="bg-brand-yellow py-6 h-20" />}>
         <StatsBar episodeCount={episodes.length} />
       </Suspense>
+
+      <JoinCTA />
 
       <Suspense fallback={null}>
         <FeaturedAthleteSection />
