@@ -447,14 +447,4 @@ Same live-DB approach as Task 5 — claim a throwaway test player (Task 5 should
 
 ## After this ships — teammate test script (share with Ambra & Tika)
 
-Once Tasks 1–6 are merged and verified:
-
-1. Teammate signs in at `/auth/login` (Google or magic-link email — no password).
-2. They search `/players` for their own name.
-   - **Found** (most national-team players are already seeded) → open their profile → "Is this you? Claim Profile."
-   - **Not found** → `/players/submit` to create a new profile, then search again and claim it.
-3. From `/dashboard`, complete their profile (`/dashboard/edit`: bio, photo, measurables).
-4. Try `/evaluate` (Athlete Evaluation) and `/iq/general` (Flag IQ quiz) — both feed the ranking system.
-5. Feedback channel: however Ambra/Tika want it collected (group chat, form, etc. — not built, just needs a channel).
-
-Nothing in this script needs new code beyond Tasks 1–4 above — everything else (search, submit, evaluate, IQ, onboarding checklist) is already live and working.
+Pulled out into its own doc so it's easy to find and forward: `docs/teammate-test-script-2026-07-02.md`.
