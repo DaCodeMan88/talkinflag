@@ -36,7 +36,8 @@ export default async function TeamsPage() {
       .from("players")
       .select("id, first_name, last_name, position, country, gender, school_or_team, stats")
       .or("level.eq.national,level.eq.international")
-      .eq("is_verified", true),
+      .eq("is_verified", true)
+      .eq("is_approved", true),
   ]);
 
   return (

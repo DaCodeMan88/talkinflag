@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 
 export const metadata = { title: "Following | Talkin Flag" };
 
@@ -21,11 +22,13 @@ export default async function FollowingPage() {
   const playerIds = follows.filter((f) => f.followed_type === "player").map((f) => f.followed_id);
   const coachIds = follows.filter((f) => f.followed_type === "coach").map((f) => f.followed_id);
 
+  const db = createServerClient();
   const [playersRes, coachesRes] = await Promise.all([
     playerIds.length > 0
-      ? supabase
+      ? db
           .from("players")
           .select("id, first_name, last_name, position, school_or_team, photo_url, is_verified, level")
+          .eq("is_approved", true)
           .in("id", playerIds)
       : { data: [] },
     coachIds.length > 0

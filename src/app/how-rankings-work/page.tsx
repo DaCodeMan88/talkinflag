@@ -40,9 +40,9 @@ export default async function HowRankingsWorkPage() {
 
   const [{ count: totalPlayers }, { count: verifiedPlayers }, { count: rankedPlayers }] =
     await Promise.all([
-      supabase.from("players").select("id", { count: "exact", head: true }),
-      supabase.from("players").select("id", { count: "exact", head: true }).eq("is_verified", true),
-      supabase.from("players").select("id", { count: "exact", head: true }).not("ranking_national", "is", null),
+      supabase.from("players").select("id", { count: "exact", head: true }).eq("is_approved", true),
+      supabase.from("players").select("id", { count: "exact", head: true }).eq("is_verified", true).eq("is_approved", true),
+      supabase.from("players").select("id", { count: "exact", head: true }).not("ranking_national", "is", null).eq("is_approved", true),
     ]);
 
   return (

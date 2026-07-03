@@ -23,12 +23,13 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
     const { data } = await supabase
       .from("players")
       .select("first_name, last_name, position, ranking_national, level, photo_url, school_or_team, grad_year, height_in, weight_lbs")
       .eq("id", id)
+      .eq("is_approved", true)
       .single();
 
     if (data) {

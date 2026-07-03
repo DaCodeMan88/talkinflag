@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
           .gte("created_at", sevenDaysAgo)
       : { data: [] },
     allPlayerIds.length > 0
-      ? supabase.from("players").select("id, first_name, last_name").in("id", allPlayerIds)
+      ? supabase.from("players").select("id, first_name, last_name").in("id", allPlayerIds).eq("is_approved", true)
       : { data: [] },
     allCoachIds.length > 0
       ? supabase.from("coaches").select("id, first_name, last_name").in("id", allCoachIds)

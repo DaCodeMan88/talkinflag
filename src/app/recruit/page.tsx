@@ -46,6 +46,7 @@ export default async function RecruitPage() {
     .from("players")
     .select("id, first_name, last_name, position, level, school_or_team, city, state, country, country_code, grad_year, photo_url, height_in, weight_lbs, stats, recruiting_targets, is_verified, is_claimed, created_at")
     .eq("recruiting_open", true)
+    .eq("is_approved", true)
     .order("created_at", { ascending: false })
     .limit(100);
 

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 import { buildMetadata } from "@/lib/seo";
 import { CompareShareButton } from "./CompareShareButton";
 import { formatHeight, formatWeight } from "@/lib/measurements";
@@ -31,10 +31,10 @@ type ComparePlayer = {
 export async function generateMetadata({ searchParams }: Props) {
   const { a, b } = await searchParams;
   if (!a || !b) return buildMetadata({ title: "Compare Players | Talkin Flag", description: "Compare flag football players side-by-side — stats, ranking, and measurables.", path: "/players/compare" });
-  const supabase = await createClient();
+  const supabase = createServerClient();
   const [{ data: pa }, { data: pb }] = await Promise.all([
-    supabase.from("players").select("first_name, last_name").eq("id", a).single(),
-    supabase.from("players").select("first_name, last_name").eq("id", b).single(),
+    supabase.from("players").select("first_name, last_name").eq("id", a).eq("is_approved", true).single(),
+    supabase.from("players").select("first_name, last_name").eq("id", b).eq("is_approved", true).single(),
   ]);
   const nameA = pa ? `${pa.first_name} ${pa.last_name}` : "Player A";
   const nameB = pb ? `${pb.first_name} ${pb.last_name}` : "Player B";
@@ -164,17 +164,19 @@ function winner(row: StatRow): "a" | "b" | null {
 }
 
 async function ComparePlayers({ idA, idB }: { idA: string; idB: string }) {
-  const supabase = await createClient();
+  const supabase = createServerClient();
   const [{ data: rawA }, { data: rawB }] = await Promise.all([
     supabase
       .from("players")
       .select("id, first_name, last_name, position, level, school_or_team, country, photo_url, ranking_national, height_in, weight_lbs, stats, is_verified, grad_year")
       .eq("id", idA)
+      .eq("is_approved", true)
       .single(),
     supabase
       .from("players")
       .select("id, first_name, last_name, position, level, school_or_team, country, photo_url, ranking_national, height_in, weight_lbs, stats, is_verified, grad_year")
       .eq("id", idB)
+      .eq("is_approved", true)
       .single(),
   ]);
 

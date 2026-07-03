@@ -173,6 +173,11 @@ export default async function PlayerDetailPage({
 
   const authSupabase = await createClient();
   const { data: { user } } = await authSupabase.auth.getUser();
+
+  // Unapproved self-submitted profiles are visible only to their owner — everyone
+  // else sees a not-found, same as if the profile didn't exist.
+  if (!player.is_approved && player.claimed_by !== user?.id) notFound();
+
   let isVerifiedCoach = false;
   if (user) {
     const { data: coachRow } = await authSupabase
@@ -191,6 +196,7 @@ export default async function PlayerDetailPage({
           "id, first_name, last_name, position, level, school_or_team, country, ranking_national, is_verified, highlight_url, instagram"
         )
         .eq("is_verified", true)
+        .eq("is_approved", true)
         .eq("position", player.position)
         .neq("id", id)
         .order("ranking_national", { ascending: true, nullsFirst: false })
@@ -281,6 +287,12 @@ export default async function PlayerDetailPage({
           >
             ← Players
           </Link>
+
+          {!player.is_approved && (
+            <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-6 text-brand-yellow text-sm font-display uppercase tracking-widest">
+              Pending Review — only visible to you until an admin approves it
+            </div>
+          )}
 
           <div className="flex flex-col md:flex-row md:items-end gap-6">
             {/* Avatar */}

@@ -22,6 +22,7 @@ export default async function PlayersPage() {
     supabase
       .from("players")
       .select("*")
+      .eq("is_approved", true)
       .or("is_verified.eq.true,ranking_national.not.is.null")
       .order("ranking_national", { ascending: true, nullsFirst: false })
       .limit(300) as unknown as Promise<{ data: Player[] | null }>,

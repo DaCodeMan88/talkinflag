@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
@@ -11,11 +11,12 @@ export async function GET(req: NextRequest) {
 
   if (q.length < 2) return NextResponse.json({ players: [] });
 
-  const supabase = await createClient();
+  const supabase = createServerClient();
 
   let query = supabase
     .from("players")
     .select("id, first_name, last_name, position, school_or_team, photo_url")
+    .eq("is_approved", true)
     .or(`first_name.ilike.%${q}%,last_name.ilike.%${q}%,school_or_team.ilike.%${q}%`)
     .order("ranking_national", { ascending: true, nullsFirst: false })
     .limit(15);

@@ -71,6 +71,7 @@ export default async function EpisodePage({
     const { data } = await supabase
       .from("players")
       .select("id, first_name, last_name, position, school_or_team")
+      .eq("is_approved", true)
       .or(
         nameParts.map((n) => `first_name.ilike.%${n}%,last_name.ilike.%${n}%`).join(",")
       )

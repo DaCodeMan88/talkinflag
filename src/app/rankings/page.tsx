@@ -30,6 +30,7 @@ export default async function RankingsPage() {
   const { data: players } = await supabase
     .from("players")
     .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed, ranking_national, ranking_position, stats, gender")
+    .eq("is_approved", true)
     .not("ranking_national", "is", null)
     .order("ranking_national", { ascending: true })
     .limit(100);

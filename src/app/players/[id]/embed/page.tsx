@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 import { formatHeight, formatWeight } from "@/lib/measurements";
 
 export const revalidate = 3600;
@@ -20,7 +20,7 @@ function formatLevel(level: string | null): string {
 
 export default async function PlayerEmbedPage({ params }: Props) {
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = createServerClient();
 
   const { data: player } = await supabase
     .from("players")
@@ -28,6 +28,7 @@ export default async function PlayerEmbedPage({ params }: Props) {
       "id, first_name, last_name, position, level, school_or_team, country, photo_url, ranking_national, height_in, weight_lbs, stats, is_verified"
     )
     .eq("id", id)
+    .eq("is_approved", true)
     .single();
 
   if (!player) notFound();
