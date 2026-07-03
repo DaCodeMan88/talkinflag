@@ -54,11 +54,12 @@ export default async function AdminHomePage({
       .is("archived_at", null),
   ]);
 
-  // career_updates is RLS-locked (no policy) → count via the service-role client.
-  const { count: pendingCareer } = await createAdminClient()
-    .from("career_updates")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
+  // career_updates + profile_reports are RLS-locked (no policy) → count via the service-role client.
+  const adminDb = createAdminClient();
+  const [{ count: pendingCareer }, { count: openReports }] = await Promise.all([
+    adminDb.from("career_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    adminDb.from("profile_reports").select("id", { count: "exact", head: true }).eq("status", "open"),
+  ]);
 
   const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
     {
@@ -125,6 +126,12 @@ export default async function AdminHomePage({
       count: 0,
     },
     {
+      label: "Reports",
+      description: "Profiles flagged by visitors as wrongly claimed",
+      href: "/admin/reports",
+      count: openReports ?? 0,
+    },
+    {
       label: "TF Rankings",
       description: "Recompute player rankings (poll weights + verified stats)",
       href: "/admin/rankings",
@@ -133,7 +140,7 @@ export default async function AdminHomePage({
     },
   ];
 
-  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0);
+  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">

@@ -15,6 +15,7 @@ import SimilarPlayers from "@/components/player/SimilarPlayers";
 import CareerUpdates from "@/components/career/CareerUpdates";
 import FlagIQBadge from "@/components/player/FlagIQBadge";
 import { formatHeight, formatWeight } from "@/lib/measurements";
+import ReportProfileButton from "@/components/players/ReportProfileButton";
 
 export const revalidate = 300;
 
@@ -369,6 +370,10 @@ export default async function PlayerDetailPage({
                   <span className="text-brand-white/25 text-xs">Free · Honor system</span>
                 </div>
               )}
+
+              <div className="mt-3">
+                <ReportProfileButton playerId={player.id} />
+              </div>
             </div>
 
             {/* Follow + Share + Compare */}
