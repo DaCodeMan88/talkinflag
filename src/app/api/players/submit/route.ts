@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 import { cmToInches, kgToLbs } from "@/lib/measurements";
+import { hasClaimedProfile, logClaimEvent, notifyAdmins } from "@/lib/claims";
 
 const VALID_POSITIONS = ["QB", "WR", "DB", "Rusher"];
 const VALID_LEVELS = ["high_school", "college", "national", "international", "youth"];
@@ -9,7 +11,13 @@ const VALID_GENDERS = ["male", "female"];
 
 export async function POST(req: NextRequest) {
   try {
+    const authClient = await createClient();
+    const { data: { user } } = await authClient.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const ip = getClientIp(req);
+    // An authenticated account script-spamming submissions is still worth throttling,
+    // even though the honeypot (anonymous-specific) defense no longer applies here.
     const { success, reset } = rateLimit(`players-submit:${ip}`, {
       limit: 5,
       windowMs: 60_000,
@@ -21,12 +29,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
+    const db = createServerClient();
 
-    // Honeypot: real users never fill this hidden field.
-    if (typeof body?.website === "string" && body.website.trim() !== "") {
-      return NextResponse.json({ success: true });
+    if (await hasClaimedProfile(db, user.id)) {
+      return NextResponse.json({ error: "You already have a profile." }, { status: 409 });
     }
+
+    const body = await req.json();
 
     if (!body.first_name?.trim()) return NextResponse.json({ error: "First name is required" }, { status: 400 });
     if (!body.last_name?.trim())  return NextResponse.json({ error: "Last name is required" }, { status: 400 });
@@ -94,8 +103,7 @@ export async function POST(req: NextRequest) {
     const wing = parseInt(body.wingspan_in ?? "");
     if (!isNaN(wing) && wing >= 48 && wing <= 108) stats.wingspan_in = wing;
 
-    const supabase = createServerClient();
-    const { error } = await supabase.from("players").insert({
+    const { data: created, error } = await db.from("players").insert({
       first_name:    body.first_name.trim().slice(0, 100),
       last_name:     body.last_name.trim().slice(0, 100),
       position,
@@ -113,14 +121,38 @@ export async function POST(req: NextRequest) {
       bio:            body.bio?.trim().slice(0, 1000) || null,
       stats:          Object.keys(stats).length > 0 ? stats : null,
       is_verified:    false,
-    });
+      is_claimed:     true,
+      claimed_by:     user.id,
+      claimed_at:     new Date().toISOString(),
+      is_approved:    false,
+    }).select("id, first_name, last_name").single();
 
     if (error) {
       console.error("Player submission error:", error.message);
       return NextResponse.json({ error: "Failed to submit profile" }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    await logClaimEvent(db, {
+      playerId: created.id,
+      userId: user.id,
+      action: "claim",
+      actor: "self",
+      note: "self-registered new profile",
+    });
+
+    await notifyAdmins(
+      `New player registration pending review: ${created.first_name} ${created.last_name}`,
+      `
+        <div style="font-family:sans-serif;max-width:600px">
+          <h2 style="color:#FDDD58">New Player Registration</h2>
+          <p><strong>${created.first_name} ${created.last_name}</strong> registered and is awaiting approval.</p>
+          <p><strong>Account:</strong> ${user.email}</p>
+          <p><a href="https://talkinflag.com/admin/players?filter=pending">Review in Admin → Players → Pending</a></p>
+        </div>
+      `
+    );
+
+    return NextResponse.json({ success: true, id: created.id });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
