@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase";
 import { getAdminUser } from "@/lib/admin";
+import { logClaimEvent } from "@/lib/claims";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS = ["high_school", "college", "national"];
@@ -63,12 +64,12 @@ function buildPayload(fd: FormData) {
 
 export async function createPlayer(formData: FormData) {
   if (!(await getAdminUser())) throw new Error("Not authorized");
-  const supabase = await createClient();
+  const db = createServerClient();
   const payload = buildPayload(formData);
   if (!payload.first_name || !payload.last_name) {
     throw new Error("First and last name are required.");
   }
-  const { data, error } = await supabase
+  const { data, error } = await db
     .from("players")
     .insert(payload)
     .select("id")
@@ -82,12 +83,12 @@ export async function createPlayer(formData: FormData) {
 
 export async function updatePlayer(id: string, formData: FormData) {
   if (!(await getAdminUser())) throw new Error("Not authorized");
-  const supabase = await createClient();
+  const db = createServerClient();
   const payload = buildPayload(formData);
   if (!payload.first_name || !payload.last_name) {
     throw new Error("First and last name are required.");
   }
-  const { error } = await supabase
+  const { error } = await db
     .from("players")
     .update({ ...payload, updated_at: new Date().toISOString() })
     .eq("id", id);
@@ -101,8 +102,8 @@ export async function updatePlayer(id: string, formData: FormData) {
 
 export async function deletePlayer(id: string) {
   if (!(await getAdminUser())) throw new Error("Not authorized");
-  const supabase = await createClient();
-  const { error } = await supabase.from("players").delete().eq("id", id);
+  const db = createServerClient();
+  const { error } = await db.from("players").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/admin/players");
@@ -111,11 +112,20 @@ export async function deletePlayer(id: string) {
 }
 
 export async function toggleClaim(id: string, claimed: boolean) {
-  if (!(await getAdminUser())) throw new Error("Not authorized");
-  const supabase = await createClient();
+  const admin = await getAdminUser();
+  if (!admin) throw new Error("Not authorized");
+  const db = createServerClient();
+
+  // Read the current claimant first so a release can be logged against them.
+  const { data: before } = await db
+    .from("players")
+    .select("claimed_by")
+    .eq("id", id)
+    .single();
+
   // Admin can release a wrongly-claimed profile. We never force-claim to a user
   // here (that requires a user id) — we only clear a claim.
-  const { error } = await supabase
+  const { error } = await db
     .from("players")
     .update(
       claimed
@@ -124,6 +134,12 @@ export async function toggleClaim(id: string, claimed: boolean) {
     )
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (!claimed && before?.claimed_by) {
+    await logClaimEvent(db, { playerId: id, userId: before.claimed_by, action: "release", actor: "admin" });
+  }
+
   revalidatePath(`/admin/players/${id}/edit`);
   revalidatePath(`/players/${id}`);
+  revalidatePath("/admin/claims");
 }

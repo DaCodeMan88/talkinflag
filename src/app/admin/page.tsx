@@ -119,6 +119,12 @@ export default async function AdminHomePage({
       count: pendingCareer ?? 0,
     },
     {
+      label: "Recent Claims",
+      description: "Audit log of profile claims + admin releases",
+      href: "/admin/claims",
+      count: 0,
+    },
+    {
       label: "TF Rankings",
       description: "Recompute player rankings (poll weights + verified stats)",
       href: "/admin/rankings",
