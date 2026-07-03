@@ -31,7 +31,7 @@ const competeLinks = [
   { label: "Events", href: "/events" },
   { label: "Results", href: "/results" },
   { label: "Find a League", href: "/find-a-league" },
-  { label: "Submit Profile", href: "/players/submit" },
+  { label: "Join Talkin Flag", href: "/join" },
   { label: "Submit Event", href: "/events/submit" },
 ];
 

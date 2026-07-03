@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const navLinks = [
   { label: "Players", href: "/players" },
@@ -19,6 +20,7 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
   const pathname = usePathname();
 
   // Close mobile menu on route change
@@ -31,6 +33,16 @@ export function Nav() {
       .then((r) => (r.ok ? r.json() : { isAdmin: false }))
       .then((d) => { if (active) setIsAdmin(!!d.isAdmin); })
       .catch(() => {});
+    return () => { active = false; };
+  }, [pathname]);
+
+  // Sign In vs Dashboard link, based on auth state
+  useEffect(() => {
+    let active = true;
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (active) setSignedIn(!!user);
+    });
     return () => { active = false; };
   }, [pathname]);
 
@@ -78,7 +90,7 @@ export function Nav() {
             })}
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-5">
             {isAdmin && (
               <Link
                 href="/admin"
@@ -88,10 +100,16 @@ export function Nav() {
               </Link>
             )}
             <Link
-              href="/players/submit"
+              href={signedIn ? "/dashboard" : "/auth/login"}
+              className="font-display text-sm tracking-widest uppercase text-brand-white/70 hover:text-brand-yellow transition-colors"
+            >
+              {signedIn ? "Dashboard" : "Sign In"}
+            </Link>
+            <Link
+              href="/join"
               className="inline-flex items-center justify-center font-display uppercase tracking-wider transition-all duration-200 px-4 py-2 text-sm border-2 border-brand-yellow text-brand-yellow hover:bg-brand-yellow hover:text-brand-black"
             >
-              Submit Profile
+              Join
             </Link>
           </div>
 
@@ -136,10 +154,16 @@ export function Nav() {
             </Link>
           )}
           <Link
-            href="/players/submit"
+            href={signedIn ? "/dashboard" : "/auth/login"}
+            className="block font-display text-xl uppercase tracking-widest text-brand-white hover:text-brand-yellow transition-colors"
+          >
+            {signedIn ? "Dashboard" : "Sign In"}
+          </Link>
+          <Link
+            href="/join"
             className="block text-center font-display uppercase tracking-wider text-sm bg-brand-yellow text-brand-black px-6 py-3 mt-4 hover:bg-yellow-400 transition-colors"
           >
-            Submit Player Profile
+            Join Talkin Flag
           </Link>
         </div>
       )}
