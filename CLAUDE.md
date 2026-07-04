@@ -79,11 +79,22 @@
 
 ## Open Items — Next Session
 
-> 🔒 **Security hardening plan (PLANNED, not started):** `docs/plans/2026-06-23-security-hardening.md`
-> — fix ALL remaining review findings (rate limiting on public POST routes, newsletter/contact
-> validation + honeypot, input caps, leaked-password protection, vector extension). The 2026-06-23
-> XSS/redirect/injection/admin fixes + DB hardening are already shipped (`a878780`). Site launched on
-> talkinflag.com. Resend (welcome email) deferred to Ambra's to-do list.
+> ✅ **RLS client sweep + admin gating (2026-07-03/04, branch `rls-sweep`):** all cookie-client
+> access to zero-policy (service-only) tables eliminated, and the admin-authz holes it was masking
+> closed. Enforced by `src/lib/supabase/usage-guard.test.ts` and `src/lib/admin-gating.test.ts` — if
+> you add a table or an admin surface, those tests tell you the rules. **Cookie client
+> (`@/lib/supabase/server`) = `auth.getUser()` + policy-backed tables ONLY; every service-only table
+> uses a service-role client (`createAdminClient`). Every `/admin` + `/api/admin` surface must gate via
+> `getAdminUser`/`isAdminEmail` (or `CRON_SECRET`) — middleware does NOT protect them.** See
+> `docs/plans/2026-07-03-rls-client-sweep-and-launch-hardening.md` + the dated follow-up note at the
+> bottom of `docs/plans/2026-06-23-security-hardening.md`. Owner actions before stress test: Upstash env
+> vars (shared rate limiting), leaked-password toggle, confirm `ADMIN_EMAILS`, `CRON_SECRET` + `RESEND_API_KEY`.
+
+> 🔒 **Security hardening plan (P1–P3 SHIPPED `ecec0b9`/`69023e1`/`dfad2ce`):** `docs/plans/2026-06-23-security-hardening.md`
+> — rate limiting on public POST routes, newsletter/contact validation + honeypot, input caps done.
+> The 2026-06-23 XSS/redirect/injection/admin fixes + DB hardening also shipped (`a878780`). Site
+> launched on talkinflag.com. Remaining owner toggles: leaked-password protection, `vector` extension
+> (accepted WARN). Resend (welcome email) deferred to Ambra's to-do list.
 
 ### 🚨 Owner Actions — Needed Now
 See `docs/ambra-update-2026-06-25.md` for the current, authoritative owner to-do list. Top unlocks:

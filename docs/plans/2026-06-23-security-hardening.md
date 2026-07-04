@@ -116,3 +116,47 @@ These are unauthenticated POST routes that write to the DB with the service role
 Hygiene is currently clean: `.env*` gitignored, no keys committed, service-role
 key server-only. Keep it that way — never add a secret to client (`NEXT_PUBLIC_`)
 env or to the repo.
+
+---
+
+## Follow-up: RLS client sweep + admin-gating unification — SHIPPED 2026-07-03/04
+
+Plan doc: `docs/plans/2026-07-03-rls-client-sweep-and-launch-hardening.md`. Branch
+`rls-sweep` (from main `f1918c8`). Eliminated the entire "cookie-client vs
+service-role client" bug class (many call sites queried RLS zero-policy tables via
+the cookie/anon client → silent zero rows), closed the admin-authz holes the bug
+was masking, and added two static regression guards so the class cannot reappear.
+
+Commits:
+- `d9aa1d8` plan · `66bb641`/`cb1d597` + `3df4e29`/`08279c9` the two red guard tests
+  (`src/lib/supabase/usage-guard.test.ts`, `src/lib/admin-gating.test.ts`).
+- `429a65d` Bug #1 recruiting toggle · `a3ce197` Bug #2 verification approval.
+- `df89789` Group P public pages · `ba5ba1a` Group M member funnels.
+- `3d0cb0b` Group A admin surfaces — **gate FIRST, then client swap**: 3 previously
+  ungated server actions (featured/highlights/events-results) now use `getAdminUser`;
+  all admin pages/routes unified onto `getAdminUser`/`isAdminEmail` from `@/lib/admin`
+  (every local case-sensitive `ADMIN_EMAILS` const deleted, incl. `eval/eligibility.ts`);
+  zero-policy + policy-hidden reads moved to `createAdminClient()`.
+
+End state: both guards green, full suite 112 pass, build clean. Security advisors
+unchanged — 15× `rls_enabled_no_policy` INFO (expected under this architecture) + 2
+accepted WARN (`extension_in_public` vector, `auth_leaked_password_protection`).
+
+**The rule going forward** (enforced by the two guards): the cookie client
+(`@/lib/supabase/server`) is for `auth.getUser()` and policy-backed COOKIE_OK tables
+ONLY; every zero-policy (service-only) table read/write uses a service-role client.
+Every `/admin` + `/api/admin` surface must gate via `getAdminUser`/`isAdminEmail`
+(or `CRON_SECRET` for cron routes) — middleware does NOT protect them.
+
+### Owner actions before the stress-test launch
+1. Set `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` in Vercel — upgrades the
+   per-IP rate limiter from per-instance memory to shared Redis (matters under load).
+2. Enable leaked-password protection: Supabase Dashboard → Auth → Policies (2 clicks).
+3. Confirm `ADMIN_EMAILS` is set in Vercel env (hardcoded fallback works but env is canonical).
+4. `CRON_SECRET` + `RESEND_API_KEY` still pending — approval/notification emails in the
+   fixed routes silently no-op without Resend.
+
+### Known follow-up (not built — out of scope for the sweep)
+- **Recruiting-toggle UI gap:** `PATCH /api/players/[id]/recruiting` now works, but NO
+  in-repo UI invokes it (no "open to recruiting" toggle on the dashboard). Candidate
+  quick follow-up: a small toggle on the dashboard edit page.
