@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdmin } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/eval/admin-client";
+import { isAdminEmail } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
-
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 export async function PATCH(
   req: NextRequest,
@@ -15,7 +14,7 @@ export async function PATCH(
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) {
+  if (!user || !isAdminEmail(user.email)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -24,37 +23,38 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
+  const db = createAdminClient();
+
   // Update verification status
-  await supabase
+  const { error: updateError } = await db
     .from("stat_verifications")
     .update({ status, reviewed_at: new Date().toISOString(), reviewed_by: user.id })
     .eq("id", id);
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
 
   // If approved, mark player as is_verified and notify them
   if (status === "approved" && playerId) {
-    const { count } = await supabase
+    const { count } = await db
       .from("stat_verifications")
       .select("id", { count: "exact", head: true })
       .eq("player_id", playerId)
       .eq("status", "approved");
 
     if ((count ?? 0) >= 1) {
-      await supabase.from("players").update({ is_verified: true }).eq("id", playerId);
+      await db.from("players").update({ is_verified: true }).eq("id", playerId);
     }
 
     // Email the player who claimed this profile
-    const { data: player } = await supabase
+    const { data: player } = await db
       .from("players")
       .select("first_name, last_name, claimed_by")
       .eq("id", playerId)
       .single();
 
     if (player?.claimed_by) {
-      const admin = createAdmin(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
-      const { data: userData } = await admin.auth.admin.getUserById(player.claimed_by);
+      const { data: userData } = await db.auth.admin.getUserById(player.claimed_by);
       const playerEmail = userData?.user?.email;
       if (playerEmail) {
         await sendEmail({
@@ -68,11 +68,11 @@ export async function PATCH(
                 Hi ${player.first_name}, a stat on your profile has been approved and your ✓ Verified badge is now live.
               </p>
               <div style="margin:32px 0;">
-                <a href="https://talkinflag.vercel.app/dashboard" style="background:#FDDD58;color:#000;padding:12px 24px;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-block;">
+                <a href="https://talkinflag.com/dashboard" style="background:#FDDD58;color:#000;padding:12px 24px;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-block;">
                   View Your Profile →
                 </a>
               </div>
-              <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.vercel.app</p>
+              <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.com</p>
             </div>
           `,
         });
