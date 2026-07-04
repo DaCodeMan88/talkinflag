@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export async function PATCH(
   req: NextRequest,
@@ -10,7 +11,8 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: player } = await supabase
+  const db = createAdminClient();
+  const { data: player } = await db
     .from("players")
     .select("id, claimed_by, is_claimed")
     .eq("id", id)
@@ -31,7 +33,7 @@ export async function PATCH(
     update.recruiting_targets = recruiting_targets.filter((t: unknown) => valid.includes(String(t)));
   }
 
-  const { error } = await supabase.from("players").update(update).eq("id", id);
+  const { error } = await db.from("players").update(update).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ ok: true });
