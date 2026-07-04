@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import MessageActions from "./MessageActions";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +30,7 @@ export default async function AdminMessagesPage({
   if (!(await getAdminUser())) redirect("/");
   const { view } = await searchParams;
   const showArchived = view === "archived";
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   let query = supabase
     .from("contact_submissions")

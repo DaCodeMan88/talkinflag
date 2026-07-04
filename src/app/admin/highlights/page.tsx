@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { HighlightActions } from "./HighlightActions";
 import { PublishTop10Form } from "./PublishTop10Form";
-
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Submission = {
   id: string;
@@ -35,13 +34,8 @@ function youtubeEmbedUrl(url: string): string | null {
 }
 
 export default async function AdminHighlightsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/auth/login?next=/admin/highlights");
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
-    return <div className="p-8 text-white"><p className="text-red-400">Not authorized.</p></div>;
-  }
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   const [{ data: pendingRaw }, { data: approvedRaw }, { data: recentRaw }] = await Promise.all([
     supabase

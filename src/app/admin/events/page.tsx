@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import EventApproveRejectButtons from "./EventApproveRejectButtons";
 
 export const metadata = { title: "Event Submissions | Admin" };
@@ -29,12 +30,8 @@ interface EventRow {
 }
 
 export default async function AdminEventsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth/login");
-
-  const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim());
-  if (!adminEmails.includes(user.email ?? "")) redirect("/dashboard");
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   const { data: events } = await supabase
     .from("events")

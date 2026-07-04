@@ -1,4 +1,5 @@
 import { createAdminClient } from "./admin-client";
+import { isAdminEmail } from "@/lib/admin";
 
 /**
  * Which poll constituencies a member qualifies for. Derived from systems the
@@ -11,13 +12,7 @@ import { createAdminClient } from "./admin-client";
 export async function getEligibleRoles(user: { id: string; email?: string | null }): Promise<string[]> {
   const roles: string[] = [];
 
-  const adminEmails = [
-    ...(process.env.ADMIN_EMAILS ?? "").split(","),
-    ...(process.env.ADMIN_EMAIL ?? "").split(","),
-  ]
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  if (user.email && adminEmails.includes(user.email.toLowerCase())) roles.push("host");
+  if (isAdminEmail(user.email)) roles.push("host");
 
   const db = createAdminClient();
   const { data: coach } = await db

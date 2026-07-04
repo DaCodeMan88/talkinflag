@@ -1,15 +1,12 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { getRankingsStaleInfo } from "@/lib/career/service";
 import RankingsRecomputePanel from "./RankingsRecomputePanel";
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "")
-  .split(",").map((e) => e.trim()).filter(Boolean);
-
 export default async function AdminRankingsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) redirect("/");
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   const { count: totalPlayers } = await supabase
     .from("players")

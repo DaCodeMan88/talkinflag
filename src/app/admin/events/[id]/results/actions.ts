@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export async function addEventResult(eventId: string, formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createAdminClient();
 
   const team_name = (formData.get("team_name") as string)?.trim();
   if (!team_name) throw new Error("Team name is required");
@@ -16,7 +16,7 @@ export async function addEventResult(eventId: string, formData: FormData) {
   const score = (formData.get("score") as string)?.trim() || null;
   const notes = (formData.get("notes") as string)?.trim() || null;
 
-  const { error } = await supabase.from("event_results").insert({
+  const { error } = await db.from("event_results").insert({
     event_id: eventId,
     team_name,
     place,
@@ -33,11 +33,10 @@ export async function addEventResult(eventId: string, formData: FormData) {
 }
 
 export async function deleteEventResult(id: string, eventId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createAdminClient();
 
-  const { error } = await supabase.from("event_results").delete().eq("id", id);
+  const { error } = await db.from("event_results").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath(`/admin/events/${eventId}/results`);

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { getAdminUser } from "@/lib/admin";
 import GuidedTour from "@/components/onboarding/GuidedTour";
@@ -16,7 +15,10 @@ export default async function AdminHomePage({
 }) {
   if (!(await getAdminUser())) redirect("/");
   const { tour } = await searchParams;
-  const supabase = await createClient();
+
+  // Every count below hits an RLS zero-policy table or a policy that hides
+  // pending rows from the cookie client — all must use the service-role client.
+  const adminDb = createAdminClient();
 
   const [
     { count: pendingVerifications },
@@ -25,39 +27,36 @@ export default async function AdminHomePage({
     { count: pendingHighlights },
     { count: pendingEvents },
     { count: unreadMessages },
+    { count: pendingCareer },
+    { count: openReports },
+    { count: pendingPlayers },
   ] = await Promise.all([
-    supabase
+    adminDb
       .from("stat_verifications")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
-    supabase
+    adminDb
       .from("coaches")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
-    supabase
+    adminDb
       .from("scout_applications")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
-    supabase
+    adminDb
       .from("highlight_submissions")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
-    supabase
+    adminDb
       .from("events")
       .select("id", { count: "exact", head: true })
       .eq("is_approved", false)
       .is("rejected_at", null),
-    supabase
+    adminDb
       .from("contact_submissions")
       .select("id", { count: "exact", head: true })
       .eq("is_read", false)
       .is("archived_at", null),
-  ]);
-
-  // career_updates + profile_reports + pending player registrations are RLS-locked
-  // (no policy) → count via the service-role client.
-  const adminDb = createAdminClient();
-  const [{ count: pendingCareer }, { count: openReports }, { count: pendingPlayers }] = await Promise.all([
     adminDb.from("career_updates").select("id", { count: "exact", head: true }).eq("status", "pending"),
     adminDb.from("profile_reports").select("id", { count: "exact", head: true }).eq("status", "open"),
     adminDb.from("players").select("id", { count: "exact", head: true }).eq("is_approved", false),

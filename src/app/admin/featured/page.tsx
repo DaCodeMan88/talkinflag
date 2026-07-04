@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { FeaturedForm } from "./FeaturedForm";
 import Link from "next/link";
-
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Player = {
   id: string;
@@ -24,17 +23,8 @@ type FeaturedRow = {
 };
 
 export default async function AdminFeaturedPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/auth/login?next=/admin/featured");
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
-    return (
-      <div className="p-8 text-white">
-        <p className="text-red-400 font-medium">Not authorized.</p>
-      </div>
-    );
-  }
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   // Get current active featured athlete
   const now = new Date().toISOString();

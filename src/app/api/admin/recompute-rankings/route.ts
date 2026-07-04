@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/admin";
 import { runRecompute } from "@/lib/rankings/recompute";
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "").split(",").map((e) => e.trim()).filter(Boolean);
-const CRON_SECRET  = process.env.CRON_SECRET ?? "";
+const CRON_SECRET = process.env.CRON_SECRET ?? "";
 
 function isCronRequest(req: NextRequest): boolean {
   const auth = req.headers.get("Authorization") ?? "";
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   if (!isCronRequest(req)) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) {
+    if (!user || !isAdminEmail(user.email)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }

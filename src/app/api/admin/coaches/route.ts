@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdmin } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/eval/admin-client";
+import { isAdminEmail } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
 
 export async function PATCH(req: NextRequest) {
@@ -8,8 +9,7 @@ export async function PATCH(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const adminEmails = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "").split(",").map((e) => e.trim());
-  if (!adminEmails.includes(user.email ?? "")) {
+  if (!isAdminEmail(user.email)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -18,7 +18,8 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { data: coach } = await supabase
+  const db = createAdminClient();
+  const { data: coach } = await db
     .from("coaches")
     .select("id, first_name, last_name, email, team, user_id")
     .eq("id", coach_id)
@@ -27,7 +28,7 @@ export async function PATCH(req: NextRequest) {
   if (!coach) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const newStatus = action === "approve" ? "approved" : "rejected";
-  await supabase
+  await db
     .from("coaches")
     .update({
       status: newStatus,
@@ -55,11 +56,11 @@ export async function PATCH(req: NextRequest) {
             <li>Approve player stat verifications</li>
           </ul>
           <div style="margin:32px 0;">
-            <a href="https://talkinflag.vercel.app/dashboard/recruiting" style="background:#FDDD58;color:#000;padding:12px 24px;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-block;">
+            <a href="https://talkinflag.com/dashboard/recruiting" style="background:#FDDD58;color:#000;padding:12px 24px;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-block;">
               Go to Coach Dashboard →
             </a>
           </div>
-          <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.vercel.app</p>
+          <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.com</p>
         </div>
       `,
     });
@@ -74,7 +75,7 @@ export async function PATCH(req: NextRequest) {
           <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.6;">
             Hi ${coach.first_name}, we weren't able to approve your coach application at this time. Feel free to reply to this email if you have questions.
           </p>
-          <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.vercel.app</p>
+          <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.com</p>
         </div>
       `,
     });

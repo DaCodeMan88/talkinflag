@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import type { Player } from "@/types/player";
 import PlayerEditForm from "../../PlayerEditForm";
 
@@ -14,7 +14,7 @@ export default async function EditPlayerPage({
 }) {
   if (!(await getAdminUser())) redirect("/");
   const { id } = await params;
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: player } = await supabase
     .from("players")

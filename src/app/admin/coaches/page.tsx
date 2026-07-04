@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { loadCoachCredibility } from "@/lib/eval/coachCredibility";
 import { coachInfluenceLabel } from "@/lib/eval/coachWeight";
@@ -9,12 +9,8 @@ import CoachApproveRejectButtons from "./ApproveRejectButtons";
 export const metadata = { title: "Coach Applications | Admin" };
 
 export default async function AdminCoachesPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/auth/login");
-
-  const adminEmails = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "").split(",").map((e) => e.trim());
-  if (!adminEmails.includes(user.email ?? "")) redirect("/dashboard");
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   const { data: coaches } = await supabase
     .from("coaches")
@@ -26,7 +22,7 @@ export default async function AdminCoachesPage() {
 
   // Voting influence for approved coaches (those with a linked account).
   const credibility = await loadCoachCredibility(
-    createAdminClient(),
+    supabase,
     reviewed.map((c) => c.user_id).filter((id): id is string => !!id)
   );
 

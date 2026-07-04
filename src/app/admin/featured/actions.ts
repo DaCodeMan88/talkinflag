@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export async function setFeaturedAthlete(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createAdminClient();
 
   const playerId = formData.get("player_id") as string;
   const message = (formData.get("message") as string) || null;
@@ -17,7 +17,7 @@ export async function setFeaturedAthlete(formData: FormData) {
   const featuredUntil = new Date(featuredFrom);
   featuredUntil.setDate(featuredUntil.getDate() + 7);
 
-  const { error } = await supabase.from("featured_athlete").insert({
+  const { error } = await db.from("featured_athlete").insert({
     player_id: playerId,
     featured_from: featuredFrom.toISOString(),
     featured_until: featuredUntil.toISOString(),
@@ -32,11 +32,10 @@ export async function setFeaturedAthlete(formData: FormData) {
 }
 
 export async function removeFeaturedAthlete(id: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createAdminClient();
 
-  const { error } = await supabase
+  const { error } = await db
     .from("featured_athlete")
     .delete()
     .eq("id", id);

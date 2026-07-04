@@ -1,9 +1,8 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { ResultsForm } from "./ResultsForm";
-
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Result = {
   id: string;
@@ -20,13 +19,8 @@ export default async function AdminEventResultsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect(`/auth/login?next=/admin/events/${id}/results`);
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
-    return <div className="p-8 text-white"><p className="text-red-400">Not authorized.</p></div>;
-  }
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   const [{ data: event }, { data: resultsRaw }] = await Promise.all([
     supabase.from("events").select("id, title, start_date").eq("id", id).single(),

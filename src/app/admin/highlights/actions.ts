@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export async function reviewHighlight(id: string, status: "approved" | "rejected" | "top10") {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createAdminClient();
 
-  const { error } = await supabase
+  const { error } = await db
     .from("highlight_submissions")
     .update({ status })
     .eq("id", id);
@@ -18,9 +18,8 @@ export async function reviewHighlight(id: string, status: "approved" | "rejected
 }
 
 export async function publishTop10(formData: FormData) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const db = createAdminClient();
 
   const week = formData.get("week") as string;
   if (!week) throw new Error("Week is required");
@@ -35,7 +34,7 @@ export async function publishTop10(formData: FormData) {
 
   // Update each selected highlight with its rank and week
   for (let i = 0; i < ids.length; i++) {
-    const { error } = await supabase
+    const { error } = await db
       .from("highlight_submissions")
       .update({ status: "top10", week_featured: week, rank_in_week: i + 1 })
       .eq("id", ids[i]);

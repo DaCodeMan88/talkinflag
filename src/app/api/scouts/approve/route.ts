@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase/server";
-import { createClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { isAdminEmail } from "@/lib/admin";
 
 export async function POST(req: NextRequest) {
@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { data: app } = await supabase
+  const db = createAdminClient();
+  const { data: app } = await db
     .from("scout_applications")
     .select("*")
     .eq("id", application_id)
@@ -25,17 +26,13 @@ export async function POST(req: NextRequest) {
 
   if (!app) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await supabase
+  await db
     .from("scout_applications")
     .update({ status: action === "approve" ? "approved" : "rejected", reviewed_at: new Date().toISOString() })
     .eq("id", application_id);
 
   if (action === "approve" && app.user_id) {
-    const admin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-    await admin.from("scouts").upsert({
+    await db.from("scouts").upsert({
       user_id: app.user_id,
       application_id: app.id,
       full_name: app.full_name,

@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getAdminUser } from "@/lib/admin";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import VerificationActions from "./VerificationActions";
-
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? process.env.ADMIN_EMAIL ?? "talkinflagshow@gmail.com").split(",").map((e) => e.trim()).filter(Boolean);
 
 type Player = {
   first_name: string;
@@ -34,22 +33,8 @@ type RecentVerification = {
 };
 
 export default async function VerificationsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth/login?next=/admin/verifications");
-  }
-
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
-    return (
-      <div className="p-8 text-white">
-        <p className="text-red-400 font-medium">Not authorized.</p>
-      </div>
-    );
-  }
+  if (!(await getAdminUser())) redirect("/");
+  const supabase = createAdminClient();
 
   const { data: pendingRaw } = await supabase
     .from("stat_verifications")
