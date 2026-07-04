@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -44,12 +44,12 @@ export default async function ResultsPage({
   searchParams: Promise<{ year?: string; level?: string }>;
 }) {
   const { year, level } = await searchParams;
-  const supabase = await createClient();
+  const db = createAdminClient();
 
   const today = new Date().toISOString().split("T")[0];
 
   // Upcoming events (future-dated, no results required)
-  const { data: upcomingRaw } = await supabase
+  const { data: upcomingRaw } = await db
     .from("events")
     .select("id, title, start_date, end_date, city, country, level, event_type, website_url")
     .eq("is_approved", true)
@@ -59,7 +59,7 @@ export default async function ResultsPage({
   const upcomingEvents = upcomingRaw ?? [];
 
   // Past events with results
-  let query = supabase
+  let query = db
     .from("events")
     .select("id, title, start_date, city, country, country_code, level, event_results(id, place, team_name)")
     .eq("is_approved", true)

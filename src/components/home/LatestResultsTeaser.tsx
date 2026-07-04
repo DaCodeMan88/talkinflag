@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 type ResultEvent = {
   id: string;
@@ -22,11 +22,11 @@ const LEVEL_LABELS: Record<string, string> = {
 };
 
 export async function LatestResultsTeaser() {
-  const supabase = await createClient();
+  const db = createAdminClient();
   const today = new Date().toISOString().split("T")[0];
 
   // Get last 3 past events that have results
-  const { data: raw } = await supabase
+  const { data: raw } = await db
     .from("events")
     .select("id, title, start_date, city, country, level, event_results(place, team_name)")
     .lt("start_date", today)

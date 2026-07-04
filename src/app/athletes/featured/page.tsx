@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -32,10 +32,10 @@ type FeaturedRow = {
 };
 
 export default async function FeaturedAthletesHistoryPage() {
-  const supabase = await createClient();
+  const db = createAdminClient();
   const now = new Date().toISOString();
 
-  const { data: raw } = await supabase
+  const { data: raw } = await db
     .from("featured_athlete")
     .select(
       "id, player_id, featured_from, featured_until, message, players(id, first_name, last_name, position, level, school_or_team, country, photo_url, ranking_national)"

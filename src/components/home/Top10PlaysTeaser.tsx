@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 type Play = {
   id: string;
@@ -28,10 +28,10 @@ function youtubeThumb(url: string): string | null {
 }
 
 export async function Top10PlaysTeaser() {
-  const supabase = await createClient();
+  const db = createAdminClient();
 
   // Find the most recently published week
-  const { data: weekRow } = await supabase
+  const { data: weekRow } = await db
     .from("highlight_submissions")
     .select("week_featured")
     .eq("status", "top10")
@@ -43,7 +43,7 @@ export async function Top10PlaysTeaser() {
 
   const currentWeek = weekRow.week_featured;
 
-  const { data: raw } = await supabase
+  const { data: raw } = await db
     .from("highlight_submissions")
     .select(
       "id, video_url, description, play_type, rank_in_week, week_featured, players(id, first_name, last_name, position)"

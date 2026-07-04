@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -47,10 +47,10 @@ function formatWeekLabel(week: string): string {
 }
 
 export default async function PlaysArchivePage() {
-  const supabase = await createClient();
+  const db = createAdminClient();
 
   // Get distinct weeks with count and a sample video URL
-  const { data: raw } = await supabase
+  const { data: raw } = await db
     .from("highlight_submissions")
     .select("week_featured, video_url")
     .eq("status", "top10")

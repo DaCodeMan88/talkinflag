@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -66,9 +66,9 @@ function formatWeekLabel(week: string): string {
 
 export default async function Top10WeekPage({ params }: Props) {
   const { week } = await params;
-  const supabase = await createClient();
+  const db = createAdminClient();
 
-  const { data: raw } = await supabase
+  const { data: raw } = await db
     .from("highlight_submissions")
     .select(
       "id, video_url, description, play_type, rank_in_week, players(id, first_name, last_name, position, school_or_team)"
