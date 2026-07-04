@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 import EditProfileForm from "./EditProfileForm";
 
@@ -15,7 +16,8 @@ export default async function EditProfilePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?next=/dashboard/edit");
 
-  const { data: player } = await supabase
+  const db = createAdminClient();
+  const { data: player } = await db
     .from("players")
     .select("*")
     .eq("claimed_by", user.id)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -32,7 +33,8 @@ export async function POST(req: NextRequest) {
     status: "pending",
   }));
 
-  const { error } = await supabase.from("stat_verifications").insert(rows);
+  const db = createAdminClient();
+  const { error } = await db.from("stat_verifications").insert(rows);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ ok: true, submitted: rows.length });

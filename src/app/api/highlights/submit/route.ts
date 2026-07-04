@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -26,8 +27,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid video URL" }, { status: 400 });
   }
 
+  const db = createAdminClient();
+
   // Rate-limit: max 3 pending submissions per user
-  const { count } = await supabase
+  const { count } = await db
     .from("highlight_submissions")
     .select("id", { count: "exact", head: true })
     .eq("submitted_by", user.id)
@@ -40,7 +43,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error } = await supabase.from("highlight_submissions").insert({
+  const { error } = await db.from("highlight_submissions").insert({
     submitted_by: user.id,
     player_id: player_id || null,
     video_url,

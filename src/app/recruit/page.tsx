@@ -27,7 +27,7 @@ export default async function RecruitPage() {
   if (user) {
     const [{ data: coach }, { data: player }] = await Promise.all([
       supabase.from("coaches").select("id, first_name, team").eq("user_id", user.id).eq("is_verified", true).single(),
-      supabase.from("players").select("id").eq("claimed_by", user.id).eq("is_claimed", true).single(),
+      publicSupabase.from("players").select("id").eq("claimed_by", user.id).eq("is_claimed", true).single(),
     ]);
     viewerCoach = coach ?? null;
     viewerPlayer = player ?? null;

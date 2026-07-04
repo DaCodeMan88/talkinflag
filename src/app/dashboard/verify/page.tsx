@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 import StatVerifyForm from "./StatVerifyForm";
 
@@ -46,7 +47,8 @@ export default async function VerifyStatsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?next=/dashboard/verify");
 
-  const { data: player } = await supabase
+  const db = createAdminClient();
+  const { data: player } = await db
     .from("players")
     .select("id, first_name, last_name, position, height_in, weight_lbs, stats")
     .eq("claimed_by", user.id)
@@ -74,7 +76,7 @@ export default async function VerifyStatsPage() {
   }
 
   // Existing verification submissions
-  const { data: submissions } = await supabase
+  const { data: submissions } = await db
     .from("stat_verifications")
     .select("stat_key, status, source_type, created_at")
     .eq("player_id", player.id)

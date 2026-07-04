@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { buildMetadata } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import ClaimButton from "./ClaimButton";
 
 export const metadata = buildMetadata({
@@ -28,7 +29,8 @@ export default async function ClaimProfilePage({
   }
 
   // Fetch the player
-  const { data: player } = await supabase
+  const db = createAdminClient();
+  const { data: player } = await db
     .from("players")
     .select("id, first_name, last_name, is_claimed, claimed_by")
     .eq("id", id)

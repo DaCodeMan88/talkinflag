@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { sendEmail } from "@/lib/email";
 
 export async function POST(
@@ -20,7 +21,8 @@ export async function POST(
 
   if (!coach) return NextResponse.json({ error: "Verified coach account required" }, { status: 403 });
 
-  const { data: player } = await supabase
+  const db = createAdminClient();
+  const { data: player } = await db
     .from("players")
     .select("id, first_name, last_name, position, claimed_by")
     .eq("id", id)
@@ -43,7 +45,7 @@ export async function POST(
 
   // Email notification to player if they have a claimed account
   if (player.claimed_by) {
-    const { data: playerUser } = await supabase
+    const { data: playerUser } = await db
       .from("players")
       .select("first_name")
       .eq("id", id)
