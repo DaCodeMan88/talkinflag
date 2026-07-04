@@ -39,14 +39,21 @@ function walk(dir: string, out: string[] = []): string[] {
 const rel = (f: string) => f.replace(APP, "src/app");
 
 // Admin surfaces = server entry points that must self-authorize:
-//   /admin pages + server actions, and every /api/admin route handler.
-// Client components ("use client" buttons/forms) are excluded — they can only
-// reach data through one of these surfaces.
+//   /admin pages + server actions (any .ts file containing a "use server"
+//   directive, not just files named actions.ts), and every /api/admin route
+//   handler. Client components ("use client" buttons/forms) are excluded —
+//   they can only reach data through one of these surfaces.
+const adminFiles = walk(join(APP, "admin"));
 const adminSurfaces = [
-  ...walk(join(APP, "admin")).filter((f) =>
-    /(?:^|\/)(page\.tsx|actions\.ts)$/.test(f)
-  ),
-  ...walk(join(APP, "api", "admin")).filter((f) => /(?:^|\/)route\.ts$/.test(f)),
+  ...new Set([
+    ...adminFiles.filter((f) => /(?:^|\/)(page\.tsx|actions\.ts)$/.test(f)),
+    ...adminFiles.filter(
+      (f) => /\.ts$/.test(f) && readFileSync(f, "utf8").includes('"use server"')
+    ),
+    ...walk(join(APP, "api", "admin")).filter((f) =>
+      /(?:^|\/)route\.ts$/.test(f)
+    ),
+  ]),
 ].sort();
 
 // A local admin-email list is any of:
@@ -56,26 +63,32 @@ const adminSurfaces = [
 // the walked tree, so naturally excluded). Importing { ADMIN_EMAILS } from
 // "@/lib/admin", or mentioning the name in a comment, does not match.
 const LOCAL_LIST_RE =
-  /\b(?:const|let|var)\s+(?:ADMIN_EMAILS|adminEmails)\s*=|process\.env\.ADMIN_EMAILS?\b/;
+  /\b(?:const|let|var)\s+(?:ADMIN_EMAILS|adminEmails)\s*(?::[^=\n]*)?=|process\.env\.ADMIN_EMAILS?\b/;
 
 describe("admin authorization", () => {
   it("finds admin surfaces (sanity: path resolution works)", () => {
-    // 15 pages + 6 actions + 5 api routes at the time of writing. If this
-    // drops to ≤10, APP is resolving to the wrong directory and every other
-    // assertion here would vacuously pass.
+    // 16 pages + 6 actions + 5 api routes = 27 at the time of writing (all
+    // current "use server" files are named actions.ts, so the directive scan
+    // adds none — yet). If this drops to ≤10, APP is resolving to the wrong
+    // directory and every other assertion here would vacuously pass.
     expect(adminSurfaces.length).toBeGreaterThan(10);
   });
 
   it.each(adminSurfaces.map((f) => [rel(f), f]))(
-    "%s gates via lib/admin helpers (or CRON_SECRET)",
+    "%s gates via lib/admin helpers (or CRON_SECRET for api routes)",
     (label, file) => {
       const src = readFileSync(file, "utf8");
-      const gated = /\b(?:getAdminUser|isAdminEmail|CRON_SECRET)\b/.test(src);
+      // CRON_SECRET is an escape hatch for cron-invoked API routes only —
+      // pages and server actions are user-facing and must check admin-ness.
+      const isApiRoute = label.startsWith("src/app/api/");
+      const gated =
+        /\b(?:getAdminUser|isAdminEmail)\b/.test(src) ||
+        (isApiRoute && /\bCRON_SECRET\b/.test(src));
       expect(
         gated,
         `${label} has no canonical admin gate.\n` +
           `Middleware does not cover /admin or /api/admin — this file must authorize itself.\n` +
-          `Use getAdminUser() or isAdminEmail() from "@/lib/admin" (cron routes may check CRON_SECRET).\n` +
+          `Use getAdminUser() or isAdminEmail() from "@/lib/admin" (cron API routes may check CRON_SECRET).\n` +
           `A bare auth.getUser() "signed in" check or a local ADMIN_EMAILS copy does not count.`
       ).toBe(true);
     }
