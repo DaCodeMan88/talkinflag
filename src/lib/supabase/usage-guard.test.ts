@@ -8,6 +8,10 @@ import { join } from "node:path";
  * when queried with the cookie-bound (anon+session) client — silently.
  * Those tables may only be accessed with a service-role client.
  *
+ * Limitations: only direct `const x = factory()` bindings of the `@/`-alias
+ * cookie factory are tracked — clients passed into helper functions, or
+ * factories imported via relative paths / dynamic import, are not seen.
+ *
  * SERVICE_ONLY must mirror the live DB (tables where rowsecurity=true and
  * pg_policies has no rows). Re-verify with:
  *   select t.tablename from pg_tables t
@@ -87,21 +91,36 @@ function findViolations(file: string): Violation[] {
   }
   if (clientVars.size === 0) return [];
 
-  // 3. Every `<var> . from ( "table" )` — whitespace/newlines allowed between
+  // 3. Every `<var> . from ( ... )` — whitespace/newlines allowed between
   //    the variable and `.from(`, which covers chained and mid-expression forms.
+  //    The table argument is optional in the regex: when it does NOT match a
+  //    recognized string literal (e.g. `.from(TABLE)` or a template literal
+  //    with interpolation), the call is flagged as unverifiable rather than
+  //    silently skipped.
   const violations: Violation[] = [];
   const seen = new Set<string>();
   for (const varName of clientVars) {
     const useRe = new RegExp(
-      `(?<![\\w$.])${varName}\\s*\\.\\s*from\\s*\\(\\s*["'\`]([\\w]+)["'\`]`,
+      `(?<![\\w$.])${varName}\\s*\\.\\s*from\\s*\\(\\s*(?:["'\`]([\\w]+)["'\`])?`,
       "g"
     );
     for (const m of content.matchAll(useRe)) {
       const table = m[1];
-      if (COOKIE_OK.has(table)) continue;
       // Report the line of the `.from(` token, not the variable reference.
       const fromOffset = (m.index ?? 0) + m[0].indexOf(".");
       const line = content.slice(0, fromOffset).split("\n").length;
+      if (table === undefined) {
+        const key = `${line}:${varName}:<dynamic>`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        violations.push({
+          file,
+          line,
+          call: `${varName}.from(<dynamic>) — dynamic table name; guard cannot verify, use a string literal`,
+        });
+        continue;
+      }
+      if (COOKIE_OK.has(table)) continue;
       const key = `${line}:${varName}:${table}`;
       if (seen.has(key)) continue;
       seen.add(key);
@@ -112,9 +131,11 @@ function findViolations(file: string): Violation[] {
 }
 
 describe("supabase cookie-client usage guard", () => {
-  it("never queries service-only (zero-policy) tables with the cookie-bound client", () => {
+  it("keeps SERVICE_ONLY and COOKIE_OK disjoint (guard config sanity)", () => {
     expect(overlap, "SERVICE_ONLY and COOKIE_OK must be disjoint").toEqual([]);
+  });
 
+  it("never queries service-only (zero-policy) tables with the cookie-bound client", () => {
     const violations = walk(SRC_DIR)
       .flatMap(findViolations)
       .sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
@@ -123,11 +144,15 @@ describe("supabase cookie-client usage guard", () => {
       .map((v) => `${v.file.replace(`${SRC_DIR}/`, "src/")}:${v.line}  ${v.call}`)
       .join("\n");
 
+    // Assert on the count (a scalar), not the Violation[] array, so a failure
+    // prints ONLY the curated message below plus a one-line diff — not a raw
+    // expected/received object dump with absolute paths.
     expect(
-      violations,
+      violations.length,
       `Cookie-bound Supabase client used on tables without RLS policies — these reads/writes silently affect ZERO rows.\n` +
         `Route these queries through createAdminClient() from "@/lib/eval/admin-client" (service role) after verifying auth.\n` +
-        `The cookie client is only for auth.getUser() and COOKIE_OK tables.\n\n${report}\n`
-    ).toEqual([]);
+        `The cookie client is only for auth.getUser() and COOKIE_OK tables.\n` +
+        `If the table has real policies, add it to COOKIE_OK with a comment; otherwise add it to SERVICE_ONLY and use the service-role client.\n\n${report}\n`
+    ).toBe(0);
   });
 });
