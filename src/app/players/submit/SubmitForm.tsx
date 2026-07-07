@@ -2,7 +2,10 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const POSITIONS = ["QB", "WR", "DB", "Rusher"];
+// Must stay within the players.position CHECK constraint
+// (QB, WR, DB, LB, C, Rusher, Utility) — and match VALID_POSITIONS
+// in src/app/api/players/submit/route.ts, or the API rejects the submission.
+const POSITIONS = ["QB", "WR", "C", "DB", "Rusher", "Utility"];
 const LEVELS = [
   { value: "high_school", label: "High School" },
   { value: "college",     label: "College" },
@@ -140,16 +143,17 @@ export default function SubmitForm() {
             </div>
             <div>
               <label className="block text-brand-yellow text-xs font-display uppercase tracking-widest mb-2" htmlFor="grad_year">
-                Graduating Class
+                Graduating Class <span className="text-brand-white/40 normal-case tracking-normal">(optional)</span>
               </label>
               <input
                 id="grad_year"
                 name="grad_year"
                 type="number"
-                min={2024} max={2035}
+                min={2000} max={2035}
                 placeholder="2027"
                 className={inputCls}
               />
+              <p className="mt-1 text-xs text-brand-white/40">Leave blank if you&apos;ve already graduated or it doesn&apos;t apply.</p>
             </div>
           </div>
 

@@ -12,7 +12,7 @@ const RESOURCES = [
   {
     name: "NFL FLAG League Finder",
     description: "The largest organized flag football program in the US. Find youth and adult leagues near you — covers most major cities and many smaller communities.",
-    href: "https://www.nflflag.com/find-a-league",
+    href: "https://play.nflflag.com/",
     tag: "Youth & Adult",
     cta: "Find a League →",
   },
@@ -26,7 +26,7 @@ const RESOURCES = [
   {
     name: "IFAF — International Federation",
     description: "Looking to compete internationally or find a national team program? IFAF is the global governing body. Find your country's federation here.",
-    href: "https://www.ifaf.org",
+    href: "https://www.americanfootball.sport/",
     tag: "International",
     cta: "Visit IFAF →",
   },
@@ -36,13 +36,6 @@ const RESOURCES = [
     href: "https://www.popwarner.com",
     tag: "Youth",
     cta: "Visit Pop Warner →",
-  },
-  {
-    name: "Flag Football Network",
-    description: "A community directory and league finder for adult recreational and competitive flag football. Good for finding local adult leagues outside NFL FLAG.",
-    href: "https://flagfootballnetwork.com",
-    tag: "Adult",
-    cta: "Find a League →",
   },
 ];
 

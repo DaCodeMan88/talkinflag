@@ -1,9 +1,11 @@
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-// Confirmed partners (2026-06-25).
+// Confirmed partners (2026-07-07).
 const PARTNERS: { name: string; url: string }[] = [
   { name: "Flag Football Finder", url: "https://flagfootballfinder.com" },
   { name: "Athleads", url: "https://athleads.com" },
+  { name: "Flag Football Nation", url: "https://www.instagram.com/flagfootballnationofficial/" },
+  { name: "Women's College Flag Football", url: "https://www.womenscollegeflagfootball.com" },
 ];
 
 export function PartnersStrip() {
