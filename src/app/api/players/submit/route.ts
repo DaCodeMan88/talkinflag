@@ -4,8 +4,9 @@ import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 import { cmToInches, kgToLbs } from "@/lib/measurements";
 import { hasClaimedProfile, logClaimEvent, notifyAdmins } from "@/lib/claims";
+import { sendEmail, confirmationEmailHtml } from "@/lib/email";
 
-const VALID_POSITIONS = ["QB", "WR", "DB", "Rusher"];
+const VALID_POSITIONS = ["QB", "WR", "C", "DB", "Rusher", "Utility"];
 const VALID_LEVELS = ["high_school", "college", "national", "international", "youth"];
 const VALID_GENDERS = ["male", "female"];
 
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     // Grad year
     const grad_year_raw = parseInt(body.grad_year ?? "");
-    const grad_year = !isNaN(grad_year_raw) && grad_year_raw >= 2024 && grad_year_raw <= 2035
+    const grad_year = !isNaN(grad_year_raw) && grad_year_raw >= 2000 && grad_year_raw <= 2035
       ? grad_year_raw : null;
 
     // Stats JSONB — measurables
@@ -151,6 +152,18 @@ export async function POST(req: NextRequest) {
         </div>
       `
     );
+
+    // Submitter confirmation — "we got it, pending review". Never blocks submission.
+    if (user.email) {
+      await sendEmail({
+        to: user.email,
+        subject: "Your Talkin Flag profile is pending review 🏈",
+        html: confirmationEmailHtml({
+          heading: "Profile received!",
+          body: `Thanks ${created.first_name} — your player profile is in our review queue. An admin will approve it shortly, and you'll be able to see it live on talkinflag.com once it's published.`,
+        }),
+      });
+    }
 
     return NextResponse.json({ success: true, id: created.id });
   } catch {

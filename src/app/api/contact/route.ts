@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, confirmationEmailHtml } from "@/lib/email";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 
 const VALID_SUBJECTS = [
@@ -92,6 +92,18 @@ export async function POST(req: NextRequest) {
         `,
       });
     }
+
+    // Submitter confirmation — "we got it". Never blocks the submission.
+    await sendEmail({
+      to: email,
+      subject: "We got your message — Talkin Flag",
+      html: confirmationEmailHtml({
+        heading: "Thanks for reaching out 🏈",
+        body: `We received your message${
+          subject ? ` about “${escapeHtml(subject)}”` : ""
+        } and someone from the Talkin Flag team will get back to you soon.`,
+      }),
+    });
 
     return NextResponse.json({ success: true });
   } catch {

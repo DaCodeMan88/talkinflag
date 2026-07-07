@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
+import { sendEmail, confirmationEmailHtml } from "@/lib/email";
+import { notifyAdmins } from "@/lib/claims";
 
 const VALID_LEVELS = ["youth", "high_school", "college", "pro", "national", "international", "olympics"];
+
+// Escape user input before interpolating into notification email HTML
+// (protects the admin inbox + submitter inbox from HTML/style injection).
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,6 +79,34 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("Event submission error:", error.message);
       return NextResponse.json({ error: "Failed to submit event" }, { status: 500 });
+    }
+
+    const title = body.title.trim().slice(0, 200);
+    const safeTitle = escapeHtml(title);
+
+    // Admin notification. Never blocks the submission.
+    await notifyAdmins(
+      `New event pending review: ${title}`,
+      `
+        <div style="font-family:sans-serif;max-width:600px">
+          <h2 style="color:#FDDD58">New Event Submission</h2>
+          <p><strong>${safeTitle}</strong> was submitted and is awaiting approval.</p>
+          <p><a href="https://talkinflag.com/admin/events">Review in Admin → Events</a></p>
+        </div>
+      `
+    );
+
+    // Submitter confirmation, only if they left an email.
+    const submitterEmail = body.submitter_email?.trim().slice(0, 200);
+    if (submitterEmail) {
+      await sendEmail({
+        to: submitterEmail,
+        subject: "Your event submission is pending review — Talkin Flag",
+        html: confirmationEmailHtml({
+          heading: "Event received!",
+          body: `Thanks for submitting “${safeTitle}”. Our team will review it and, once approved, it'll appear on the Talkin Flag events page.`,
+        }),
+      });
     }
 
     return NextResponse.json({ success: true });
