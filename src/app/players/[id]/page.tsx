@@ -15,6 +15,7 @@ import SimilarPlayers from "@/components/player/SimilarPlayers";
 import CareerUpdates from "@/components/career/CareerUpdates";
 import FlagIQBadge from "@/components/player/FlagIQBadge";
 import { formatHeight, formatWeight } from "@/lib/measurements";
+import { hasDisplayableValue } from "@/lib/profile-visibility";
 import ReportProfileButton from "@/components/players/ReportProfileButton";
 
 export const revalidate = 300;
@@ -224,13 +225,33 @@ export default async function PlayerDetailPage({
   const flag = countryFlag(player.country_code);
   const ext = (player.stats ?? {}) as ExtendedStats;
 
-  const athleticismStats = ATHLETICISM_KEYS.filter((k) => ext[k] != null).map((k) => ({
+  const athleticismStats = ATHLETICISM_KEYS.filter((k) => hasDisplayableValue(ext[k])).map((k) => ({
     key: k,
     label: ATHLETICISM_LABELS[k],
     value: String(ext[k]),
   }));
 
-  const rawStats = Object.entries(ext).filter(([k]) => !META_KEYS.includes(k as typeof META_KEYS[number]));
+  const rawStats = Object.entries(ext).filter(
+    ([k, v]) => !META_KEYS.includes(k as typeof META_KEYS[number]) && hasDisplayableValue(v)
+  );
+
+  const achievements = (Array.isArray(ext.achievements) ? ext.achievements : []).filter(
+    hasDisplayableValue
+  );
+  const tournaments = (Array.isArray(ext.tournaments) ? ext.tournaments : []).filter(
+    (t) => t && (hasDisplayableValue(t.event) || hasDisplayableValue(t.result))
+  );
+
+  const hasProfileDetails = [
+    player.school_or_team,
+    player.city,
+    player.country,
+    player.height_in,
+    player.weight_lbs,
+    ext.wingspan_in,
+    player.grad_year,
+    ext.years_active,
+  ].some(hasDisplayableValue);
 
   const isNational = player.level === "national" || player.level === "international";
 
@@ -321,7 +342,7 @@ export default async function PlayerDetailPage({
               {/* Country + team */}
               <div className="flex items-center gap-2 mb-3">
                 {flag && <span className="text-2xl leading-none">{flag}</span>}
-                {player.school_or_team && (
+                {hasDisplayableValue(player.school_or_team) && (
                   <span className="text-brand-white/50 text-sm font-display uppercase tracking-widest">
                     {player.school_or_team}
                   </span>
@@ -417,14 +438,14 @@ export default async function PlayerDetailPage({
             {player.ranking_national && (
               <StatChip label="World Rank" value={`#${player.ranking_national}`} highlight />
             )}
-            {ext.caps && (
+            {hasDisplayableValue(ext.caps) && (
               <StatChip label="Caps" value={String(ext.caps)} />
             )}
-            {ext.occupation && (
-              <StatChip label="Off the Field" value={ext.occupation} />
+            {hasDisplayableValue(ext.occupation) && (
+              <StatChip label="Off the Field" value={String(ext.occupation)} />
             )}
-            {ext.education && (
-              <StatChip label="Education" value={ext.education} />
+            {hasDisplayableValue(ext.education) && (
+              <StatChip label="Education" value={String(ext.education)} />
             )}
           </div>
         </div>
@@ -438,11 +459,12 @@ export default async function PlayerDetailPage({
           <div className="space-y-6">
 
             {/* Profile details */}
+            {hasProfileDetails && (
             <SideCard title="Profile">
-              {player.school_or_team && <DetailRow label="Team" value={player.school_or_team} />}
-              {player.city && <DetailRow label="City" value={player.city} />}
-              {player.country && <DetailRow label="Country" value={player.country} />}
-              {player.height_in && (
+              {hasDisplayableValue(player.school_or_team) && <DetailRow label="Team" value={player.school_or_team!} />}
+              {hasDisplayableValue(player.city) && <DetailRow label="City" value={player.city!} />}
+              {hasDisplayableValue(player.country) && <DetailRow label="Country" value={player.country!} />}
+              {hasDisplayableValue(player.height_in) && (
                 <DetailRow
                   label="Height"
                   value={formatHeight(player.height_in)}
@@ -450,7 +472,7 @@ export default async function PlayerDetailPage({
                   selfReported={player.is_claimed && !verifiedStats.has("height_in")}
                 />
               )}
-              {player.weight_lbs && (
+              {hasDisplayableValue(player.weight_lbs) && (
                 <DetailRow
                   label="Weight"
                   value={formatWeight(player.weight_lbs)}
@@ -458,7 +480,7 @@ export default async function PlayerDetailPage({
                   selfReported={player.is_claimed && !verifiedStats.has("weight_lbs")}
                 />
               )}
-              {!!ext.wingspan_in && (
+              {hasDisplayableValue(ext.wingspan_in) && (
                 <DetailRow
                   label="Wingspan"
                   value={`${ext.wingspan_in as number}"`}
@@ -466,9 +488,10 @@ export default async function PlayerDetailPage({
                   selfReported={player.is_claimed && !verifiedStats.has("wingspan_in")}
                 />
               )}
-              {player.grad_year && <DetailRow label="Class" value={`Class of ${player.grad_year}`} />}
-              {ext.years_active && <DetailRow label="Years Active" value={`${ext.years_active} yrs`} />}
+              {hasDisplayableValue(player.grad_year) && <DetailRow label="Class" value={`Class of ${player.grad_year}`} />}
+              {hasDisplayableValue(ext.years_active) && <DetailRow label="Years Active" value={`${ext.years_active} yrs`} />}
             </SideCard>
+            )}
 
             {/* Rankings */}
             {(player.ranking_national || player.ranking_position) && (
@@ -486,17 +509,19 @@ export default async function PlayerDetailPage({
             )}
 
             {/* Tournament history */}
-            {ext.tournaments && ext.tournaments.length > 0 && (
+            {tournaments.length > 0 && (
               <SideCard title="Tournament History">
                 <div className="space-y-3">
-                  {ext.tournaments.map((t, i) => (
+                  {tournaments.map((t, i) => (
                     <div key={i} className="text-xs">
                       <div className="flex items-center justify-between gap-2 mb-0.5">
                         <span className="text-brand-yellow font-display uppercase tracking-wide text-[10px]">{t.year}</span>
-                        <span className="text-brand-white/40 font-display text-[10px] uppercase tracking-wide">{t.result}</span>
+                        {hasDisplayableValue(t.result) && (
+                          <span className="text-brand-white/40 font-display text-[10px] uppercase tracking-wide">{t.result}</span>
+                        )}
                       </div>
-                      <div className="text-brand-white/70">{t.event}</div>
-                      {t.location && <div className="text-brand-white/30">{t.location}</div>}
+                      {hasDisplayableValue(t.event) && <div className="text-brand-white/70">{t.event}</div>}
+                      {hasDisplayableValue(t.location) && <div className="text-brand-white/30">{t.location}</div>}
                     </div>
                   ))}
                 </div>
@@ -504,7 +529,7 @@ export default async function PlayerDetailPage({
             )}
 
             {/* Social links */}
-            {(player.highlight_url || player.instagram) && (
+            {(isSafeUrl(player.highlight_url) || hasDisplayableValue(player.instagram)) && (
               <SideCard title="Links">
                 {isSafeUrl(player.highlight_url) && (
                   <a
@@ -516,18 +541,18 @@ export default async function PlayerDetailPage({
                     ▶ Highlight Reel
                   </a>
                 )}
-                {player.instagram && (
+                {hasDisplayableValue(player.instagram) && (
                   <a
                     href={
-                      player.instagram.startsWith("http")
-                        ? player.instagram
-                        : `https://instagram.com/${player.instagram.replace(/^@/, "")}`
+                      player.instagram!.startsWith("http")
+                        ? player.instagram!
+                        : `https://instagram.com/${player.instagram!.replace(/^@/, "")}`
                     }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-brand-white/60 hover:text-brand-white text-sm transition-colors"
                   >
-                    @ {player.instagram.replace(/^@/, "")}
+                    @ {player.instagram!.replace(/^@/, "")}
                   </a>
                 )}
               </SideCard>
@@ -538,7 +563,7 @@ export default async function PlayerDetailPage({
           <div className="md:col-span-2 space-y-6">
 
             {/* Bio */}
-            {player.bio && (
+            {hasDisplayableValue(player.bio) && (
               <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
                 <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">Biography</h2>
                 <p className="text-brand-white/80 leading-relaxed">{player.bio}</p>
@@ -585,13 +610,13 @@ export default async function PlayerDetailPage({
             )}
 
             {/* Achievements */}
-            {ext.achievements && ext.achievements.length > 0 && (
+            {achievements.length > 0 && (
               <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
                 <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">
                   Career Highlights
                 </h2>
                 <ul className="space-y-2">
-                  {ext.achievements.map((a, i) => (
+                  {achievements.map((a, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm text-brand-white/75">
                       <span className="text-brand-yellow mt-0.5 flex-shrink-0">—</span>
                       {a}
@@ -602,7 +627,7 @@ export default async function PlayerDetailPage({
             )}
 
             {/* National team context */}
-            {isNational && player.country && (
+            {isNational && hasDisplayableValue(player.country) && (
               <div className="bg-brand-yellow/5 border border-brand-yellow/20 p-6">
                 <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">
                   National Team
@@ -610,7 +635,9 @@ export default async function PlayerDetailPage({
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-3xl">{flag}</span>
                   <div>
-                    <div className="text-brand-white font-medium">{player.school_or_team}</div>
+                    {hasDisplayableValue(player.school_or_team) && (
+                      <div className="text-brand-white font-medium">{player.school_or_team}</div>
+                    )}
                     {player.ranking_national && (
                       <div className="text-brand-white/50 text-xs mt-0.5">
                         Ranked #{player.ranking_national} in the world (IFAF Women&apos;s)
@@ -618,7 +645,7 @@ export default async function PlayerDetailPage({
                     )}
                   </div>
                 </div>
-                {ext.caps && (
+                {hasDisplayableValue(ext.caps) && (
                   <p className="text-brand-white/60 text-sm">
                     {player.first_name} has earned <span className="text-brand-white font-medium">{ext.caps} international caps</span> representing Italy on the world stage.
                   </p>
@@ -663,7 +690,7 @@ export default async function PlayerDetailPage({
               )}
 
             {/* Empty state */}
-            {!player.bio && !ext.achievements && rawStats.length === 0 && (
+            {!hasDisplayableValue(player.bio) && achievements.length === 0 && rawStats.length === 0 && (
               <div className="bg-[#0d0d0d] border border-brand-yellow/10 p-10 text-center">
                 <p className="text-brand-white/40 text-sm">More profile details coming soon.</p>
               </div>
@@ -737,8 +764,8 @@ export default async function PlayerDetailPage({
         weightLbs={player.weight_lbs ?? null}
         level={player.level ?? null}
         verifiedStatKeys={Array.from(verifiedStats)}
-        fortyYard={ext.forty_yard ? String(ext.forty_yard) : null}
-        verticalJump={ext.vertical_jump ? String(ext.vertical_jump) : null}
+        fortyYard={hasDisplayableValue(ext.forty_yard) ? String(ext.forty_yard) : null}
+        verticalJump={hasDisplayableValue(ext.vertical_jump) ? String(ext.vertical_jump) : null}
       />
     </div>
   );

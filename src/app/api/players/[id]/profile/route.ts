@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
+import { hasDisplayableValue } from "@/lib/profile-visibility";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -78,10 +79,11 @@ export async function PATCH(
     statsFields.education = String(body.education).slice(0, 100) || null;
   }
 
-  const mergedStats = { ...(player.stats ?? {}), ...statsFields };
-  // Remove null entries to keep JSONB clean
+  const mergedStats: Record<string, unknown> = { ...(player.stats ?? {}), ...statsFields };
+  // Drop anything that isn't displayable (null, "", "?", "N/A", empty arrays…)
+  // so junk placeholders are removed rather than stored.
   Object.keys(mergedStats).forEach((k) => {
-    if (mergedStats[k] === null) delete mergedStats[k];
+    if (!hasDisplayableValue(mergedStats[k])) delete mergedStats[k];
   });
 
   if (body.grad_year !== undefined) {
