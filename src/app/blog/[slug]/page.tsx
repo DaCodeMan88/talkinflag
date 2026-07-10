@@ -215,10 +215,10 @@ export default async function BlogPostPage({
             {staticPost.title}
           </h1>
 
-          {/* Guest byline (interview posts) */}
+          {/* Guest byline (profile posts) */}
           {staticPost.guestName && (
             <p className="text-brand-yellow font-display text-xs uppercase tracking-widest mt-4">
-              Interview with {staticPost.guestName}
+              Featuring {staticPost.guestName}
               {staticPost.guestRole ? ` — ${staticPost.guestRole}` : ""}
             </p>
           )}
@@ -334,8 +334,8 @@ export default async function BlogPostPage({
           {/* Footer CTA */}
           <div className="mt-16 pt-10 border-t border-brand-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
-              <p className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-1">Listen Now</p>
-              <p className="text-brand-white/60 text-sm">Explore the episodes that inspired this story.</p>
+              <p className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-1">The Talkin Flag Show</p>
+              <p className="text-brand-white/60 text-sm">Explore all podcast episodes and listen now.</p>
             </div>
             <Link
               href="/podcast"

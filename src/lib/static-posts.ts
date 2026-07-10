@@ -33,15 +33,15 @@ export const staticPosts: StaticPost[] = [
     title: "Katherine Sowers on Coaching, Breaking Barriers, and What Flag Football Needs Next",
     author: "Talkin Flag",
     publishedAt: "2026-06-06T00:00:00Z",
-    category: "Interview",
+    category: "Profile",
     guestName: "Katherine Sowers",
     guestRole: "Flag Football Coach · First Woman to Coach in a Super Bowl",
     youtubeVideoId: "TODO_OWNER",
     excerpt:
-      "She made history on the NFL's biggest stage, then brought that pedigree to the flag field. Katherine Sowers sat down with Talkin Flag to talk coaching, building national programs, and where the women's game goes from here.",
+      "She made history on the NFL's biggest stage, then brought that pedigree to the flag field. A look at how Katherine Sowers approaches coaching, building national programs, and where the women's game goes from here.",
     body: `When Katherine Sowers walked onto the field for Super Bowl LIV in February 2020, she became the first woman — and the first openly gay coach — to coach in a Super Bowl. It was the headline that introduced her to the world. But for Sowers, the moment was never the point. The work was.
 
-That same work ethic is what she has carried into flag football, a sport she now sees as one of the most important growth engines in American football. We sat down with her for a wide-ranging conversation about coaching, barriers, and what the game needs to do next.
+That same work ethic is what she has carried into flag football, a sport she now sees as one of the most important growth engines in American football. Here is a look at how she approaches coaching, the barriers she has broken, and what she believes the game needs to do next.
 
 **From the Super Bowl Sideline to the Flag Field**
 
@@ -75,7 +75,7 @@ With flag football headed to the [2028 Olympics in Los Angeles](/blog/flag-footb
 
 Her message to anyone thinking about getting into the game, as a player or a coach: don't wait for permission. The sport is being built right now, in real time, by the people who show up. She would know. She has been one of them at every level.
 
-You can follow the athletes and programs shaping the women's game on our [teams page](/teams) and across the [Talkin Flag player database](/players). And there is much more from coaches like Katherine Sowers on the [podcast](/podcast).`,
+You can follow the athletes and programs shaping the women's game on our [teams page](/teams) and across the [Talkin Flag player database](/players). And there is much more on coaching and the women's game on the [podcast](/podcast).`,
     isStatic: true,
   },
   {
@@ -83,15 +83,15 @@ You can follow the athletes and programs shaping the women's game on our [teams 
     title: "Amber Clark-Robinson on College Flag, Playing for Team USA, and Doing Both at Once",
     author: "Talkin Flag",
     publishedAt: "2026-06-05T00:00:00Z",
-    category: "Interview",
+    category: "Profile",
     guestName: "Amber Clark-Robinson",
     guestRole: "Head Coach, Univ. of Saint Mary · USA Women's National Team",
     youtubeVideoId: "TODO_OWNER",
     excerpt:
-      "She coaches one of the first college women's flag programs in the country — and still suits up for Team USA. Amber Clark-Robinson joined Talkin Flag to talk about living on both sides of the sport at once.",
+      "She coaches one of the first college women's flag programs in the country — and still suits up for Team USA. A look at how Amber Clark-Robinson lives on both sides of the sport at once.",
     body: `Most people in flag football pick a lane: you play, or you coach. Amber Clark-Robinson refuses to choose. She is the head women's flag football coach at the University of Saint Mary in Kansas, and she is also a defensive back and team captain for the United States women's national team. On any given month she might be game-planning for a college opponent and defending the world title for her country.
 
-We caught up with her to understand what it takes to live on both sides of the sport at the same time.
+Here is what it takes to live on both sides of the sport at the same time.
 
 **A Player and a Coach at the Same Time**
 
@@ -109,7 +109,7 @@ The NAIA has been an early mover here, giving women's flag a varsity home before
 
 On the national team, Clark-Robinson plays defensive back — and she plays it at an elite level. At the 2023 IFAF Americas Championship she recorded five interceptions in six games, and she sealed the championship with the game-clinching pick in a 26-21 win over Mexico.
 
-Great flag defense, she explains, is about anticipation more than reaction. In a game with no contact and tight spacing, the defender who reads the quarterback's eyes and the receiver's leverage a half-second early is the one who makes the play. That is a teachable skill — and it is exactly the kind of thing she drills into her college players, because she is still doing it herself under the brightest lights.
+Great flag defense is about anticipation more than reaction. In a game with no contact and tight spacing, the defender who reads the quarterback's eyes and the receiver's leverage a half-second early is the one who makes the play. That is a teachable skill — and it is exactly the kind of thing she drills into her college players, because she is still doing it herself under the brightest lights.
 
 **Recruiting the Next Generation**
 
@@ -123,7 +123,7 @@ When the Kansas City Chiefs honored Clark-Robinson and her teammates for winning
 
 But her real legacy may be the program she is building one recruit at a time. Every college roster spot she creates is a reason for a young girl to keep playing. With the [2028 Olympics](/blog/flag-football-la-2028-olympics) on the horizon, that pipeline — high school to college to national team — is how the United States stays on top. Clark-Robinson is one of the few people building all three rungs of that ladder at once.
 
-Explore the athletes coming up through the college and national ranks in the [player database](/players) and on the [teams page](/teams) — and hear more from Amber on the [podcast](/podcast).`,
+Explore the athletes coming up through the college and national ranks in the [player database](/players) and on the [teams page](/teams) — and find more stories from across the sport on the [podcast](/podcast).`,
     isStatic: true,
   },
   {
@@ -131,13 +131,13 @@ Explore the athletes coming up through the college and national ranks in the [pl
     title: "Vanita Krouch: The Most Decorated Quarterback in USA Flag Football History",
     author: "Talkin Flag",
     publishedAt: "2026-06-04T00:00:00Z",
-    category: "Interview",
+    category: "Profile",
     guestName: "Vanita Krouch",
     guestRole: "QB, USA Women's National Team",
     youtubeVideoId: "TODO_OWNER",
     excerpt:
-      "Three world titles. A 33-1 international record. They call her the Tom Brady of flag football. Vanita Krouch joined Talkin Flag to talk about quarterbacking a dynasty — and chasing an Olympic dream.",
-    body: `If you want to understand how good the United States women's flag football team has been, start with the woman taking the snap. Vanita Krouch is the most decorated woman in U.S. national team history, the quarterback of a dynasty, and — by reputation across the sport — the Tom Brady of flag football. We sat down with her to talk about a career that has rewritten what is possible for a flag quarterback.
+      "Three world titles. A 33-1 international record. They call her the Tom Brady of flag football. This is the story of Vanita Krouch: quarterbacking a dynasty — and chasing an Olympic dream.",
+    body: `If you want to understand how good the United States women's flag football team has been, start with the woman taking the snap. Vanita Krouch is the most decorated woman in U.S. national team history, the quarterback of a dynasty, and — by reputation across the sport — the Tom Brady of flag football. Here is a look at a career that has rewritten what is possible for a flag quarterback.
 
 **The Tom Brady of Flag Football**
 
@@ -159,7 +159,7 @@ She didn't pick up flag football until 2006, looking for a competitive outlet in
 
 **Playing QB at the Highest Level**
 
-Quarterbacking at the international level, Krouch explains, is a mental discipline as much as a physical one. The windows are tighter, the defenders are faster, and every team you face at a World Championship is the best its country has to offer. Preparation is everything — knowing your reads cold, trusting your receivers, and refusing to let a single bad play snowball.
+Quarterbacking at the international level is a mental discipline as much as a physical one. The windows are tighter, the defenders are faster, and every team you face at a World Championship is the best its country has to offer. Preparation is everything — knowing your reads cold, trusting your receivers, and refusing to let a single bad play snowball.
 
 Her influence now extends beyond the field. She served as an NFC flag coordinator at the NFL Pro Bowl, bringing the sport she has mastered to the league's marquee all-star showcase — another sign of how far the women's game has traveled.
 
@@ -167,7 +167,7 @@ Her influence now extends beyond the field. She served as an NFC flag coordinato
 
 With flag football set to debut at the [2028 Los Angeles Olympics](/blog/flag-football-la-2028-olympics), Krouch is chasing the one thing missing from her résumé: a gold medal on the sport's biggest possible stage. The [U.S. women's national team](/blog/usa-flag-football-national-team) will enter as a favorite, and she has been the engine of that program for years.
 
-For a generation of girls who now grow up playing flag, Krouch is proof of the ceiling — and proof that it can be reached by someone who started as a basketball player from Carrollton and never stopped competing. The [rise of women's flag football](/blog/womens-flag-football-rise) has many authors, but few have written more of the story than the quarterback who keeps winning. You can find Vanita and her teammates in the [Talkin Flag player database](/players), and hear the full conversation on the [podcast](/podcast).`,
+For a generation of girls who now grow up playing flag, Krouch is proof of the ceiling — and proof that it can be reached by someone who started as a basketball player from Carrollton and never stopped competing. The [rise of women's flag football](/blog/womens-flag-football-rise) has many authors, but few have written more of the story than the quarterback who keeps winning. You can find Vanita and her teammates in the [Talkin Flag player database](/players), and explore more of the sport's biggest stories on the [podcast](/podcast).`,
     isStatic: true,
   },
   {
@@ -175,13 +175,13 @@ For a generation of girls who now grow up playing flag, Krouch is proof of the c
     title: "Darrell 'Housh' Doucette on Leading Team USA and the Mentality of a Champion",
     author: "Talkin Flag",
     publishedAt: "2026-06-03T00:00:00Z",
-    category: "Interview",
+    category: "Profile",
     guestName: 'Darrell "Housh" Doucette III',
     guestRole: "QB, USA Men's National Team",
     youtubeVideoId: "TODO_OWNER",
     excerpt:
-      "He has quarterbacked the United States to the top of the flag football world and kept it there. Darrell 'Housh' Doucette joined Talkin Flag to talk championships, mentality, and the debate over who deserves an Olympic roster spot.",
-    body: `Darrell Doucette goes by "Housh," and in flag football circles the nickname needs no introduction. He has been the quarterback of the United States men's national team since 2020, the on-field general of a program that has spent years at or near the top of the global game. We sat down with him to talk about winning, the mindset it demands, and the conversation the whole sport is having about its Olympic future.
+      "He has quarterbacked the United States to the top of the flag football world and kept it there. This is the story of Darrell 'Housh' Doucette: championships, mentality, and the debate over who deserves an Olympic roster spot.",
+    body: `Darrell Doucette goes by "Housh," and in flag football circles the nickname needs no introduction. He has been the quarterback of the United States men's national team since 2020, the on-field general of a program that has spent years at or near the top of the global game. Here is a look at his winning ways, the mindset they demand, and the conversation the whole sport is having about its Olympic future.
 
 **The Quarterback Who Built a Dynasty**
 
@@ -211,7 +211,7 @@ For Doucette, quarterbacking that group is about more than play-calling. It is a
 
 One of the quietly remarkable things about elite flag football is that its stars are grown adults with full lives, competing at a world-class level on heart and discipline. Doucette embodies that. There is no developmental league funneling resources to these athletes; they have built their excellence on their own time, fueled by love of the game.
 
-That is part of why the Olympic moment matters so much to him. It is validation for a generation of players who chased greatness in a sport the mainstream overlooked. With LA 2028 approaching, the [United States men's program](/teams) he leads is determined to make sure the world remembers who got there first. Find the athletes behind Team USA in the [player database](/players), and catch the full interview on the [podcast](/podcast).`,
+That is part of why the Olympic moment matters so much to him. It is validation for a generation of players who chased greatness in a sport the mainstream overlooked. With LA 2028 approaching, the [United States men's program](/teams) he leads is determined to make sure the world remembers who got there first. Find the athletes behind Team USA in the [player database](/players), and explore more from the sport's biggest voices on the [podcast](/podcast).`,
     isStatic: true,
   },
   {
@@ -219,13 +219,13 @@ That is part of why the Olympic moment matters so much to him. It is validation 
     title: "Diana Flores: The Global Face of Flag Football",
     author: "Talkin Flag",
     publishedAt: "2026-06-02T00:00:00Z",
-    category: "Interview",
+    category: "Profile",
     guestName: "Diana Flores",
     guestRole: "QB & Captain, Mexico Women's National Team",
     youtubeVideoId: "TODO_OWNER",
     excerpt:
-      "From a Super Bowl ad to a World Games gold medal over Team USA, Diana Flores has become the most recognizable athlete in flag football. The Mexico captain joined Talkin Flag to talk about carrying a sport toward the Olympics.",
-    body: `If flag football has a global face, it belongs to Diana Flores. The quarterback and captain of Mexico's women's national team has done something few athletes in any emerging sport manage: she has become a household name before her sport even reaches the Olympics. We sat down with her to talk about leadership, legacy, and the weight of representing a movement.
+      "From a Super Bowl ad to a World Games gold medal over Team USA, Diana Flores has become the most recognizable athlete in flag football. This is the story of the Mexico captain carrying a sport toward the Olympics.",
+    body: `If flag football has a global face, it belongs to Diana Flores. The quarterback and captain of Mexico's women's national team has done something few athletes in any emerging sport manage: she has become a household name before her sport even reaches the Olympics. Here is a look at her leadership, her legacy, and the weight of representing a movement.
 
 **Mexico's Rise to the Top of the World**
 
@@ -255,7 +255,7 @@ Rivalries like this are what mainstream sports are built on, and flag football n
 
 With the [2028 Olympics in Los Angeles](/blog/flag-football-la-2028-olympics) on the horizon, Flores understands the stakes better than anyone. An Olympic flag football tournament with Mexico in contention — and with her under center — would be a landmark moment for the sport across Latin America and the world.
 
-She is not just chasing a medal. She is trying to make sure that the next eight-year-old in Mexico City who picks up a flag football grows up believing there is a stage waiting for her. The [international programs to watch heading into 2028](/blog/international-flag-football-teams-to-watch-2028) are deep and getting deeper, but Mexico's captain remains the brightest star in the international game. Explore the global contenders on our [teams page](/teams), and hear the full conversation with Diana on the [podcast](/podcast).`,
+She is not just chasing a medal. She is trying to make sure that the next eight-year-old in Mexico City who picks up a flag football grows up believing there is a stage waiting for her. The [international programs to watch heading into 2028](/blog/international-flag-football-teams-to-watch-2028) are deep and getting deeper, but Mexico's captain remains the brightest star in the international game. Explore the global contenders on our [teams page](/teams), and find more of the sport's biggest stories on the [podcast](/podcast).`,
     isStatic: true,
   },
   {
@@ -1652,7 +1652,7 @@ The game rewards preparation. Film is how preparation happens. For the broader f
     category: "Mental Performance",
     excerpt:
       "The physical preparation for flag football gets all the attention. But the mental side — visualization, pre-game routines, and managing pressure moments — is what separates good players from great ones.",
-    body: `In the Talkin Flag podcast archives, one topic surfaces in almost every conversation with national team athletes and elite coaches: the mental game. Not motivation. Not mindset posters. The actual craft of mental preparation — visualization routines, pressure management, and the cognitive skills that show up when it matters most.
+    body: `Across the sport, one topic comes up whenever national team athletes and elite coaches talk about their preparation: the mental game. Not motivation. Not mindset posters. The actual craft of mental preparation — visualization routines, pressure management, and the cognitive skills that show up when it matters most.
 
 Here's what that actually looks like in practice.
 
