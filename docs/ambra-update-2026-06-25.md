@@ -1,53 +1,59 @@
-# Talkin Flag — Update for Ambra & Tika (2026-06-25)
+# Talkin Flag — Update for Ambra & Tika (2026-07-05)
 
-Hi Ambra & Tika — quick rundown of what's new on the website, and a short to-do list of things only you can flip on. Nothing here is broken; these are the keys that unlock features we've already built.
-
----
-
-## What's new this week
-
-- **Career Updates ("reasons to come back").** Members can now log a new championship, postseason run, title game, award, role change, event covered, or clinic hosted from their dashboard → **Career Updates**. You approve them in **Admin → Career Updates**, and approved updates show on the member's public profile. Championship/postseason/award updates also feed the weekly ranking refresh.
-- **Rankings now release weekly** (not nightly). They recompute every **Sunday at 02:00 UTC** — a few hours before the Sunday digest — so the weekly rankings are fresh. (Needs the `CRON_SECRET` key below to run automatically; until then you can hit "Recompute Rankings Now" on the admin rankings page anytime.)
-- **Flag IQ on profiles.** A member's best Flag IQ score now appears on their public player profile.
-- **Partners confirmed** — Flag Football Finder and Athleads links on the homepage are confirmed live.
-- **Separate channels noted.** The podcast stays on the Talkin Balls Network, and we're standing up Talkin Flag's own YouTube, Spotify, and Apple Podcasts channels. Send the IDs/links once those exist and we'll wire them in (see below).
+Hi Ambra & Tika — this replaces the last update. Big one: **you're both officially admins now**, and the security/email/rankings plumbing behind the scenes is fully wired up. Below is what's live, what (little) is still on your plate, and what's parked for later.
 
 ---
 
-## Your to-do list (the keys)
+## You're in — log in and take a look
 
-These are set in **Vercel → Project Settings → Environment Variables** (or just send the value and we'll add it). Each one turns on a feature that's already coded.
+Your emails (`ambramarcucci1@gmail.com` and `martikamarcucci@gmail.com`) are now set as admins. When you sign in (magic link or "Continue with Google," whichever you used to give us the email), you'll automatically get:
+
+- **Admin access** — the full back-office at `/admin`: review player claims (`/admin/claims`), profile reports (`/admin/reports`), pending career updates (`/admin/credentials`), highlight/plays submissions, verification requests, events, scouts/coaches, and the rankings recompute button.
+- **"Host" poll weight** — your Evaluation + Flag IQ answers now count toward the Host slice of the ranking algorithm (Hosts/Coaches/Experts blend).
+
+**One ask:** log in once and click around `/admin` so we can confirm everything renders correctly for you both — that click-through has never actually been tested with your real logins.
+
+---
+
+## What's live now (since the last update)
+
+- **Email is fully turned on.** Contact form replies, career-update approval notices, verification approvals, claim notifications — all of it now sends from `noreply@talkinflag.com` through a Resend account we set up specifically for Talkin Flag (kept separate from the agency's Resend account on purpose, so quota/billing never mixes).
+- **Weekly rankings now auto-run.** Every Sunday at 02:00 UTC, no manual click needed. (The admin "Recompute Rankings Now" button still works anytime too.)
+- **Join / claim flow rebuilt for safety.** New members sign in first, then either claim an existing profile or create their own (auto-linked to their account, no ambiguity). Every claim is logged and emails the admins. Self-submitted profiles sit in "Pending Review" until an admin approves them — invisible to the public until then.
+- **Career Updates loop is live** — members log championships, postseason runs, awards, role changes, etc. from their dashboard; you approve in `/admin/credentials`; approved ones show on their public profile and can bump their ranking.
+- **Coach IQ quiz shipped** — a real credibility test (not just trivia) that feeds coach poll weight, separate from the general Flag IQ quiz.
+- **Save & resume everywhere** — the Evaluation, Flag IQ, and profile-edit forms now save progress automatically, so nobody loses their answers if they close the tab partway through.
+- **A full security pass shipped** — closed a bug class where several admin pages and public pages were silently reading a locked-down database incorrectly (some had been broken since launch, e.g. the admin players list, the claim button, results/plays pages). All confirmed fixed and tested.
+
+---
+
+## Your to-do list (short now — most of the old list is done)
 
 | # | Key / Action | What it turns on | Where |
 |---|---|---|---|
-| 1 | **`CRON_SECRET`** (any random string) | Automatic **weekly** ranking refresh + secures the Sunday digest job | Vercel env var |
-| 2 | **`RESEND_API_KEY`** (+ verify talkinflag.com in Resend) | Welcome emails, contact-form copies, weekly digest, **and the new "your update is live" emails** | Resend account → Vercel env var |
-| 3 | **Spotify Show ID** (`NEXT_PUBLIC_SPOTIFY_SHOW_ID`) | The audio player on `/podcast` (already built, hidden until set) | From the new Spotify channel |
-| 4 | **YouTube channel + 5 video IDs** | Live episode section + the 5 interview blog embeds | From the new YouTube channel |
-| 5 | **Apple Podcasts URL** | "Listen on Apple Podcasts" link | From the new Apple channel |
-| 6 | **`PRINTFUL_API_KEY`** | Merch store (fully built — products appear automatically) | Printful → Vercel |
-| 7 | **Amazon Associates tag** | Swap placeholder `talkinflag-20` for your real affiliate tag | Once approved |
+| 1 | **Spotify Show ID** | Audio player on `/podcast` (already built, just hidden until you send the ID from your Spotify for Podcasters dashboard URL — `open.spotify.com/show/<ID>`) | Send us the ID |
+| 2 | **5 YouTube video IDs** for the interview blog posts | Replaces placeholder text with real embedded clips on 5 existing articles (Sowers, Clark-Robinson, Krouch, Doucette, Flores) | Send us the video links once posted |
+| 3 | **Printful + Stripe keys** | Turns on the merch store (`/merch` — page is built, but currently can't actually list products or take payment without both of these) | Printful account + Stripe account → send us the keys |
+| 4 | **Amazon Associates tag** | Swaps the placeholder affiliate tag (`talkinflag-20`) in gear-recommendation articles for your real one | Once your Amazon Associates application is approved |
 
-**Most impactful first:** #1 (`CRON_SECRET`) and #2 (`RESEND_API_KEY`) unlock the most — automatic weekly rankings and all the email loops.
+**Not blocking anything, low priority:** Apple Podcasts already links out fine (a working search link), it just isn't a direct link to your specific show yet — send the direct URL whenever you have it and we'll swap it in.
 
 ---
 
-## Decisions recorded (no action needed)
+## Decisions on record (no action needed)
 
-- ✅ Rankings release **weekly**, Sundays.
-- ✅ Talkin Flag launches its **own** YouTube / Spotify / Apple channels; the show itself stays on the Talkin Balls Network.
-- ✅ Homepage partners (Flag Football Finder, Athleads) confirmed.
-- ✅ Database backup tables already cleaned up.
+- ✅ Talkin Flag has its own dedicated Resend account (not nested in the agency's).
+- ✅ Rankings recompute weekly, Sundays, fully automatic.
+- ✅ Talkin Flag runs its own YouTube / Spotify / Apple channels; the show itself stays on the Talkin Balls Network.
+- ✅ Homepage partners (Flag Football Finder, Athleads) confirmed live.
+- ✅ Expert and Player IQ quiz variants — not building these, general + Coach IQ cover it.
 
 ---
 
-## Next up
+## Parked (by your call — revisit whenever)
 
-- **Coach IQ quiz** — building a coach-specific quiz with real purpose: it establishes coaching credibility and feeds the coach poll weight (not just trivia). *Expert and Player quiz variants aren't planned.*
-
-## Parked (by your call)
-
-- Password protection + login CAPTCHA — adding later (site is already secure).
-- International expansion: Spanish translation + Mexico's top women's league depth (Phase G).
-- Gallery redesign + TikTok embeds (need a TikTok handle).
-- Host photos — no more needed.
+- **Login CAPTCHA** — site is already secure without it; add later if spam becomes a problem.
+- **"Leaked password" protection** — a Supabase feature that blocks known-breached passwords. Only available on Supabase's paid Pro plan ($25/mo); low priority since login here is magic-link/Google, not password-based. Flip it on if we ever upgrade Supabase for another reason.
+- **Spanish translation + Mexico's top women's league depth** (international expansion).
+- **Gallery redesign + TikTok embeds** — needs a TikTok handle from you first.
+- **Host photos** — none needed, current set is final.

@@ -89,6 +89,25 @@
 > `docs/plans/2026-07-03-rls-client-sweep-and-launch-hardening.md` + the dated follow-up note at the
 > bottom of `docs/plans/2026-06-23-security-hardening.md`. Owner actions before stress test: Upstash env
 > vars (shared rate limiting), leaked-password toggle, confirm `ADMIN_EMAILS`, `CRON_SECRET` + `RESEND_API_KEY`.
+>
+> ✅ **2026-07-05 — `ADMIN_EMAILS` (Ambra + Tika added), `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, `CRON_SECRET`
+> all set in Vercel** (talkinflag.com domain verified in Ambra's own Resend account), production redeployed.
+> ⚠️ **Leaked-password protection is NOT enabled** — the toggle lives in Supabase → Auth → Sign In/Providers →
+> Email → "Prevent use of leaked passwords" (checks new passwords against HaveIBeenPwned via the Pwned
+> Passwords API), but it's **gated to the Supabase Pro plan ($25/mo)** — the project is on Free, so the
+> toggle silently doesn't persist on save. Owner decision 2026-07-05: **defer** (auth here is
+> magic-link/Google OAuth first, so password-based attacks are lower-risk than on a password-primary app).
+> Revisit if/when the project is upgraded to Pro for other reasons — flip it then, low effort.
+>
+> ✅ **2026-07-05 (same session) — Upstash rate limiting wired up.** Created a free-tier Upstash Redis
+> database (`talkinflag-rate-limit`, N. Virginia/us-east-1, $0/mo, 10GB monthly bandwidth cap). Set
+> `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` in Vercel (Production + Preview), production
+> redeployed. `src/lib/rate-limit.ts` auto-upgrades from in-memory-per-instance to shared Upstash-backed
+> limiting the moment those two env vars exist — no code change was needed. **All 4 of the original
+> pre-stress-test owner-action items are now closed:** ADMIN_EMAILS, RESEND_API_KEY+CONTACT_EMAIL_TO,
+> CRON_SECRET, Upstash. Only the (deferred, Pro-gated) leaked-password toggle remains open by owner choice.
+> **Not yet done:** a real authenticated click-through as Ambra/Tika to confirm admin access + host poll
+> weight, and that an approval action actually sends an email from `noreply@talkinflag.com`.
 
 > 🔒 **Security hardening plan (P1–P3 SHIPPED `ecec0b9`/`69023e1`/`dfad2ce`):** `docs/plans/2026-06-23-security-hardening.md`
 > — rate limiting on public POST routes, newsletter/contact validation + honeypot, input caps done.
@@ -97,32 +116,20 @@
 > (accepted WARN). Resend (welcome email) deferred to Ambra's to-do list.
 
 ### 🚨 Owner Actions — Needed Now
-See `docs/ambra-update-2026-06-25.md` for the current, authoritative owner to-do list. Top unlocks:
+See `docs/ambra-update-2026-06-25.md` (content rewritten 2026-07-05, filename kept for the existing CLAUDE.md link) for the current, authoritative owner to-do list. As of 2026-07-05, `CRON_SECRET`, `RESEND_API_KEY`, `ADMIN_EMAILS` (Ambra + Tika added), and Upstash rate-limiting env vars are all done. Remaining real owner actions:
 
-1. **`CRON_SECRET`** (Vercel) — makes the **weekly** ranking refresh auto-fire (Sundays 02:00 UTC) and secures the digest cron.
-2. **`RESEND_API_KEY`** (Vercel) — welcome email, contact copies, weekly digest, and career-update approval emails.
-3. **Spotify / YouTube / Apple IDs** — from the new separate Talkin Flag channels; wire in once they exist.
+1. **Spotify Show ID** (`NEXT_PUBLIC_SPOTIFY_SHOW_ID`) — audio player on `/podcast` (built, hidden until set).
+2. **5 YouTube video IDs** — `YOUTUBE_API_KEY`/`YOUTUBE_CHANNEL_ID` are already live in Vercel; only the 5 `TODO_OWNER` placeholders in `static-posts.ts` (Sowers/Clark-Robinson/Krouch/Doucette/Flores interviews) remain.
+3. **`PRINTFUL_API_KEY` + `STRIPE_SECRET_KEY`/`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`** — both exist in local `.env.local` but neither is set in **Vercel production**, so `/merch` cannot list products or take payment live yet. Needs both, not just Printful.
+4. **Amazon Associates tag** — swap placeholder `talkinflag-20` in `static-posts.ts` once approved.
 
-> ✅ Done / dropped: host photos (none needed), DB backup tables (already gone), partner URLs (confirmed). Password protection + login CAPTCHA: deferred ("add later").
+> ✅ Done / dropped: host photos (none needed), DB backup tables (already gone), partner URLs (confirmed), CRON_SECRET, RESEND_API_KEY, ADMIN_EMAILS, Upstash. Password protection + login CAPTCHA: deferred. Leaked-password toggle: deferred (Supabase Pro-gated, see above).
 
 ### Build Queue
 1. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
 2. **More images for Gallery** — drop in `public/gallery/`, add to array in `src/app/media/page.tsx`
-3. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. Needs `RESEND_API_KEY`.
+3. **Profile claim outreach** — email flow for the 284 flagsonly-imported athletes to claim their profiles. `RESEND_API_KEY` is now live, so this is unblocked whenever it's prioritized.
 4. **Interview articles — Q&A upgrade** — the 5 interview posts in `static-posts.ts` are currently editorial paraphrase (no quotes). Once episode transcripts are available, upgrade them to direct Q&A / pull-quotes. **Do NOT invent quotes** — quotes must come from real transcripts.
-
-> ✅ **Podcast audio widget** — pre-built (`src/components/episodes/SpotifyPlayer.tsx`, wired into `/podcast`). Now just an owner action (provide Spotify show ID — see above).
-
-### Other Owner Actions
-| Item | What It Unlocks | Action |
-|------|----------------|--------|
-| YouTube video IDs (×5) | Episode-to-Blog embeds | After YOUTUBE_API_KEY is live, replace `TODO_OWNER` in the 5 interview posts in `static-posts.ts` |
-| Spotify show ID (or `NEXT_PUBLIC_SPOTIFY_SHOW_ID`) | Podcast audio widget on `/podcast` (already built) | Set env var in Vercel, or send the ID |
-| Episode transcripts | Q&A upgrade of the 5 interview blog posts | Provide transcripts → real quotes get woven into the articles |
-| `CRON_SECRET` | Weekly auto ranking refresh + digest cron | Vercel → Settings → Env Vars |
-| `RESEND_API_KEY` | Contact form, welcome email, digest, career-update approval emails | Vercel → Settings → Env Vars |
-| `YOUTUBE_API_KEY` | Live episode fetching + video IDs for blog | Vercel |
-| `PRINTFUL_API_KEY` | Merch store (code done) | Vercel |
 
 ---
 
