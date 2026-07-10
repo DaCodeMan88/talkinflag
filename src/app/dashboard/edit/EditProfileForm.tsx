@@ -6,10 +6,14 @@ import Image from "next/image";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 
+type TournamentDraft = { year: string; event: string; result: string; location: string };
+
 type ProfileDraft = {
   heightFt: string; heightIn: string; bio: string; instagram: string; highlightUrl: string;
   weightLbs: string; wingspanIn: string; fortyYard: string; verticalJump: string;
   yearsActive: string; gradYear: string; occupation: string; education: string;
+  caps: string; worldAppearances: string; jersey: string; club: string; nickname: string;
+  achievements: string[]; tournaments: TournamentDraft[];
 };
 
 interface PlayerFormData {
@@ -29,6 +33,13 @@ interface PlayerFormData {
   occupation: string;
   education: string;
   grad_year: number | null;
+  caps: number | null;
+  world_appearances: number | null;
+  jersey: string;
+  club: string;
+  nickname: string;
+  achievements: string[];
+  tournaments: TournamentDraft[];
 }
 
 function heightFromInches(inches: number | null): { ft: string; in: string } {
@@ -63,6 +74,15 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   const [gradYear, setGradYear] = useState(player.grad_year ? String(player.grad_year) : "");
   const [occupation, setOccupation] = useState(player.occupation);
   const [education, setEducation] = useState(player.education);
+  const [caps, setCaps] = useState(player.caps != null ? String(player.caps) : "");
+  const [worldAppearances, setWorldAppearances] = useState(
+    player.world_appearances != null ? String(player.world_appearances) : ""
+  );
+  const [jersey, setJersey] = useState(player.jersey);
+  const [club, setClub] = useState(player.club);
+  const [nickname, setNickname] = useState(player.nickname);
+  const [achievements, setAchievements] = useState<string[]>(player.achievements);
+  const [tournaments, setTournaments] = useState<TournamentDraft[]>(player.tournaments);
 
   // Photo state
   const [photoPreview, setPhotoPreview] = useState<string | null>(player.photo_url);
@@ -81,6 +101,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     value: {
       heightFt, heightIn, bio, instagram, highlightUrl, weightLbs, wingspanIn,
       fortyYard, verticalJump, yearsActive, gradYear, occupation, education,
+      caps, worldAppearances, jersey, club, nickname, achievements, tournaments,
     },
   });
 
@@ -91,6 +112,10 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     setFortyYard(v.fortyYard ?? ""); setVerticalJump(v.verticalJump ?? "");
     setYearsActive(v.yearsActive ?? ""); setGradYear(v.gradYear ?? "");
     setOccupation(v.occupation ?? ""); setEducation(v.education ?? "");
+    setCaps(v.caps ?? ""); setWorldAppearances(v.worldAppearances ?? "");
+    setJersey(v.jersey ?? ""); setClub(v.club ?? ""); setNickname(v.nickname ?? "");
+    setAchievements(Array.isArray(v.achievements) ? v.achievements : []);
+    setTournaments(Array.isArray(v.tournaments) ? v.tournaments : []);
   }
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -155,6 +180,20 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
         occupation,
         education,
         grad_year: gradYear ? parseInt(gradYear) : null,
+        caps: caps ? parseInt(caps) : null,
+        world_appearances: worldAppearances ? parseInt(worldAppearances) : null,
+        jersey,
+        club,
+        nickname,
+        achievements: achievements.map((a) => a.trim()).filter(Boolean),
+        tournaments: tournaments
+          .filter((t) => t.year || t.event || t.result || t.location)
+          .map((t) => ({
+            year: t.year ? parseInt(t.year) : undefined,
+            event: t.event,
+            result: t.result,
+            location: t.location,
+          })),
       }),
     });
 
@@ -513,6 +552,230 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
             </div>
             <p className="text-brand-white/20 text-xs mt-1">The year you graduate high school or college</p>
           </div>
+        </div>
+      </section>
+
+      {/* ── Career ───────────────────────────────────────────────────── */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-brand-white/10" />
+          <span className="text-xs font-display uppercase tracking-widest text-brand-white/30">
+            Career
+          </span>
+          <div className="h-px flex-1 bg-brand-white/10" />
+        </div>
+        <div className="bg-brand-yellow/5 border border-brand-yellow/15 px-4 py-3 text-brand-white/40 text-xs leading-relaxed">
+          Changing your <span className="text-brand-white/60">caps, world appearances, tournaments or career highlights</span> removes
+          the <span className="text-brand-yellow">✓ Verified</span> badge until the new info is re-verified.
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Caps */}
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              International Caps
+            </label>
+            <input
+              type="number"
+              value={caps}
+              onChange={(e) => setCaps(e.target.value)}
+              placeholder="25"
+              min={0} max={1000}
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
+          </div>
+
+          {/* World appearances */}
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              World Championship Apps.
+            </label>
+            <input
+              type="number"
+              value={worldAppearances}
+              onChange={(e) => setWorldAppearances(e.target.value)}
+              placeholder="2"
+              min={0} max={50}
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
+          </div>
+
+          {/* Jersey */}
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              Jersey Number
+            </label>
+            <input
+              type="text"
+              value={jersey}
+              onChange={(e) => setJersey(e.target.value.slice(0, 10))}
+              placeholder="7"
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
+          </div>
+
+          {/* Nickname */}
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              Nickname
+            </label>
+            <input
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value.slice(0, 60))}
+              placeholder="e.g. The Jet"
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
+          </div>
+
+          {/* Club */}
+          <div className="col-span-2">
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              Club / Team
+            </label>
+            <input
+              type="text"
+              value={club}
+              onChange={(e) => setClub(e.target.value.slice(0, 120))}
+              placeholder="e.g. Roma Warriors"
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Career Highlights ────────────────────────────────────────── */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-brand-white/10" />
+          <span className="text-xs font-display uppercase tracking-widest text-brand-white/30">
+            Career Highlights
+          </span>
+          <div className="h-px flex-1 bg-brand-white/10" />
+        </div>
+
+        <div className="space-y-3">
+          {achievements.map((a, i) => (
+            <div key={i} className="flex gap-2">
+              <input
+                type="text"
+                value={a}
+                onChange={(e) =>
+                  setAchievements((prev) =>
+                    prev.map((x, j) => (j === i ? e.target.value.slice(0, 160) : x))
+                  )
+                }
+                placeholder="e.g. Gold — 2024 European Championship"
+                className="flex-1 bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setAchievements((prev) => prev.filter((_, j) => j !== i))}
+                aria-label={`Remove highlight ${i + 1}`}
+                className="px-3 border border-brand-white/10 text-brand-white/40 hover:text-red-400 hover:border-red-400/40 transition-colors text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          {achievements.length < 20 && (
+            <button
+              type="button"
+              onClick={() => setAchievements((prev) => [...prev, ""])}
+              className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+            >
+              + Add highlight
+            </button>
+          )}
+        </div>
+      </section>
+
+      {/* ── Tournament History ───────────────────────────────────────── */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-brand-white/10" />
+          <span className="text-xs font-display uppercase tracking-widest text-brand-white/30">
+            Tournament History
+          </span>
+          <div className="h-px flex-1 bg-brand-white/10" />
+        </div>
+
+        <div className="space-y-4">
+          {tournaments.map((t, i) => (
+            <div key={i} className="bg-[#0d0d0d] border border-brand-white/10 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-display uppercase tracking-widest text-brand-white/30">
+                  Tournament {i + 1}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setTournaments((prev) => prev.filter((_, j) => j !== i))}
+                  aria-label={`Remove tournament ${i + 1}`}
+                  className="text-brand-white/40 hover:text-red-400 transition-colors text-sm px-1"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="number"
+                  value={t.year}
+                  onChange={(e) =>
+                    setTournaments((prev) =>
+                      prev.map((x, j) => (j === i ? { ...x, year: e.target.value } : x))
+                    )
+                  }
+                  placeholder="Year (e.g. 2024)"
+                  min={1990} max={2035}
+                  className="bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                />
+                <input
+                  type="text"
+                  value={t.result}
+                  onChange={(e) =>
+                    setTournaments((prev) =>
+                      prev.map((x, j) => (j === i ? { ...x, result: e.target.value.slice(0, 120) } : x))
+                    )
+                  }
+                  placeholder="Result (e.g. Gold)"
+                  className="bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                />
+                <input
+                  type="text"
+                  value={t.event}
+                  onChange={(e) =>
+                    setTournaments((prev) =>
+                      prev.map((x, j) => (j === i ? { ...x, event: e.target.value.slice(0, 120) } : x))
+                    )
+                  }
+                  placeholder="Event (e.g. World Championship)"
+                  className="col-span-2 bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                />
+                <input
+                  type="text"
+                  value={t.location}
+                  onChange={(e) =>
+                    setTournaments((prev) =>
+                      prev.map((x, j) => (j === i ? { ...x, location: e.target.value.slice(0, 120) } : x))
+                    )
+                  }
+                  placeholder="Location (e.g. Lahti, Finland)"
+                  className="col-span-2 bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                />
+              </div>
+            </div>
+          ))}
+          {tournaments.length < 30 && (
+            <button
+              type="button"
+              onClick={() =>
+                setTournaments((prev) => [...prev, { year: "", event: "", result: "", location: "" }])
+              }
+              className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+            >
+              + Add tournament
+            </button>
+          )}
         </div>
       </section>
 

@@ -27,6 +27,16 @@ export default async function EditProfilePage() {
   if (!player) redirect("/dashboard");
 
   const stats = (player.stats ?? {}) as Record<string, unknown>;
+  const achievements = (Array.isArray(stats.achievements) ? stats.achievements : [])
+    .filter((a): a is string => typeof a === "string");
+  const tournaments = (Array.isArray(stats.tournaments) ? stats.tournaments : [])
+    .filter((t): t is Record<string, unknown> => typeof t === "object" && t !== null)
+    .map((t) => ({
+      year: t.year != null ? String(t.year) : "",
+      event: typeof t.event === "string" ? t.event : "",
+      result: typeof t.result === "string" ? t.result : "",
+      location: typeof t.location === "string" ? t.location : "",
+    }));
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
@@ -66,6 +76,13 @@ export default async function EditProfilePage() {
             occupation: (stats.occupation as string) ?? "",
             education: (stats.education as string) ?? "",
             grad_year: player.grad_year ?? null,
+            caps: (stats.caps as number) ?? null,
+            world_appearances: (stats.world_appearances as number) ?? null,
+            jersey: stats.jersey != null ? String(stats.jersey) : "",
+            club: (stats.club as string) ?? "",
+            nickname: (stats.nickname as string) ?? "",
+            achievements,
+            tournaments,
           }}
         />
       </div>

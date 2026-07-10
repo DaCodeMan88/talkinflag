@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { hasDisplayableValue } from "@/lib/profile-visibility";
+import { sanitizeStatsPayload, shouldResetVerification } from "@/lib/profile-edit";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -54,30 +55,9 @@ export async function PATCH(
     identity.weight_lbs = isNaN(v) || v < 80 || v > 400 ? null : v;
   }
 
-  // Stats JSONB fields
-  const statsFields: Record<string, unknown> = {};
-  if (body.wingspan_in !== undefined) {
-    const v = parseInt(body.wingspan_in);
-    statsFields.wingspan_in = isNaN(v) || v < 48 || v > 108 ? null : v;
-  }
-  if (body.forty_yard !== undefined) {
-    const v = parseFloat(body.forty_yard);
-    statsFields.forty_yard = isNaN(v) || v < 3.5 || v > 8 ? null : v.toFixed(2);
-  }
-  if (body.vertical_jump !== undefined) {
-    const v = parseInt(body.vertical_jump);
-    statsFields.vertical_jump = isNaN(v) || v < 10 || v > 60 ? null : v;
-  }
-  if (body.years_active !== undefined) {
-    const v = parseInt(body.years_active);
-    statsFields.years_active = isNaN(v) || v < 0 || v > 30 ? null : v;
-  }
-  if (body.occupation !== undefined) {
-    statsFields.occupation = String(body.occupation).slice(0, 100) || null;
-  }
-  if (body.education !== undefined) {
-    statsFields.education = String(body.education).slice(0, 100) || null;
-  }
+  // Stats JSONB fields — allowlisted + sanitized (anything else the client
+  // sends, e.g. team_designation/source/seed_batch/roster_year, is stripped).
+  const statsFields = sanitizeStatsPayload(body as Record<string, unknown>);
 
   const mergedStats: Record<string, unknown> = { ...(player.stats ?? {}), ...statsFields };
   // Drop anything that isn't displayable (null, "", "?", "N/A", empty arrays…)
@@ -91,9 +71,16 @@ export async function PATCH(
     identity.grad_year = isNaN(v) || v < 2024 || v > 2032 ? null : v;
   }
 
+  // Changing the load-bearing facts (caps, world appearances, tournaments,
+  // achievements) drops the verified badge until re-verified.
+  const update: Record<string, unknown> = { ...identity, stats: mergedStats };
+  if (shouldResetVerification(player.stats as Record<string, unknown> | null, statsFields)) {
+    update.is_verified = false;
+  }
+
   const { error } = await db
     .from("players")
-    .update({ ...identity, stats: mergedStats })
+    .update(update)
     .eq("id", id);
 
   if (error) {
