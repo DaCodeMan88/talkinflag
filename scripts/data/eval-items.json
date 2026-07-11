@@ -15,27 +15,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player explodes off the line?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -52,27 +52,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player moves fluidly without stiffness?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -89,27 +89,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player accelerates explosively in the first step?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -126,27 +126,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player generates real power on cuts and throws?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -163,27 +163,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player shows top-end burst and speed?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -200,27 +200,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player conserves energy yet stays quick late?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -237,27 +237,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player changes direction sharply without slowing?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -274,27 +274,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player holds position and balance under load?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -311,27 +311,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player stays balanced through contact and cuts?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -348,27 +348,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player has the lower-body power for jumps and bursts?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "athleticism",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "athleticism",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "athleticism",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "athleticism",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "athleticism",
           "points": 4
         }
@@ -390,22 +390,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -427,22 +427,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -464,22 +464,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -501,22 +501,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -538,22 +538,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -575,22 +575,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -612,22 +612,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -649,22 +649,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -686,22 +686,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -723,22 +723,22 @@
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little",
           "dimension": "football_iq",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Meaningfully",
           "dimension": "football_iq",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavily",
           "dimension": "football_iq",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "It defines the position",
           "dimension": "football_iq",
           "points": 4
         }
@@ -755,27 +755,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a receiver holds a steady final fixation on the ball before the catch?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -792,27 +792,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player locks eyes on the target at the right instant?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -829,27 +829,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's hands track and match the ball's flight?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -866,27 +866,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a QB scans smoothly from field to target?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -903,27 +903,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a catcher keeps the ball centered in sharp focus?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -940,27 +940,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player tracks a deep ball over the shoulder?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -977,27 +977,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a receiver turns head and body in sync with the throw?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -1014,27 +1014,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender fixes on the ball-carrier's hips, not the fakes?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -1051,27 +1051,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player catches cleanly with soft, coordinated hands?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -1088,27 +1088,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a QB repeats an accurate throwing motion consistently?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "ball_skills",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "ball_skills",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "ball_skills",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "ball_skills",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "ball_skills",
           "points": 4
         }
@@ -1125,27 +1125,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player knows their own limits and plays within them?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1162,27 +1162,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender doesn't bite on play-action or fakes?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1199,27 +1199,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender keys the QB's eyes and hips?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1236,27 +1236,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender stays even-keeled after giving up a score?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1273,27 +1273,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player avoids dumb penalties and flag-guarding fouls?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1310,27 +1310,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player trusts their assignment instead of freelancing?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1347,27 +1347,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender's eyes snap to the ball instantly?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1384,27 +1384,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender tracks receiver and ball at the same time?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1421,27 +1421,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender plays the ball even through traffic?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1458,27 +1458,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a defender keeps clean eyes in chaotic moments?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "defense",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "defense",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "defense",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "defense",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "defense",
           "points": 4
         }
@@ -1495,27 +1495,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player keeps a stable visual anchor while making plays?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1532,27 +1532,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player integrates pivots and vision to create yards?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1569,27 +1569,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's ankle stability holds up while producing?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1606,27 +1606,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player cuts safely and powerfully to produce?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1643,27 +1643,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's core control supports consistent production?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1680,27 +1680,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's conditioning base supports high output?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1717,27 +1717,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's build fits their position's production demands?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1754,27 +1754,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player has the size and length for their role's output?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1791,27 +1791,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's strength translates to production through contact?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1828,27 +1828,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's power-to-weight supports explosive output?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Zero factor",
           "dimension": "production",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Minor factor",
           "dimension": "production",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Real factor",
           "dimension": "production",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Major factor",
           "dimension": "production",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Deciding factor",
           "dimension": "production",
           "points": 4
         }
@@ -1865,27 +1865,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player honestly assesses their tape against elite competition?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -1902,27 +1902,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player visualizes reps against top opponents?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -1939,27 +1939,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player out-prepares the level they're competing at?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -1976,27 +1976,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's work rate separates them from the field?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2013,27 +2013,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player attacks their weaknesses against tougher competition?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2050,27 +2050,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player wins on fundamentals against strong teams?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2087,27 +2087,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player questions and competes rather than coasting?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2124,27 +2124,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player resets quickly between high-level reps?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2161,27 +2161,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player measures themselves against the very best?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2198,27 +2198,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player scans the field in a disciplined order vs good defenses?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "competition",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "competition",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "competition",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "competition",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "competition",
           "points": 4
         }
@@ -2235,27 +2235,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player treats a bad half or blowout as a challenge to attack?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2272,27 +2272,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player prepares for pressure situations before they arrive?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2309,27 +2309,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player adjusts their own game to fix what's going wrong?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2346,27 +2346,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player stays composed when calls or bad breaks go against them?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2383,27 +2383,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player sustains intensity through fatigue and adversity?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2420,27 +2420,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player keeps taking bold shots after a drop or interception?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2457,27 +2457,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player executes complex plays under pressure without hesitation?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2494,27 +2494,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player's body stays calm (no rushed breathing) in big moments?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2531,27 +2531,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player locks onto their read despite noise and chaos?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2568,27 +2568,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player shakes off a mistake instead of dwelling on it?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Irrelevant",
           "dimension": "clutch",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Nice to have",
           "dimension": "clutch",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Matters",
           "dimension": "clutch",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Big factor",
           "dimension": "clutch",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Separates elite players",
           "dimension": "clutch",
           "points": 4
         }
@@ -2605,27 +2605,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player switches between roles or positions seamlessly?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2642,27 +2642,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player makes hard plays look calm and automatic?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2679,27 +2679,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player adjusts mid-play when the first option breaks?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2716,27 +2716,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player fixes their own footwork or route without being told?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2753,27 +2753,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player improvises and creates when a play breaks down?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2790,27 +2790,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player offers multiple solutions to a defensive look?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2827,27 +2827,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player sustains attention across a long drive?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2864,27 +2864,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player ignores trash talk and sideline noise?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2901,27 +2901,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player embraces new schemes and positions?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2938,27 +2938,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player energizes and directs the unit vocally?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Not important",
           "dimension": "versatility",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Slightly important",
           "dimension": "versatility",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Fairly important",
           "dimension": "versatility",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Very important",
           "dimension": "versatility",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Absolutely essential",
           "dimension": "versatility",
           "points": 4
         }
@@ -2975,27 +2975,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player holds elite standards without unraveling on errors?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3012,27 +3012,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player owns their own training and film study?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3049,27 +3049,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player is driven by personal goals, not just the scoreboard?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3086,27 +3086,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player absorbs coaching and applies it on the next rep?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3123,27 +3123,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player generates a plan and a pathway when behind?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3160,27 +3160,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player expects to come through in the clutch?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3197,27 +3197,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player lifts and leverages their teammates?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3234,27 +3234,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player is reliably prepared, on time, and detail-oriented?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3271,27 +3271,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player still wants to dominate even when already winning?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3308,27 +3308,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player flips a competitive switch on game day?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "Doesn't factor in",
           "dimension": "intangibles",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "Barely",
           "dimension": "intangibles",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Somewhat",
           "dimension": "intangibles",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Quite a bit",
           "dimension": "intangibles",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Non-negotiable",
           "dimension": "intangibles",
           "points": 4
         }
@@ -3345,27 +3345,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player is just as explosive late in a tournament?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3382,27 +3382,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player recovers well between games?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3419,27 +3419,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player settles down quickly between plays?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3456,27 +3456,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player keeps pace deep into a fast game?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3493,27 +3493,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player sustains repeated sprints without fading?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3530,27 +3530,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player covers ground efficiently all game long?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3567,27 +3567,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player prioritizes the recovery habits behind durability?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3604,27 +3604,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player shows consistent week-to-week availability?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3641,27 +3641,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player manages nutrition and conditioning professionally?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
@@ -3678,27 +3678,27 @@
       "prompt": "When you evaluate a player, how much does it matter that a player builds routines that keep them available?",
       "options": [
         {
-          "label": "Not at all",
+          "label": "No weight",
           "dimension": "consistency",
           "points": 0
         },
         {
-          "label": "Slightly",
+          "label": "A little weight",
           "dimension": "consistency",
           "points": 1
         },
         {
-          "label": "Moderately",
+          "label": "Moderate weight",
           "dimension": "consistency",
           "points": 2
         },
         {
-          "label": "A lot",
+          "label": "Heavy weight",
           "dimension": "consistency",
           "points": 3
         },
         {
-          "label": "It's decisive",
+          "label": "Maximum weight",
           "dimension": "consistency",
           "points": 4
         }
