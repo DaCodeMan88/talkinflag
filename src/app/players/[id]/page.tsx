@@ -407,6 +407,16 @@ export default async function PlayerDetailPage({
               <div className="mt-3">
                 <ReportProfileButton playerId={player.id} />
               </div>
+
+              {!player.is_claimed && (
+                <p className="mt-3 text-brand-white/40 text-xs">
+                  Data compiled from public sources.{" "}
+                  <Link href="/privacy" className="underline hover:text-brand-white/60 transition-colors">
+                    How we handle athlete data
+                  </Link>{" "}
+                  · Report an issue above
+                </p>
+              )}
             </div>
 
             {/* Follow + Share + Compare */}

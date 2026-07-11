@@ -41,6 +41,8 @@ const connectLinks = [
   { label: "Scouts", href: "/scouts/apply" },
   { label: "Merch", href: "/merch" },
   { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];
 
 type FooterLink = { label: string; href: string; external?: boolean };
