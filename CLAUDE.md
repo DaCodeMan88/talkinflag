@@ -129,7 +129,7 @@ See `docs/ambra-update-2026-06-25.md` (content rewritten 2026-07-05, filename ke
 - **Real-phone share test** of the LinkedIn share + native share-sheet + OG card (can't be tested from a server).
 
 **Config / content (unchanged from before):**
-1. **Spotify Show ID** (`NEXT_PUBLIC_SPOTIFY_SHOW_ID`) — audio player on `/podcast` (built, hidden until set). Current known ID `033Gc…` is a hard 404; env var already removed. Need the correct ID from Ambra.
+1. **Spotify Show ID** (`NEXT_PUBLIC_SPOTIFY_SHOW_ID` = `033GcNgIw5FPNMr69P5sDU`) — this ID is **correct** (confirmed by owner 2026-07-11); the show is new and has **no episode posted yet**, which is why the embed 404s / shows "Page not available". Env var is currently unset so no broken embed ships. Re-add it once the first episode is published (the `/podcast` player auto-activates then).
 2. **5 YouTube video IDs** — `YOUTUBE_API_KEY`/`YOUTUBE_CHANNEL_ID` are already live in Vercel; only the 5 `TODO_OWNER` placeholders in `static-posts.ts` (Sowers/Clark-Robinson/Krouch/Doucette/Flores interviews) remain.
 3. **`PRINTFUL_API_KEY` + `STRIPE_SECRET_KEY`/`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`** — both exist in local `.env.local` but neither is set in **Vercel production**. Stripe is additionally **blocked on US business formation** (see legal, above) — do NOT take payments before the entity exists.
 4. **Amazon Associates tag** — swap placeholder `talkinflag-20` in `static-posts.ts` once approved (add the FTC affiliate disclosure when unpaused).
