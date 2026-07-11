@@ -214,7 +214,10 @@ export default function ShareCardModal(props: Props) {
               gap: "32px",
               padding: "32px",
               position: "relative",
-              maxWidth: "820px",
+              // border-box: 880 − 64 padding − 2 border = 814px content, fits the
+              // 772px flex line (500 card + 32 gap + 240 controls) side by side;
+              // flexWrap only kicks in on narrower viewports (mobile).
+              maxWidth: "880px",
               width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
