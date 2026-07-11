@@ -104,7 +104,9 @@ export default async function DashboardPage({
   const checklist: ChecklistItem[] = [
     { label: "Claim or create your player profile", done: !!player, href: "/players", cta: "Find" },
     { label: "Complete your profile (80%+)", done: !!player && pct >= 80, href: "/dashboard/edit", cta: "Edit" },
-    { label: "Take the Athlete Evaluation", done: !!evalRow, href: "/evaluate", cta: "Start" },
+    evalRow
+      ? { label: "Take the Athlete Evaluation", done: true, href: "/evaluate/results", cta: "View", doneHref: "/evaluate/results", doneCta: "View results" }
+      : { label: "Take the Athlete Evaluation", done: false, href: "/evaluate", cta: "Start" },
     { label: "Take the Flag IQ quiz", done: !!iqRow, href: "/iq/general", cta: "Start" },
     { label: "Submit a stat for verification", done: !!player?.is_verified, href: "/dashboard/verify", cta: "Submit" },
   ];

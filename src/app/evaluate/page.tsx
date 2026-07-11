@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 import { loadActiveItems, stripAnswers } from "@/lib/eval/load";
 import { getEligibleRoles } from "@/lib/eval/eligibility";
@@ -46,8 +48,26 @@ export default async function EvaluatePage() {
     }
   }
 
+  // Prior run? Offer a way back to the saved results.
+  const { data: prior } = await createAdminClient()
+    .from("eval_responses")
+    .select("id")
+    .eq("user_id", user.id)
+    .limit(1)
+    .maybeSingle();
+
   return (
     <main className="bg-brand-black min-h-screen">
+      {prior && (
+        <div className="pt-20 -mb-12 px-4 text-center">
+          <Link
+            href="/evaluate/results"
+            className="inline-block text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+          >
+            You&apos;ve taken this before — view your saved results →
+          </Link>
+        </div>
+      )}
       <EvaluationRunner items={items} sections={sections} eligibleRoles={eligibleRoles} />
     </main>
   );

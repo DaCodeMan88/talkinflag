@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
@@ -50,6 +51,12 @@ export async function POST(
   if (!updated) return NextResponse.json({ error: "This profile has already been claimed." }, { status: 409 });
 
   await logClaimEvent(db, { playerId: id, userId: user.id, action: "claim", actor: "self" });
+
+  // Bust the ISR caches that show the claimed/unclaimed badge, so the list
+  // doesn't disagree with the profile for up to `revalidate` seconds.
+  revalidatePath("/players");
+  revalidatePath(`/players/${id}`);
+  revalidatePath("/rankings");
 
   await notifyAdmins(
     `New profile claim: ${updated.first_name} ${updated.last_name}`,

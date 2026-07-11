@@ -6,6 +6,9 @@ export type ChecklistItem = {
   done: boolean;
   href: string;
   cta: string;
+  /** Optional link shown after the item is done (e.g. "View results"). */
+  doneHref?: string;
+  doneCta?: string;
 };
 
 export default function OnboardingChecklist({
@@ -51,12 +54,19 @@ export default function OnboardingChecklist({
                 {item.label}
               </span>
             </div>
-            {!item.done && (
+            {!item.done ? (
               <Link
                 href={item.href}
                 className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors shrink-0"
               >
                 {item.cta} →
+              </Link>
+            ) : item.doneHref && (
+              <Link
+                href={item.doneHref}
+                className="text-brand-white/40 text-xs font-display uppercase tracking-widest hover:text-brand-yellow transition-colors shrink-0"
+              >
+                {item.doneCta ?? "View"} →
               </Link>
             )}
           </li>

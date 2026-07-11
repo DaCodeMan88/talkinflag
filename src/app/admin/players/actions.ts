@@ -176,5 +176,6 @@ export async function toggleClaim(id: string, claimed: boolean) {
 
   revalidatePath(`/admin/players/${id}/edit`);
   revalidatePath(`/players/${id}`);
+  revalidatePath("/players");
   revalidatePath("/admin/claims");
 }
