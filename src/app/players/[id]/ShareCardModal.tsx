@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ImageShareButtons from "@/components/share/ImageShareButtons";
 
 type Props = {
   playerId: string;
@@ -93,6 +94,7 @@ export default function ShareCardModal(props: Props) {
   const [copied, setCopied] = useState(false);
   const [copiedEmbed, setCopiedEmbed] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
+  const [format, setFormat] = useState<"post" | "story">("post");
 
   useEffect(() => {
     if (typeof navigator !== "undefined" && !!navigator.share) setCanNativeShare(true);
@@ -117,6 +119,15 @@ export default function ShareCardModal(props: Props) {
   ].filter(Boolean).join("  ·  ");
 
   const shareUrl = `https://talkinflag.com/players/${playerId}`;
+
+  // Card-route URL that renders the shareable PNG. Mirrors the preview toggles;
+  // the route re-derives verified-stat gating server-side, so an unverified stat
+  // param is ignored there even if it slips through here.
+  const b = (v: boolean) => (v ? "1" : "0");
+  const imageUrl =
+    `/players/${playerId}/card?format=${format}` +
+    `&photo=${b(showPhoto)}&school=${b(showSchool)}&year=${b(showClassYear)}&rank=${b(showRank)}` +
+    `&height=${b(showHeight)}&weight=${b(showWeight)}&forty=${b(showForty)}&vertical=${b(showVertical)}`;
 
   function markCopied() {
     setCopied(true);
@@ -427,10 +438,6 @@ export default function ShareCardModal(props: Props) {
                 )}
               </div>
 
-              {/* Note below card */}
-              <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "11px", marginTop: "10px", textAlign: "center" }}>
-                Screenshot this card to share on Instagram
-              </p>
             </div>
 
             {/* Right: Controls */}
@@ -476,6 +483,41 @@ export default function ShareCardModal(props: Props) {
                     </p>
                   )}
                 </div>
+              </div>
+
+              {/* Instagram-ready image share (headline feature) */}
+              <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <h3 style={{ color: "#FDDD58", fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", margin: 0 }}>
+                  Post to Instagram
+                </h3>
+                {/* Post / Story format toggle */}
+                <div style={{ display: "flex", gap: "6px" }}>
+                  {(["post", "story"] as const).map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setFormat(f)}
+                      style={{
+                        flex: 1,
+                        backgroundColor: format === f ? "#FDDD58" : "rgba(255,255,255,0.06)",
+                        color: format === f ? "#000000" : "rgba(255,255,255,0.6)",
+                        border: `1px solid ${format === f ? "#FDDD58" : "rgba(255,255,255,0.12)"}`,
+                        padding: "8px 0",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {f === "post" ? "Post 1:1" : "Story 9:16"}
+                    </button>
+                  ))}
+                </div>
+                <ImageShareButtons
+                  imageUrl={imageUrl}
+                  fileName={`talkin-flag-${playerName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${format}.png`}
+                  shareTitle={`${playerName} | Talkin Flag`}
+                />
               </div>
 
               <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>

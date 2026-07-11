@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import RadarChart from "./RadarChart";
+import ImageShareButtons from "@/components/share/ImageShareButtons";
 import {
   DIMENSION_KEYS,
   DIMENSION_LABELS,
@@ -39,6 +41,8 @@ function gapLine(fp: Record<string, number>, reference: Record<string, number>):
 }
 
 export default function PerspectiveSummary({ result }: { result: EvalResult }) {
+  const [format, setFormat] = useState<"post" | "story">("post");
+  const [copiedQuiz, setCopiedQuiz] = useState(false);
   const fp = result.fingerprint;
   const axes = DIMENSION_KEYS.map((k) => DIMENSION_LABELS[k].split(" ")[0]);
   const memberVals = DIMENSION_KEYS.map((k) => fp[k] ?? 0);
@@ -49,6 +53,14 @@ export default function PerspectiveSummary({ result }: { result: EvalResult }) {
     result.role === "player"
       ? "Taken for your own insight — players don't carry poll weight."
       : `This shapes the ${result.role[0].toUpperCase() + result.role.slice(1)} Poll.`;
+
+  function copyQuizLink() {
+    // Share the funnel, not the private /evaluate/results URL.
+    navigator.clipboard.writeText("https://talkinflag.com/evaluate").then(() => {
+      setCopiedQuiz(true);
+      setTimeout(() => setCopiedQuiz(false), 2000);
+    });
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 text-brand-white">
@@ -118,6 +130,50 @@ export default function PerspectiveSummary({ result }: { result: EvalResult }) {
           Benchmarked against the Biopsychosocial Architecture of Elite Athletic Performance (Talkin Flag research) — at the
           highest level, coping and game intelligence separate champions more than physical tools.
         </p>
+      </div>
+
+      {/* Share your archetype (Instagram-ready image) */}
+      <div className="mt-6 rounded-2xl bg-brand-gray border border-white/10 p-5">
+        <p className="font-display uppercase tracking-widest text-brand-yellow text-sm">Share your archetype</p>
+        <p className="mt-1 text-xs text-white/50">
+          A branded card of your radar + archetype. On mobile, pick Instagram in the share sheet.
+        </p>
+
+        {/* Post / Story toggle */}
+        <div className="mt-4 flex gap-2 max-w-xs">
+          {(["post", "story"] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFormat(f)}
+              className={`flex-1 py-2 text-[11px] font-display uppercase tracking-widest border transition-colors ${
+                format === f
+                  ? "bg-brand-yellow text-brand-black border-brand-yellow"
+                  : "bg-white/5 text-white/60 border-white/15"
+              }`}
+            >
+              {f === "post" ? "Post 1:1" : "Story 9:16"}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4 max-w-xs">
+          <ImageShareButtons
+            imageUrl={`/api/eval/card?format=${format}`}
+            fileName={`talkin-flag-eval-${format}.png`}
+            shareTitle="My Talkin Flag evaluation archetype"
+          />
+        </div>
+
+        <button
+          onClick={copyQuizLink}
+          className={`mt-3 w-full max-w-xs py-3 text-xs font-display uppercase tracking-widest border transition-colors ${
+            copiedQuiz
+              ? "bg-brand-yellow/15 text-brand-yellow border-brand-yellow"
+              : "bg-white/5 text-white/70 border-white/15"
+          }`}
+        >
+          {copiedQuiz ? "✓ Quiz link copied!" : "Copy quiz link"}
+        </button>
       </div>
 
       <div className="mt-8 flex flex-wrap gap-3">
