@@ -8,13 +8,13 @@
 
 ## Active Roadmap
 
-**🎯 Master plan (everything below is now consolidated here):**
-`docs/plans/2026-06-06-community-rankings-platform.md` — the Community Rankings Platform: highlight-clip blogs + Shorts (Phase A), IQ quiz funnel (B), weighted Coaches/Experts/Hosts polls (C), the TF ranking algorithm (D), fundamentals course (E), career-update re-engagement (F), i18n + Mexico depth (G), and the full tabled/parked backlog + owner actions (H).
+**Most recent shipped work: Phase 2 — Trust, Data Quality & Legal Hardening** (`docs/plans/2026-07-10-phase-2-trust-data-and-legal.md`, shipped 2026-07-11, merged to `main` at `d51c9b3`, live on talkinflag.com). Delivered: blog CTAs no longer imply interviews, profiles hide unset stats (no grey blocks), claimed players self-edit highlights/tournaments/key stats (verification resets on stat change), roster/coach accuracy sweep (Italy W coach → Jonathan Homer), varied eval answer anchors, LinkedIn/Web-Share fixes, and — biggest — `/privacy` + `/terms` pages, footer/sitemap links, and a data-source/removal notice on unclaimed profiles (GDPR Art. 14). See also the legal risk review `docs/legal-risk-review-2026-07-10.md`.
+
+**Older master plan (Phases A–F all shipped weeks ago):**
+`docs/plans/2026-06-06-community-rankings-platform.md` — the Community Rankings Platform. Retained as historical reference; do NOT treat its "execute Phase A" instruction as live.
 
 **To start the next build session, say:**
-> "Read CLAUDE.md and docs/plans/2026-06-06-community-rankings-platform.md, resolve the Decisions Needed section with me, then execute Phase A."
-
-> ⚠️ Do Phase H3 (drop `_backup_*` tables) before any new Phase B migrations. The build-queue/owner-action lists below are retained for reference but are all folded into the master plan.
+> "Read CLAUDE.md and the newest plan under docs/plans/; check its task list against `git log --oneline` before executing anything."
 
 ---
 
@@ -118,12 +118,23 @@
 ### 🚨 Owner Actions — Needed Now
 See `docs/ambra-update-2026-06-25.md` (content rewritten 2026-07-05, filename kept for the existing CLAUDE.md link) for the current, authoritative owner to-do list. As of 2026-07-05, `CRON_SECRET`, `RESEND_API_KEY`, `ADMIN_EMAILS` (Ambra + Tika added), and Upstash rate-limiting env vars are all done. Remaining real owner actions:
 
-1. **Spotify Show ID** (`NEXT_PUBLIC_SPOTIFY_SHOW_ID`) — audio player on `/podcast` (built, hidden until set).
-2. **5 YouTube video IDs** — `YOUTUBE_API_KEY`/`YOUTUBE_CHANNEL_ID` are already live in Vercel; only the 5 `TODO_OWNER` placeholders in `static-posts.ts` (Sowers/Clark-Robinson/Krouch/Doucette/Flores interviews) remain.
-3. **`PRINTFUL_API_KEY` + `STRIPE_SECRET_KEY`/`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`** — both exist in local `.env.local` but neither is set in **Vercel production**, so `/merch` cannot list products or take payment live yet. Needs both, not just Printful.
-4. **Amazon Associates tag** — swap placeholder `talkinflag-20` in `static-posts.ts` once approved.
+**Legal (from the 2026-07-10 legal risk review — do before monetizing):**
+- **Form the US entity (LLC) BEFORE any Stripe/merch/paid feature.** Taking payments as an unformed venture puts personal liability on the founders. Order is: entity → Stripe → merch. Hold this line.
+- **Get the Talkin Balls / Neil "Network" partnership in writing** (revenue/IP split + naming license) before the nav "Network" rename ships.
+- **Have a real attorney skim `/privacy` + `/terms`** now that they're live — especially the GDPR legitimate-interest basis and the scraped-athlete disclosure. (These pages are Claude-drafted, not attorney-reviewed.)
 
-> ✅ Done / dropped: host photos (none needed), DB backup tables (already gone), partner URLs (confirmed), CRON_SECRET, RESEND_API_KEY, ADMIN_EMAILS, Upstash. Password protection + login CAPTCHA: deferred. Leaked-password toggle: deferred (Supabase Pro-gated, see above).
+**Phase 2 open owner questions (data confirmations, surfaced 2026-07-11):**
+- Ambra: confirm `caps=24` and `world_appearances=2` (her old profile text said 34 caps — corrected to match `caps`, single source of truth).
+- Confirm **Jonathan Homer** as current Italy women's HC (spelling + still current) — set live in `coaches` + `world-rankings.ts`.
+- **Real-phone share test** of the LinkedIn share + native share-sheet + OG card (can't be tested from a server).
+
+**Config / content (unchanged from before):**
+1. **Spotify Show ID** (`NEXT_PUBLIC_SPOTIFY_SHOW_ID`) — audio player on `/podcast` (built, hidden until set). Current known ID `033Gc…` is a hard 404; env var already removed. Need the correct ID from Ambra.
+2. **5 YouTube video IDs** — `YOUTUBE_API_KEY`/`YOUTUBE_CHANNEL_ID` are already live in Vercel; only the 5 `TODO_OWNER` placeholders in `static-posts.ts` (Sowers/Clark-Robinson/Krouch/Doucette/Flores interviews) remain.
+3. **`PRINTFUL_API_KEY` + `STRIPE_SECRET_KEY`/`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`** — both exist in local `.env.local` but neither is set in **Vercel production**. Stripe is additionally **blocked on US business formation** (see legal, above) — do NOT take payments before the entity exists.
+4. **Amazon Associates tag** — swap placeholder `talkinflag-20` in `static-posts.ts` once approved (add the FTC affiliate disclosure when unpaused).
+
+> ✅ Done / dropped: host photos (none needed), DB backup tables (already gone), partner URLs (confirmed), CRON_SECRET, RESEND_API_KEY, ADMIN_EMAILS, Upstash. Password protection + login CAPTCHA: deferred. Leaked-password toggle: deferred (Supabase Pro-gated, see above). **Phase 2 (trust/data/legal) SHIPPED 2026-07-11** — see Active Roadmap.
 
 ### Build Queue
 1. **TF Rankings Algorithm** — needs Ambra & Tika to define the 100-pt rubric weights.
