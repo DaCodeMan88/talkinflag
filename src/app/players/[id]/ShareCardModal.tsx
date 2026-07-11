@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   playerId: string;
@@ -92,6 +92,11 @@ export default function ShareCardModal(props: Props) {
   const [showVertical, setShowVertical] = useState(isVerticalVerified);
   const [copied, setCopied] = useState(false);
   const [copiedEmbed, setCopiedEmbed] = useState(false);
+  const [canNativeShare, setCanNativeShare] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && !!navigator.share) setCanNativeShare(true);
+  }, []);
 
   const initials = playerName
     .split(" ")
@@ -111,11 +116,40 @@ export default function ShareCardModal(props: Props) {
     showVertical && verticalJump ? `${verticalJump} vert` : null,
   ].filter(Boolean).join("  ·  ");
 
+  const shareUrl = `https://talkinflag.com/players/${playerId}`;
+
+  function markCopied() {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   function handleCopy() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(shareUrl).then(markCopied).catch(() => {
+      // Fallback for browsers where the async clipboard API is unavailable/blocked
+      const input = document.createElement("input");
+      input.value = shareUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      markCopied();
     });
+  }
+
+  // NOTE: navigator.share must be invoked synchronously inside the click
+  // handler — an await before it would drop the user-gesture context and
+  // the share sheet would silently never open on mobile.
+  function handleNativeShare() {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      navigator
+        .share({ title: `${playerName} | Talkin Flag`, url: shareUrl })
+        .catch(() => {
+          /* user cancelled */
+        });
+      return;
+    }
+    // Fallback: copy link + reuse the existing "Copied!" confirmation
+    handleCopy();
   }
 
   function handleCopyEmbed() {
@@ -176,11 +210,14 @@ export default function ShareCardModal(props: Props) {
               border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "4px",
               display: "flex",
+              flexWrap: "wrap",
               gap: "32px",
               padding: "32px",
               position: "relative",
               maxWidth: "820px",
               width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
           >
             {/* Close button */}
@@ -201,8 +238,8 @@ export default function ShareCardModal(props: Props) {
               ✕
             </button>
 
-            {/* Left: Card preview */}
-            <div style={{ flexShrink: 0 }}>
+            {/* Left: Card preview (fixed-width card scrolls sideways on narrow screens) */}
+            <div style={{ flexShrink: 0, maxWidth: "100%", overflowX: "auto" }}>
               {/* 500x263 — half of 1000x526 (16:9-ish) */}
               <div
                 style={{
@@ -439,6 +476,27 @@ export default function ShareCardModal(props: Props) {
               </div>
 
               <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+                {/* Native share sheet (mobile) */}
+                {canNativeShare && (
+                  <button
+                    onClick={handleNativeShare}
+                    style={{
+                      backgroundColor: "#FDDD58",
+                      border: "none",
+                      color: "#000000",
+                      padding: "10px 16px",
+                      fontSize: "12px",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      width: "100%",
+                    }}
+                  >
+                    ↗ Share…
+                  </button>
+                )}
+
                 {/* Copy profile link */}
                 <button
                   onClick={handleCopy}

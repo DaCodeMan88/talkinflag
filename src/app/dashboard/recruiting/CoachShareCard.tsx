@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   coachId: string;
@@ -122,17 +122,48 @@ export default function CoachShareCard(props: Props) {
       ? `${window.location.origin}/coaches/${coachId}`
       : `https://talkinflag.com/coaches/${coachId}`;
 
+  const [canNativeShare, setCanNativeShare] = useState(false);
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && !!navigator.share) setCanNativeShare(true);
+  }, []);
+
+  function markCopied() {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   function handleCopy() {
-    navigator.clipboard.writeText(publicUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(publicUrl).then(markCopied).catch(() => {
+      // Fallback for browsers where the async clipboard API is unavailable/blocked
+      const input = document.createElement("input");
+      input.value = publicUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      markCopied();
     });
+  }
+
+  // NOTE: navigator.share must be invoked synchronously inside the click
+  // handler — an await before it would drop the user-gesture context.
+  function handleNativeShare() {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      navigator
+        .share({ title: `Coach ${coachName} | Talkin Flag`, url: publicUrl })
+        .catch(() => {
+          /* user cancelled */
+        });
+      return;
+    }
+    handleCopy();
   }
 
   function handleLinkedIn() {
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(publicUrl)}`,
-      "_blank"
+      "_blank",
+      "noopener,noreferrer"
     );
   }
 
@@ -187,11 +218,14 @@ export default function CoachShareCard(props: Props) {
               border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "4px",
               display: "flex",
+              flexWrap: "wrap",
               gap: "32px",
               padding: "32px",
               position: "relative",
               maxWidth: "820px",
               width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
           >
             {/* Close button */}
@@ -212,8 +246,8 @@ export default function CoachShareCard(props: Props) {
               ✕
             </button>
 
-            {/* Left: Card preview */}
-            <div style={{ flexShrink: 0 }}>
+            {/* Left: Card preview (fixed-width card scrolls sideways on narrow screens) */}
+            <div style={{ flexShrink: 0, maxWidth: "100%", overflowX: "auto" }}>
               <div
                 style={{
                   width: "500px",
@@ -548,6 +582,25 @@ export default function CoachShareCard(props: Props) {
                   gap: "10px",
                 }}
               >
+                {canNativeShare && (
+                  <button
+                    onClick={handleNativeShare}
+                    style={{
+                      backgroundColor: "#FDDD58",
+                      border: "none",
+                      color: "#000000",
+                      padding: "10px 16px",
+                      fontSize: "12px",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                    }}
+                  >
+                    ↗ Share…
+                  </button>
+                )}
+
                 <button
                   onClick={handleCopy}
                   style={{
