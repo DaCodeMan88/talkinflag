@@ -127,6 +127,20 @@ export function nationKey(value: string | null | undefined): string {
   return NATION_ALIASES[v] ?? v;
 }
 
+/**
+ * True when a player's `stats` JSON does NOT mark them as off the active
+ * national-team roster. Players with `stats.roster_status` of 'inactive' or
+ * 'former' are excluded from active-squad renders; a missing/blank status
+ * (the common case) counts as active.
+ */
+export function isActiveRosterPlayer(stats: unknown): boolean {
+  if (!stats || typeof stats !== "object") return true;
+  const status = String((stats as Record<string, unknown>).roster_status ?? "")
+    .trim()
+    .toLowerCase();
+  return status !== "inactive" && status !== "former";
+}
+
 // ─── World Rankings ───────────────────────────────────────────────────────────
 // Source: IFAF World Rankings — americanfootball.sport/ifaf-world-rankings/
 // Last updated: 2025
@@ -145,7 +159,7 @@ export const WOMENS_WORLD_RANKINGS: WorldTeam[] = [
     rank: 2, nation: "USA", points: 10817,
     yearEstablished: 2008,
     accomplishments: ["2018 IFAF World Championship Gold", "2021 IFAF World Championship Gold", "2024 IFAF World Championship Gold", "2023 IFAF Americas Championship Gold"],
-    keyPlayers: ["Vanita Krouch (QB)", "Maci Joncich (WR/QB)", "Brianna Hernandez-Silva (DB)", "Deliah Autry-Jones (DB)", "Addison Orsborn (Rusher)"],
+    keyPlayers: ["Maci Joncich (WR/QB)", "Brianna Hernandez-Silva (DB)", "Deliah Autry-Jones (DB)", "Addison Orsborn (Rusher)"],
     headCoach: "Saaid Mortazavi",
     recentRecord: "Gold — 2024 IFAF World Championship (Lahti, FIN)",
     notes: "USA Women are 3x IFAF World Champions (2018, 2021, 2024), ranked #2 globally. QB Vanita Krouch was honored at an NFL game following the team's 2024 championship victory. Head coach Saaid Mortazavi leads a 12-player roster of elite flag specialists from across the country.",
@@ -191,9 +205,9 @@ export const WOMENS_WORLD_RANKINGS: WorldTeam[] = [
     yearEstablished: 2012,
     accomplishments: ["2x IFAF European Championship podium", "Top 8 — 2024 IFAF World Championship (Lahti, FIN)"],
     keyPlayers: ["Martika 'Tika' Marcucci (DB)", "Sofia Petrillo (QB)", "Nausicaa Dell'Orto (WR)", "Aleksandra Radisavljević (WR)", "Yvonne Guglielmino (DB)"],
-    headCoach: "Katherine Sowers",
+    headCoach: "Jonathan Homer",
     recentRecord: "Top 8 — 2024 IFAF World Championship (Lahti, FIN)",
-    notes: "Italy's women's national team is one of Europe's rising forces, coached by Katherine Sowers — former San Francisco 49ers offensive assistant and the first woman to coach in a Super Bowl. Tika Marcucci (co-host of Talkin Flag) is a starting DB for the squad. Ambra Marcucci (co-host) is also part of the Italy flag football community.",
+    notes: "Italy's women's national team is one of Europe's rising forces, now led by head coach Jonathan Homer (UK). The program was previously coached by Katherine Sowers — former San Francisco 49ers offensive assistant and the first woman to coach in a Super Bowl. Tika Marcucci (co-host of Talkin Flag) is a starting DB for the squad. Ambra Marcucci (co-host) is also part of the Italy flag football community.",
   },
   {
     rank: 9, nation: "Germany", points: 6000,
@@ -275,7 +289,7 @@ export const MENS_WORLD_RANKINGS: WorldTeam[] = [
     rank: 4, nation: "Italy", points: 6248,
     yearEstablished: 2006,
     accomplishments: ["2x IFAF European Championship finalist", "2022 European Championship Silver", "6th Place — 2024 IFAF World Championship"],
-    keyPlayers: ["Luke Zahradka (QB)", "Gianluca Santagostino (WR)", "Vincent Papale (WR)", "Tamsir Seck (WR)", "Lorenzo Scaperrotta (DB)"],
+    keyPlayers: ["Luke Zahradka (QB)", "Vincent Papale (WR)", "Tamsir Seck (WR)", "Lorenzo Scaperrotta (DB)"],
     headCoach: "Giorgio Gerbaldi",
     recentRecord: "6th Place — 2024 IFAF World Championship (Lahti, FIN)",
     notes: "Italy's men's program ranks among Europe's elite, reaching the quarterfinals of the 2024 IFAF World Championship before falling to eventual champions USA 46-21. The Italian Flag Football Federation (FIDAF) has grown rapidly, producing strong national teams at all levels.",

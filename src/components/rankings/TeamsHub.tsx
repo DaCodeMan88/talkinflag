@@ -8,6 +8,7 @@ import {
   HS_RANKINGS,
   getFlag,
   nationKey,
+  isActiveRosterPlayer,
   type WorldTeam,
 } from "@/lib/world-rankings";
 
@@ -316,7 +317,9 @@ function WorldTeamRow({
         nationKey(p.country) === nationKey(team.nation) &&
         p.gender === genderFilter &&
         // Only the curated official squad — excludes unofficial flagsonly imports tagged level='national'
-        (p.stats as Record<string, unknown>)?.team_designation === "national_senior",
+        (p.stats as Record<string, unknown>)?.team_designation === "national_senior" &&
+        // …and only players still on the active roster (drops roster_status 'inactive'/'former')
+        isActiveRosterPlayer(p.stats),
     )
     .sort((a, b) => {
       const ja = Number((a.stats as Record<string, unknown>)?.jersey ?? 999);

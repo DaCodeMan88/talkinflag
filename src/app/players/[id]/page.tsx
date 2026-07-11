@@ -647,7 +647,7 @@ export default async function PlayerDetailPage({
                 </div>
                 {hasDisplayableValue(ext.caps) && (
                   <p className="text-brand-white/60 text-sm">
-                    {player.first_name} has earned <span className="text-brand-white font-medium">{ext.caps} international caps</span> representing Italy on the world stage.
+                    {player.first_name} has earned <span className="text-brand-white font-medium">{ext.caps} international caps</span> representing {hasDisplayableValue(player.country) ? player.country : "their country"} on the world stage.
                   </p>
                 )}
               </div>
