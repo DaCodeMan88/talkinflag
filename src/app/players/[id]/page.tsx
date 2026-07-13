@@ -179,6 +179,12 @@ export default async function PlayerDetailPage({
   // else sees a not-found, same as if the profile didn't exist.
   if (!player.is_approved && player.claimed_by !== user?.id) notFound();
 
+  // A claim awaiting admin approval must not read as "claimed" publicly — otherwise
+  // a scammer could impersonate a high-profile athlete just by claiming their page.
+  // Until approved, the profile presents as unclaimed (no badge, no self-reported
+  // labels) and the claimant can't edit it (enforced server-side in the write routes).
+  const claimApproved = !!player.is_claimed && !player.claim_pending;
+
   let isVerifiedCoach = false;
   if (user) {
     const { data: coachRow } = await authSupabase
@@ -375,15 +381,15 @@ export default async function PlayerDetailPage({
                     Class of {player.grad_year}
                   </span>
                 )}
-                {player.is_claimed ? (
+                {claimApproved ? (
                   <span className="border border-brand-yellow/50 text-brand-yellow text-xs px-3 py-1 uppercase tracking-wide font-display">
                     ✓ Claimed
                   </span>
-                ) : (
+                ) : !player.is_claimed ? (
                   <span className="border border-brand-white/15 text-brand-white/30 text-xs px-3 py-1 uppercase tracking-wide font-display">
                     Unclaimed
                   </span>
-                )}
+                ) : null}
                 {isInDemand && (
                   <span className="bg-brand-yellow text-brand-black text-xs px-3 py-1 uppercase tracking-wide font-display font-bold">
                     🔥 In Demand
@@ -479,7 +485,7 @@ export default async function PlayerDetailPage({
                   label="Height"
                   value={formatHeight(player.height_in)}
                   verified={verifiedStats.has("height_in")}
-                  selfReported={player.is_claimed && !verifiedStats.has("height_in")}
+                  selfReported={claimApproved && !verifiedStats.has("height_in")}
                 />
               )}
               {hasDisplayableValue(player.weight_lbs) && (
@@ -487,7 +493,7 @@ export default async function PlayerDetailPage({
                   label="Weight"
                   value={formatWeight(player.weight_lbs)}
                   verified={verifiedStats.has("weight_lbs")}
-                  selfReported={player.is_claimed && !verifiedStats.has("weight_lbs")}
+                  selfReported={claimApproved && !verifiedStats.has("weight_lbs")}
                 />
               )}
               {hasDisplayableValue(ext.wingspan_in) && (
@@ -495,7 +501,7 @@ export default async function PlayerDetailPage({
                   label="Wingspan"
                   value={`${ext.wingspan_in as number}"`}
                   verified={verifiedStats.has("wingspan_in")}
-                  selfReported={player.is_claimed && !verifiedStats.has("wingspan_in")}
+                  selfReported={claimApproved && !verifiedStats.has("wingspan_in")}
                 />
               )}
               {hasDisplayableValue(player.grad_year) && <DetailRow label="Class" value={`Class of ${player.grad_year}`} />}
@@ -587,7 +593,7 @@ export default async function PlayerDetailPage({
                   <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest">
                     Athleticism
                   </h2>
-                  {player.is_claimed && !player.is_verified && (
+                  {claimApproved && !player.is_verified && (
                     <span className="text-brand-white/25 text-[10px] font-display uppercase tracking-widest">
                       Self-reported
                     </span>
@@ -610,7 +616,7 @@ export default async function PlayerDetailPage({
                       {verifiedStats.has(key) && (
                         <div className="absolute top-2 right-2 text-brand-yellow text-[9px] font-display uppercase tracking-widest">✓</div>
                       )}
-                      {player.is_claimed && !verifiedStats.has(key) && (
+                      {claimApproved && !verifiedStats.has(key) && (
                         <div className="absolute top-2 right-2 text-brand-white/15 text-[9px]">·</div>
                       )}
                     </div>

@@ -22,6 +22,7 @@ export default async function EditProfilePage() {
     .select("*")
     .eq("claimed_by", user.id)
     .eq("is_claimed", true)
+    .eq("claim_pending", false) // pending claims can't edit until approved
     .single();
 
   if (!player) redirect("/dashboard");

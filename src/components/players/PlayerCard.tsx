@@ -43,7 +43,7 @@ export function PlayerCard({ player }: { player: Player }) {
               🔥 In Demand
             </span>
           )}
-          {player.is_claimed ? (
+          {player.is_claimed && !player.claim_pending ? (
             <span className="shrink-0 bg-brand-yellow text-brand-black font-display text-[9px] px-2 py-0.5 uppercase tracking-widest">
               ✓ Claimed
             </span>

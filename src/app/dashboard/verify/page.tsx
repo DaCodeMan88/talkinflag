@@ -53,6 +53,7 @@ export default async function VerifyStatsPage() {
     .select("id, first_name, last_name, position, height_in, weight_lbs, stats")
     .eq("claimed_by", user.id)
     .eq("is_claimed", true)
+    .eq("claim_pending", false) // pending claims can't submit stats until approved
     .single();
 
   if (!player) redirect("/dashboard");

@@ -24,6 +24,7 @@ export interface Player {
   claimed_by?: string | null;
   claimed_at?: string | null;
   is_approved?: boolean;
+  claim_pending?: boolean;
   photo_url?: string | null;
   created_at?: string;
   updated_at?: string;

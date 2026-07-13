@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAdminUser } from "@/lib/admin";
 import { createServerClient } from "@/lib/supabase";
 import ReleaseClaimButton from "./ReleaseClaimButton";
+import ApproveClaimButton from "./ApproveClaimButton";
 
 export const dynamic = "force-dynamic";
 
@@ -20,16 +21,22 @@ export default async function AdminClaimsPage() {
   if (!(await getAdminUser())) redirect("/");
   const db = createServerClient();
 
-  const [{ data: eventsRaw }, { data: { users } }] = await Promise.all([
+  const [{ data: eventsRaw }, { data: { users } }, { data: pendingRaw }] = await Promise.all([
     db
       .from("claim_events")
       .select("id, player_id, user_id, action, actor, note, created_at")
       .order("created_at", { ascending: false })
       .limit(50),
     db.auth.admin.listUsers(),
+    db
+      .from("players")
+      .select("id, first_name, last_name, claimed_by, claimed_at, level, school_or_team")
+      .eq("claim_pending", true)
+      .order("claimed_at", { ascending: false }),
   ]);
 
   const events = (eventsRaw ?? []) as ClaimEvent[];
+  const pending = pendingRaw ?? [];
   const emailById = Object.fromEntries(users.map((u) => [u.id, u.email ?? "—"]));
 
   const playerIds = [...new Set(events.map((e) => e.player_id))];
@@ -47,6 +54,42 @@ export default async function AdminClaimsPage() {
         Audit log of every profile claim and admin release. Report flags are reviewed separately at{" "}
         <Link href="/admin/reports" className="text-[#FDDD58]/70 hover:text-[#FDDD58]">Admin → Reports</Link>.
       </p>
+
+      {/* Pending claims — approve to make the profile read as claimed + editable */}
+      <div className="space-y-3">
+        <h2 className="font-display text-lg uppercase text-[#FDDD58]/80 tracking-widest">
+          Pending Claims {pending.length > 0 && <span className="text-white/40">· {pending.length}</span>}
+        </h2>
+        <p className="text-white/40 text-xs">
+          Verify the person before approving — until then the profile shows as unclaimed publicly and can&apos;t be edited.
+        </p>
+        {pending.length === 0 ? (
+          <p className="text-white/50 text-sm">No claims awaiting review.</p>
+        ) : (
+          <div className="space-y-2">
+            {pending.map((p) => (
+              <div key={p.id} className="bg-[#0d0d0d] border border-[#FDDD58]/20 p-4 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <Link href={`/players/${p.id}`} className="text-white font-semibold hover:text-[#FDDD58]">
+                    {p.first_name} {p.last_name}
+                  </Link>
+                  <p className="text-white/40 text-xs mt-0.5 truncate">
+                    {[p.school_or_team, p.level?.replace(/_/g, " ")].filter(Boolean).join(" · ")}
+                  </p>
+                  <p className="text-white/30 text-xs mt-0.5">
+                    Claimed by {p.claimed_by ? (emailById[p.claimed_by] ?? p.claimed_by) : "—"}
+                    {p.claimed_at ? ` · ${new Date(p.claimed_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <ApproveClaimButton playerId={p.id} />
+                  <ReleaseClaimButton playerId={p.id} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {events.length === 0 ? (
         <p className="text-white/50 text-sm">No claim activity yet.</p>

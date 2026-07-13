@@ -17,12 +17,15 @@ export async function POST(
   // Verify this player is claimed by this user
   const { data: player } = await db
     .from("players")
-    .select("id, claimed_by, is_claimed")
+    .select("id, claimed_by, is_claimed, claim_pending")
     .eq("id", id)
     .single();
 
   if (!player || !player.is_claimed || player.claimed_by !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  if (player.claim_pending) {
+    return NextResponse.json({ error: "Your claim is still pending review." }, { status: 403 });
   }
 
   const formData = await req.formData();

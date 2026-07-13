@@ -38,6 +38,8 @@ export async function POST(
       is_claimed: true,
       claimed_by: user.id,
       claimed_at: new Date().toISOString(),
+      claim_pending: true, // awaits admin approval before the profile reads as
+                           // claimed publicly or becomes editable — anti-impersonation
     })
     .eq("id", id)
     .eq("is_claimed", false) // race guard — no-op if already claimed
@@ -50,7 +52,7 @@ export async function POST(
   }
   if (!updated) return NextResponse.json({ error: "This profile has already been claimed." }, { status: 409 });
 
-  await logClaimEvent(db, { playerId: id, userId: user.id, action: "claim", actor: "self" });
+  await logClaimEvent(db, { playerId: id, userId: user.id, action: "claim", actor: "self", note: "pending review" });
 
   // Bust the ISR caches that show the claimed/unclaimed badge, so the list
   // doesn't disagree with the profile for up to `revalidate` seconds.
@@ -59,11 +61,11 @@ export async function POST(
   revalidatePath("/rankings");
 
   await notifyAdmins(
-    `New profile claim: ${updated.first_name} ${updated.last_name}`,
+    `Profile claim pending review: ${updated.first_name} ${updated.last_name}`,
     `
       <div style="font-family:sans-serif;max-width:600px">
-        <h2 style="color:#FDDD58">New Profile Claim</h2>
-        <p><strong>${updated.first_name} ${updated.last_name}</strong> was just claimed.</p>
+        <h2 style="color:#FDDD58">Profile Claim — Pending Review</h2>
+        <p><strong>${updated.first_name} ${updated.last_name}</strong> was just claimed and is awaiting your approval before it reads as claimed publicly or becomes editable.</p>
         <p><strong>Claimed by:</strong> ${user.email}</p>
         <p><strong>Time:</strong> ${new Date().toISOString()}</p>
         <p><a href="https://talkinflag.com/admin/claims">Review in Admin → Recent Claims</a></p>

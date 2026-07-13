@@ -165,7 +165,7 @@ export async function toggleClaim(id: string, claimed: boolean) {
     .update(
       claimed
         ? { is_claimed: true }
-        : { is_claimed: false, claimed_by: null, claimed_at: null }
+        : { is_claimed: false, claimed_by: null, claimed_at: null, claim_pending: false }
     )
     .eq("id", id);
   if (error) throw new Error(error.message);
@@ -175,6 +175,63 @@ export async function toggleClaim(id: string, claimed: boolean) {
   }
 
   revalidatePath(`/admin/players/${id}/edit`);
+  revalidatePath(`/players/${id}`);
+  revalidatePath("/players");
+  revalidatePath("/admin/claims");
+}
+
+/** Approve a pending self-service claim: the profile then reads as claimed
+ *  publicly and the claimant can edit it. */
+export async function approveClaim(id: string) {
+  const admin = await getAdminUser();
+  if (!admin) throw new Error("Not authorized");
+  const db = createServerClient();
+
+  const { data: player } = await db
+    .from("players")
+    .select("first_name, last_name, claimed_by, claim_pending")
+    .eq("id", id)
+    .single();
+
+  if (!player?.claim_pending) return; // nothing to approve
+
+  const { error } = await db
+    .from("players")
+    .update({ claim_pending: false })
+    .eq("id", id)
+    .eq("claim_pending", true);
+  if (error) throw new Error(error.message);
+
+  await logClaimEvent(db, { playerId: id, userId: player.claimed_by, action: "claim", actor: "admin", note: "approved" });
+
+  // Let the claimant know they're live.
+  if (player.claimed_by) {
+    const { data: userData } = await db.auth.admin.getUserById(player.claimed_by);
+    const email = userData?.user?.email;
+    if (email) {
+      await sendEmail({
+        to: email,
+        subject: "Your Talkin Flag profile claim is approved ✓",
+        html: `
+          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#000;color:#fff;padding:32px;">
+            <p style="color:#FDDD58;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 24px;">Talkin Flag</p>
+            <h1 style="font-size:24px;margin:0 0 12px;font-weight:900;text-transform:uppercase;">Claim Approved ✓</h1>
+            <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.6;">
+              Hi ${player.first_name}, your claim on your Talkin Flag profile has been verified. You can now
+              edit your profile, add highlights, and submit stats for verification.
+            </p>
+            <div style="margin:32px 0;">
+              <a href="https://talkinflag.com/dashboard" style="background:#FDDD58;color:#000;padding:12px 24px;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-block;">
+                Go to Dashboard →
+              </a>
+            </div>
+            <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.com</p>
+          </div>
+        `,
+      });
+    }
+  }
+
   revalidatePath(`/players/${id}`);
   revalidatePath("/players");
   revalidatePath("/admin/claims");

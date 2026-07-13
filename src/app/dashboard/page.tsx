@@ -57,7 +57,7 @@ export default async function DashboardPage({
   const [{ data: player }, { data: coachApp }] = await Promise.all([
     db
       .from("players")
-      .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified")
+      .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified, claim_pending")
       .eq("claimed_by", user.id)
       .eq("is_claimed", true)
       .maybeSingle(),
@@ -129,7 +129,14 @@ export default async function DashboardPage({
         <OnboardingChecklist items={checklist} />
         <div className="h-4" />
 
-        {claimed && (
+        {claimed && player?.claim_pending && (
+          <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-8 text-brand-yellow text-sm leading-relaxed">
+            <span className="font-display uppercase tracking-widest">Profile claimed — pending review.</span>{" "}
+            <span className="text-brand-yellow/70">Our team will verify it shortly. Editing unlocks once it&apos;s approved.</span>
+          </div>
+        )}
+
+        {claimed && player && !player.claim_pending && (
           <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-8 text-brand-yellow text-sm font-display uppercase tracking-widest">
             Profile claimed successfully!
           </div>
@@ -146,7 +153,25 @@ export default async function DashboardPage({
           <MemberInsightsCard userId={user.id} />
         </div>
 
-        {player ? (
+        {player && player.claim_pending ? (
+          <div className="bg-[#0d0d0d] border border-brand-white/10 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl uppercase text-brand-white">Your Profile</h2>
+              <span className="text-xs font-display uppercase tracking-widest px-3 py-1 border border-brand-white/20 text-brand-white/40">
+                Pending Review
+              </span>
+            </div>
+            <p className="text-brand-white/60 text-sm">
+              {player.first_name} {player.last_name}
+              {player.school_or_team ? ` · ${player.school_or_team}` : ""}
+            </p>
+            <p className="text-brand-white/30 text-xs leading-relaxed">
+              Your claim is with our team for verification — this protects athletes from impersonation.
+              We&apos;ll email you once it&apos;s approved, and editing, stat submissions, and your public
+              &ldquo;Claimed&rdquo; badge unlock then.
+            </p>
+          </div>
+        ) : player ? (
           <div className="space-y-4">
             {/* Profile card */}
             <div data-tour="profile" className="bg-[#0d0d0d] border border-brand-white/10 p-6 space-y-5">

@@ -1,0 +1,11 @@
+alter table players add column claim_pending boolean not null default false;
+-- TRUE only while a self-service claim on an EXISTING profile awaits admin
+-- approval. Default FALSE so every already-claimed / seeded / admin-added row
+-- keeps its current (approved) state with no disruption.
+--
+-- While claim_pending is TRUE the profile shows no "✓ Claimed" badge publicly
+-- and the claimant cannot edit the profile, submit stats, toggle recruiting, or
+-- change the photo — this protects high-profile players from impersonation until
+-- a human approves the claim (Admin → Recent Claims). The public profile stays
+-- visible (we do NOT flip is_approved) so a bad-faith claim can't hide a real
+-- athlete's page.
