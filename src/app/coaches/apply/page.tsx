@@ -70,6 +70,16 @@ export default async function CoachApplyPage() {
           </p>
         </div>
 
+        {/* Already listed? Send them to claim their existing profile instead of filing a duplicate. */}
+        <div className="bg-brand-yellow/5 border border-brand-yellow/20 px-5 py-4 mb-10 text-sm text-brand-white/70 leading-relaxed">
+          Already listed in our coaches directory?{" "}
+          <a href="/coaches" className="text-brand-yellow underline hover:text-brand-yellow/80">
+            Find your profile
+          </a>{" "}
+          and hit <span className="text-brand-white">&ldquo;Is this you? Claim Profile&rdquo;</span> — no need to
+          re-apply.
+        </div>
+
         {/* What you get */}
         <div className="grid grid-cols-3 gap-px bg-brand-white/10 mb-10">
           {[

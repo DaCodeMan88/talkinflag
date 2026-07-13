@@ -6,9 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 export default function LoginForm({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; claim?: string }>;
+  searchParams: Promise<{ next?: string; claim?: string; claimCoach?: string }>;
 }) {
-  const { next = "/dashboard", claim } = use(searchParams);
+  const { next = "/dashboard", claim, claimCoach } = use(searchParams);
 
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,9 +16,15 @@ export default function LoginForm({
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const postLoginPath = claimCoach
+    ? `/auth/claim-coach/${claimCoach}`
+    : claim
+      ? `/auth/claim/${claim}`
+      : next;
+
   const redirectTo =
     typeof window !== "undefined"
-      ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(claim ? `/auth/claim/${claim}` : next)}`
+      ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(postLoginPath)}`
       : `/auth/callback`;
 
   async function handleEmailSignIn(e: React.FormEvent) {

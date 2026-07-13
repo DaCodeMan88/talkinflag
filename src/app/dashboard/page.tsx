@@ -44,13 +44,13 @@ function missingFields(player: Record<string, unknown>, stats: Record<string, un
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ claimed?: string; tour?: string }>;
+  searchParams: Promise<{ claimed?: string; claimedCoach?: string; tour?: string }>;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login?next=/dashboard");
 
-  const { claimed, tour } = await searchParams;
+  const { claimed, claimedCoach, tour } = await searchParams;
 
   const db = createAdminClient();
 
@@ -132,6 +132,13 @@ export default async function DashboardPage({
         {claimed && (
           <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-8 text-brand-yellow text-sm font-display uppercase tracking-widest">
             Profile claimed successfully!
+          </div>
+        )}
+
+        {claimedCoach && (
+          <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-8 text-brand-yellow text-sm leading-relaxed">
+            <span className="font-display uppercase tracking-widest">Coach profile claimed — pending review.</span>{" "}
+            <span className="text-brand-yellow/70">Our team will verify it shortly and restore your verified badge.</span>
           </div>
         )}
 
@@ -369,6 +376,42 @@ export default async function DashboardPage({
                   ))}
                 </div>
               </div>
+            )}
+          </div>
+        ) : coachApp ? (
+          <div className="bg-[#0d0d0d] border border-brand-white/10 p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl uppercase text-brand-white">Your Coach Profile</h2>
+              {coachApp.is_verified ? (
+                <span className="border border-brand-yellow/40 text-brand-yellow text-xs px-3 py-1 font-display uppercase tracking-widest">
+                  ✓ Verified
+                </span>
+              ) : (
+                <span className={`text-xs font-display uppercase tracking-widest px-3 py-1 border ${
+                  coachApp.status === "rejected"
+                    ? "border-red-500/30 text-red-400"
+                    : "border-brand-white/20 text-brand-white/40"
+                }`}>
+                  {coachApp.status === "rejected" ? "Not Approved" : "Pending Review"}
+                </span>
+              )}
+            </div>
+            <p className="text-brand-white/60 text-sm">
+              {coachApp.first_name} {coachApp.last_name} · {coachApp.team}
+            </p>
+            {coachApp.is_verified ? (
+              <Link
+                href="/dashboard/recruiting"
+                className="inline-block bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-xs py-2 px-5 hover:bg-brand-yellow/90 transition-colors"
+              >
+                Coach Dashboard →
+              </Link>
+            ) : (
+              <p className="text-brand-white/30 text-xs">
+                {coachApp.status === "rejected"
+                  ? "This claim wasn't approved. Contact us at talkinflagshow@gmail.com if you believe this is an error."
+                  : "Your claim is with our team for verification. We'll email you once it's approved."}
+              </p>
             )}
           </div>
         ) : (

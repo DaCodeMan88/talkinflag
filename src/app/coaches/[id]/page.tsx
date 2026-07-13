@@ -103,6 +103,19 @@ export default async function CoachProfilePage({ params }: Props) {
           {coach.title && (
             <p className="text-brand-white/40 text-sm mt-1">{coach.title}</p>
           )}
+
+          {/* Claim CTA — unclaimed profiles (no linked account) can be taken over by the real coach */}
+          {!coach.user_id && (
+            <div className="mt-5 flex items-center gap-4">
+              <Link
+                href={`/auth/claim-coach/${coach.id}`}
+                className="inline-flex items-center gap-2 bg-brand-yellow text-brand-black font-display text-xs uppercase tracking-widest px-5 py-2.5 hover:bg-brand-yellow/90 transition-colors"
+              >
+                Is this you? Claim Profile →
+              </Link>
+              <span className="text-brand-white/25 text-xs">Free · Honor system</span>
+            </div>
+          )}
         </div>
 
         {/* Stats row */}

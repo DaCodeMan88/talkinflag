@@ -10,7 +10,7 @@ export const metadata = buildMetadata({
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; claim?: string }>;
+  searchParams: Promise<{ next?: string; claim?: string; claimCoach?: string }>;
 }) {
   return (
     <div className="min-h-screen bg-brand-black flex items-center justify-center px-4 pt-24 pb-20">
