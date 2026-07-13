@@ -11,7 +11,7 @@ import EvaluationRunner, { Section } from "@/components/eval/EvaluationRunner";
 export const metadata = buildMetadata({
   title: "How Do You Judge an Athlete? | Talkin Flag",
   description:
-    "Take the Talkin Flag Evaluation Philosophy — 100 quick questions that map how you judge a flag football athlete, then see your perspective and archetype.",
+    "Take the Talkin Flag Evaluation Philosophy — 50 quick questions that map how you judge a flag football athlete, then see your perspective and archetype.",
   path: "/evaluate",
 });
 

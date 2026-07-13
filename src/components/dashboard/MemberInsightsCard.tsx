@@ -28,7 +28,7 @@ export default async function MemberInsightsCard({ userId }: { userId: string })
           </>
         ) : (
           <>
-            <p className="mt-2 text-sm text-brand-white/70">Map how you judge an athlete in ~6 minutes.</p>
+            <p className="mt-2 text-sm text-brand-white/70">Map how you judge an athlete in ~3 minutes.</p>
             <Link href="/evaluate" className="mt-3 inline-block rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-xs px-5 py-2">Take the evaluation</Link>
           </>
         )}

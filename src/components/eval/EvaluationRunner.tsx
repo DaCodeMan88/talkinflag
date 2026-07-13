@@ -114,8 +114,8 @@ export default function EvaluationRunner({
           How Do You<br />Judge an Athlete?
         </h1>
         <p className="mt-5 text-white/80">
-          100 quick calls across 10 areas of the game. There are no wrong answers — we&apos;re mapping <em>your</em> eye
-          for talent. Takes about 6 minutes. Tap or press 1–5.
+          50 quick calls across 10 areas of the game. There are no wrong answers — we&apos;re mapping <em>your</em> eye
+          for talent. Takes about 3 minutes. Tap or press 1–5.
         </p>
 
         {draft.resumable && (

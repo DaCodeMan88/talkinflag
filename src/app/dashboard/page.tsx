@@ -96,20 +96,36 @@ export default async function DashboardPage({
   }
 
   // Onboarding checklist — derived from real account state.
-  const [{ data: evalRow }, { data: iqRow }] = await Promise.all([
+  const [{ data: evalRow }, { data: iqRow }, { data: iqCoachRow }] = await Promise.all([
     db.from("eval_responses").select("id").eq("user_id", user.id).limit(1).maybeSingle(),
     db.from("iq_best").select("score_pct").eq("user_id", user.id).eq("category", "general").maybeSingle(),
+    db.from("iq_best").select("score_pct").eq("user_id", user.id).eq("category", "coach").maybeSingle(),
   ]);
 
-  const checklist: ChecklistItem[] = [
-    { label: "Claim or create your player profile", done: !!player, href: "/players", cta: "Find" },
-    { label: "Complete your profile (80%+)", done: !!player && pct >= 80, href: "/dashboard/edit", cta: "Edit" },
-    evalRow
-      ? { label: "Take the Athlete Evaluation", done: true, href: "/evaluate/results", cta: "View", doneHref: "/evaluate/results", doneCta: "View results" }
-      : { label: "Take the Athlete Evaluation", done: false, href: "/evaluate", cta: "Start" },
-    { label: "Take the Flag IQ quiz", done: !!iqRow, href: "/iq/general", cta: "Start" },
-    { label: "Submit a stat for verification", done: !!player?.is_verified, href: "/dashboard/verify", cta: "Submit" },
-  ];
+  // A coach-only account (has a coach profile, no player profile) gets a
+  // coach-relevant checklist instead of the player onboarding steps.
+  const isCoachOnly = !!coachApp && !player;
+
+  const checklist: ChecklistItem[] = isCoachOnly
+    ? [
+        { label: "Claim your coach profile", done: true, href: `/coaches/${coachApp!.id}`, cta: "View", doneHref: `/coaches/${coachApp!.id}`, doneCta: "View" },
+        iqCoachRow
+          ? { label: "Take the Coach IQ quiz", done: true, href: "/iq/coach", cta: "Start", doneHref: "/iq/coach", doneCta: "Retake" }
+          : { label: "Take the Coach IQ quiz", done: false, href: "/iq/coach", cta: "Start" },
+        evalRow
+          ? { label: "Map your Evaluation Lens", done: true, href: "/evaluate/results", cta: "View", doneHref: "/evaluate/results", doneCta: "View results" }
+          : { label: "Map your Evaluation Lens", done: false, href: "/evaluate", cta: "Start" },
+        { label: "Take the Flag IQ quiz", done: !!iqRow, href: "/iq/general", cta: "Start" },
+      ]
+    : [
+        { label: "Claim or create your player profile", done: !!player, href: "/players", cta: "Find" },
+        { label: "Complete your profile (80%+)", done: !!player && pct >= 80, href: "/dashboard/edit", cta: "Edit" },
+        evalRow
+          ? { label: "Take the Athlete Evaluation", done: true, href: "/evaluate/results", cta: "View", doneHref: "/evaluate/results", doneCta: "View results" }
+          : { label: "Take the Athlete Evaluation", done: false, href: "/evaluate", cta: "Start" },
+        { label: "Take the Flag IQ quiz", done: !!iqRow, href: "/iq/general", cta: "Start" },
+        { label: "Submit a stat for verification", done: !!player?.is_verified, href: "/dashboard/verify", cta: "Submit" },
+      ];
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">

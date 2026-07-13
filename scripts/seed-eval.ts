@@ -3,7 +3,7 @@
  * Seed the Athlete Evaluation Philosophy questionnaire:
  *   - 10 eval_dimensions (+ science map)
  *   - active eval_questionnaires v1
- *   - 100 eval_items (from scripts/data/eval-items.json, locked)
+ *   - 50 eval_items (from scripts/data/eval-items.json — 5 per dimension)
  *   - eval_reference: taxonomy tier-derived "elite ideal" vector (dim.* + sci.*)
  *
  * Usage: npx tsx --env-file=.env.local scripts/seed-eval.ts
@@ -50,7 +50,7 @@ function round3(n: number) { return Math.round(n * 1000) / 1000; }
 async function main() {
   const data = JSON.parse(readFileSync(join("scripts", "data", "eval-items.json"), "utf8"));
   const items: Item[] = data.items;
-  if (items.length !== 100) throw new Error(`expected 100 items, got ${items.length}`);
+  if (items.length !== 50) throw new Error(`expected 50 items, got ${items.length}`);
 
   // --- compute taxonomy tier-derived elite-ideal reference vector ---
   // tier weight: Tier 1 (most important) -> 6 ... Tier 6 -> 1
