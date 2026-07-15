@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
+import { ALLOWED_POSITIONS } from "@/lib/profile-edit";
 
 type TournamentDraft = { year: string; event: string; result: string; location: string };
 
 type ProfileDraft = {
+  position: string; city: string; country: string;
   heightFt: string; heightIn: string; bio: string; instagram: string; highlightUrl: string;
   weightLbs: string; wingspanIn: string; fortyYard: string; verticalJump: string;
   yearsActive: string; gradYear: string; occupation: string; education: string;
@@ -21,6 +23,9 @@ interface PlayerFormData {
   first_name: string;
   last_name: string;
   photo_url: string | null;
+  position: string;
+  city: string;
+  country: string;
   bio: string;
   instagram: string;
   highlight_url: string;
@@ -63,6 +68,9 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   const [heightFt, setHeightFt] = useState(initHeight.ft);
   const [heightIn, setHeightIn] = useState(initHeight.in);
 
+  const [position, setPosition] = useState(player.position);
+  const [city, setCity] = useState(player.city);
+  const [country, setCountry] = useState(player.country);
   const [bio, setBio] = useState(player.bio);
   const [instagram, setInstagram] = useState(player.instagram);
   const [highlightUrl, setHighlightUrl] = useState(player.highlight_url);
@@ -99,6 +107,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     kind: "profile",
     ref: player.id,
     value: {
+      position, city, country,
       heightFt, heightIn, bio, instagram, highlightUrl, weightLbs, wingspanIn,
       fortyYard, verticalJump, yearsActive, gradYear, occupation, education,
       caps, worldAppearances, jersey, club, nickname, achievements, tournaments,
@@ -106,6 +115,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   });
 
   function applyDraft(v: ProfileDraft) {
+    setPosition(v.position ?? ""); setCity(v.city ?? ""); setCountry(v.country ?? "");
     setHeightFt(v.heightFt ?? ""); setHeightIn(v.heightIn ?? "");
     setBio(v.bio ?? ""); setInstagram(v.instagram ?? ""); setHighlightUrl(v.highlightUrl ?? "");
     setWeightLbs(v.weightLbs ?? ""); setWingspanIn(v.wingspanIn ?? "");
@@ -168,6 +178,9 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        position,
+        city,
+        country,
         bio,
         instagram,
         highlight_url: highlightUrl,
@@ -343,6 +356,49 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
               onChange={(e) => setInstagram(e.target.value.replace(/^@/, ""))}
               placeholder="yourhandle"
               className="flex-1 bg-transparent text-brand-white placeholder-brand-white/20 px-2 py-3 text-sm focus:outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Position / City / Country */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              Position
+            </label>
+            <select
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            >
+              <option value="">—</option>
+              {ALLOWED_POSITIONS.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              City
+            </label>
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value.slice(0, 80))}
+              placeholder="e.g. Rome"
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+              Country
+            </label>
+            <input
+              type="text"
+              value={country}
+              onChange={(e) => setCountry(e.target.value.slice(0, 60))}
+              placeholder="e.g. Italy"
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
             />
           </div>
         </div>
