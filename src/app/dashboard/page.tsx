@@ -118,7 +118,9 @@ export default async function DashboardPage({
         { label: "Take the Flag IQ quiz", done: !!iqRow, href: "/iq/general", cta: "Start" },
       ]
     : [
-        { label: "Claim or create your player profile", done: !!player, href: "/players", cta: "Find" },
+        player
+          ? { label: "Your player profile", done: true, href: `/players/${player.id}`, cta: "View", doneHref: `/players/${player.id}`, doneCta: "View" }
+          : { label: "Find & claim your player profile", done: false, href: "/players", cta: "Find" },
         { label: "Complete your profile (80%+)", done: !!player && pct >= 80, href: "/dashboard/edit", cta: "Edit" },
         evalRow
           ? { label: "Take the Athlete Evaluation", done: true, href: "/evaluate/results", cta: "View", doneHref: "/evaluate/results", doneCta: "View results" }
@@ -461,12 +463,20 @@ export default async function DashboardPage({
             <p className="text-brand-white/60 text-sm">
               No player profile linked to your account yet.
             </p>
-            <Link
-              href="/players"
-              className="inline-block bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-xs py-2 px-5 hover:bg-brand-yellow/90 transition-colors"
-            >
-              Find Your Profile
-            </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/players"
+                className="inline-block bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-xs py-2 px-5 hover:bg-brand-yellow/90 transition-colors"
+              >
+                Find Your Profile
+              </Link>
+              <Link
+                href="/players/submit"
+                className="text-brand-white/40 text-xs font-display uppercase tracking-widest hover:text-brand-yellow transition-colors"
+              >
+                Create a New Profile →
+              </Link>
+            </div>
           </div>
         )}
       </div>
