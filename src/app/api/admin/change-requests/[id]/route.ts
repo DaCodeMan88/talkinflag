@@ -30,25 +30,47 @@ export async function PATCH(
     .eq("id", id)
     .single();
   if (!reqRow) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (reqRow.status !== "pending") {
+    return NextResponse.json({ error: "This request has already been reviewed." }, { status: 409 });
+  }
 
-  await db
+  // Validate BEFORE marking approved — never mark a row approved if the
+  // stored value turns out to be inert; leave it pending for an admin to
+  // investigate instead of silently lying about what happened.
+  let change = null;
+  if (status === "approved") {
+    change = sanitizeChangeRequest(reqRow.field, reqRow.new_value);
+    if (!change) {
+      return NextResponse.json(
+        { error: "Stored request is no longer valid — cannot apply." },
+        { status: 422 },
+      );
+    }
+  }
+
+  // Atomic guard: only transition if still pending, preventing double-processing
+  // races (two admin tabs, a slow retry, a replayed request) from clobbering
+  // reviewed_by/reviewed_at or re-applying a write that should've been rejected.
+  const { data: updated, error: updateError } = await db
     .from("profile_change_requests")
     .update({ status, reviewed_at: new Date().toISOString(), reviewed_by: user.id })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("status", "pending")
+    .select("id")
+    .maybeSingle();
+  if (updateError || !updated) {
+    return NextResponse.json({ error: "This request was already reviewed by someone else." }, { status: 409 });
+  }
 
-  if (status === "approved") {
-    // Re-validate at apply time — never trust the stored value blindly.
-    const change = sanitizeChangeRequest(reqRow.field, reqRow.new_value);
-    if (change) {
-      await db
-        .from("players")
-        .update({ [change.field]: change.value, updated_at: new Date().toISOString() })
-        .eq("id", reqRow.player_id);
+  if (change) {
+    await db
+      .from("players")
+      .update({ [change.field]: change.value, updated_at: new Date().toISOString() })
+      .eq("id", reqRow.player_id);
 
-      // level/team changes affect rankings — bust the profile + list caches.
-      revalidatePath(`/players/${reqRow.player_id}`);
-      revalidatePath("/players");
-    }
+    // level/team changes affect rankings — bust the profile + list caches.
+    revalidatePath(`/players/${reqRow.player_id}`);
+    revalidatePath("/players");
   }
 
   return NextResponse.json({ ok: true });
