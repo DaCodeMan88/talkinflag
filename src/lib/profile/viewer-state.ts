@@ -1,7 +1,7 @@
 export interface ClaimFields {
-  is_claimed: boolean | null | undefined;
-  claim_pending: boolean | null | undefined;
-  claimed_by: string | null | undefined;
+  is_claimed?: boolean | null;
+  claim_pending?: boolean | null;
+  claimed_by?: string | null;
 }
 
 export type ProfileBadge = "claimed" | "unclaimed" | "none";
