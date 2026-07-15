@@ -150,10 +150,13 @@ async function fetchPlaylistVideos(playlistId: string, maxResults: number): Prom
     );
 
     // Iterate the ORIGINAL playlistItems array (in playlist order) and
-    // attach durations by id — this is what keeps ordering correct.
+    // attach durations by id — this is what keeps ordering correct. Items
+    // absent from durationById mean videos.list omitted them (deleted or
+    // private video) — drop those, matching the old behavior of only
+    // mapping over what videos.list actually returned.
     return items
       .filter((i): i is { snippet: PlaylistSnippet; contentDetails: { videoId: string } } =>
-        Boolean(i.snippet && i.contentDetails?.videoId)
+        Boolean(i.snippet && i.contentDetails?.videoId && durationById.has(i.contentDetails.videoId))
       )
       .map((i) => {
         const id = i.contentDetails.videoId;
