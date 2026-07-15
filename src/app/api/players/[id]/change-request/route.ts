@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
-import { sanitizeChangeRequest, guardedFieldLabel } from "@/lib/profile/change-request";
+import { sanitizeChangeRequest, guardedFieldLabel, isStatsField } from "@/lib/profile/change-request";
 import { notifyAdmins } from "@/lib/claims";
 
 function escapeHtml(str: string): string {
@@ -39,7 +39,7 @@ export async function POST(
   const db = createServerClient();
   const { data: player } = await db
     .from("players")
-    .select("id, first_name, last_name, claimed_by, is_claimed, claim_pending, school_or_team, level")
+    .select("id, first_name, last_name, claimed_by, is_claimed, claim_pending, school_or_team, level, stats")
     .eq("id", id)
     .single();
   if (!player || !player.is_claimed || player.claim_pending || player.claimed_by !== user.id) {
@@ -60,7 +60,9 @@ export async function POST(
     );
   }
 
-  const oldValue = (player as Record<string, unknown>)[change.field];
+  const oldValue = isStatsField(change.field)
+    ? ((player.stats as Record<string, unknown> | null) ?? {})[change.field]
+    : (player as Record<string, unknown>)[change.field];
   const { error } = await db.from("profile_change_requests").insert({
     player_id: id,
     requested_by: user.id,

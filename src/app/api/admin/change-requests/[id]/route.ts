@@ -3,7 +3,7 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { isAdminEmail } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
-import { sanitizeChangeRequest } from "@/lib/profile/change-request";
+import { sanitizeChangeRequest, isStatsField } from "@/lib/profile/change-request";
 
 export async function PATCH(
   req: NextRequest,
@@ -63,12 +63,28 @@ export async function PATCH(
   }
 
   if (change) {
-    await db
-      .from("players")
-      .update({ [change.field]: change.value, updated_at: new Date().toISOString() })
-      .eq("id", reqRow.player_id);
+    const now = new Date().toISOString();
+    if (isStatsField(change.field)) {
+      // roster_year (and future stats-backed fields) live in the `stats` JSONB
+      // blob — merge into current stats rather than writing a phantom column.
+      const { data: p } = await db
+        .from("players")
+        .select("stats")
+        .eq("id", reqRow.player_id)
+        .single();
+      const stats = ((p?.stats as Record<string, unknown> | null) ?? {});
+      await db
+        .from("players")
+        .update({ stats: { ...stats, [change.field]: change.value }, updated_at: now })
+        .eq("id", reqRow.player_id);
+    } else {
+      await db
+        .from("players")
+        .update({ [change.field]: change.value, updated_at: now })
+        .eq("id", reqRow.player_id);
+    }
 
-    // level/team changes affect rankings — bust the profile + list caches.
+    // level/team/roster changes affect rankings — bust the profile + list caches.
     revalidatePath(`/players/${reqRow.player_id}`);
     revalidatePath("/players");
   }

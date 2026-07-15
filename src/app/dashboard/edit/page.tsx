@@ -99,6 +99,7 @@ export default async function EditProfilePage() {
               last_name: player.last_name,
               school_or_team: player.school_or_team ?? "",
               level: player.level ?? "",
+              roster_year: (stats.roster_year as string) ?? "",
             }}
           />
         </div>

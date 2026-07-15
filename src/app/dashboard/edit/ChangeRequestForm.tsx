@@ -17,6 +17,7 @@ interface PlayerBasicInfo {
   last_name: string;
   school_or_team: string;
   level: string;
+  roster_year: string;
 }
 
 function levelLabel(value: string): string {
@@ -35,6 +36,7 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
     last_name: player.last_name,
     school_or_team: player.school_or_team,
     level: player.level ? levelLabel(player.level) : "",
+    roster_year: player.roster_year,
   };
 
   // Raw (non-display) current values, used for no-op comparison — for `level` the
@@ -44,6 +46,7 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
     last_name: player.last_name,
     school_or_team: player.school_or_team,
     level: player.level,
+    roster_year: player.roster_year,
   };
   const isNoOp = value.trim().length > 0 && value.trim() === (rawCurrentValues[field] ?? "").trim();
 
@@ -143,6 +146,16 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
                 </option>
               ))}
             </select>
+          ) : field === "roster_year" ? (
+            <input
+              id="cr-value"
+              type="text"
+              inputMode="numeric"
+              value={value}
+              onChange={(e) => setValue(e.target.value.replace(/\D/g, "").slice(0, 4))}
+              placeholder="e.g. 2025"
+              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+            />
           ) : (
             <input
               id="cr-value"
