@@ -8,6 +8,14 @@
 
 ## Active Roadmap
 
+**✅ SHIPPED 2026-07-15 (`54a80dd` on main, pushed → Vercel): Roster-year self-correction + duplicate-account cleanup** — follow-up to Ambra's "still shows roster year 2024 that I can't edit."
+- Her "claim my profile still showing" was **not a live bug** — DB shows her profile fully claimed+approved, she's on the right account, and the live page renders "✓ Claimed" (served `no-store`, no stale ISR). Her feedback predated the `1d8fc8c` deploy; a hard-refresh clears it.
+- Real gap fixed: `roster_year` (in `players.stats` JSONB) added to the guarded change-request flow — `src/lib/profile/change-request.ts` (`isStatsField()`/`STATS_GUARDED_FIELDS`, 4-digit-year 2000–2035 validation), the POST + admin PATCH routes **merge into `stats` JSONB** (not a phantom column), `ChangeRequestForm.tsx` numeric input, migration `014_change_request_roster_year.sql` (applied live).
+- Deleted duplicate `marcucci_martika@hotmail.com` auth account (verified empty first); her real `martikamarcucci@gmail.com` untouched.
+- Verified: tsc clean, 9/9 change-request tests, `npm run build` green. Auth-gated form not click-tested — Ambra's next attempt is the real verification.
+
+**✅ SHIPPED 2026-07-15 (`1d8fc8c` on main): Onboarding/profile UX overhaul** — plan `docs/plans/2026-07-14-onboarding-and-profile-ux-overhaul.md`. `src/lib/profile/viewer-state.ts` (single source of truth for claim badge / CTA / owner edit bar — owner no longer sees the stranger "Claim Profile" view on their own profile); soft fields (position/city/country) self-editable via PATCH; guarded fields (name/team/level, now +roster_year) go through `profile_change_requests` + `/admin/change-requests`; `getEpisodes()` prefers a curated `YOUTUBE_PLAYLIST_ID` with a Shorts filter fallback. **OWNER ACTION:** set `YOUTUBE_PLAYLIST_ID` in Vercel (a playlist of real episodes only) so the podcast feed stops using the weaker channel-search fallback.
+
 **✅ SHIPPED 2026-07-11 (`32b5a5f` on main, deploying to talkinflag.com): Instagram image share + eval archetype share card** — plan at `docs/plans/2026-07-11-instagram-image-share-and-eval-share-card.md`. All 6 tasks done, verified (tsc/149 tests/build green; PNGs render at correct dims; verified-stat gate proven both ways; eval route 401 for anon). Delivered:
 - `src/app/players/[id]/card/route.tsx` — player card PNG (edge, `no-store`), `?format=post|story` → 1080×1080 / 1080×1920, verified-stat gating re-derived server-side (never trusts client toggle params).
 - `src/components/share/ImageShareButtons.tsx` (client) — pre-fetches the PNG blob (debounced) so `navigator.share({files})` fires inside the click gesture (iOS rule); `canShare({files})` feature-detect → Share Image on mobile, Download on desktop.
