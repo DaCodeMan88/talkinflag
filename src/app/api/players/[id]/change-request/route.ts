@@ -5,6 +5,15 @@ import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 import { sanitizeChangeRequest, guardedFieldLabel } from "@/lib/profile/change-request";
 import { notifyAdmins } from "@/lib/claims";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -37,6 +46,20 @@ export async function POST(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const { data: existing } = await db
+    .from("profile_change_requests")
+    .select("id")
+    .eq("player_id", id)
+    .eq("field", change.field)
+    .eq("status", "pending")
+    .maybeSingle();
+  if (existing) {
+    return NextResponse.json(
+      { error: "You already have a pending request for this field." },
+      { status: 409 }
+    );
+  }
+
   const oldValue = (player as Record<string, unknown>)[change.field];
   const { error } = await db.from("profile_change_requests").insert({
     player_id: id,
@@ -55,9 +78,9 @@ export async function POST(
     `Profile change request: ${player.first_name} ${player.last_name}`,
     `<div style="font-family:sans-serif;max-width:600px">
        <h2 style="color:#FDDD58">Profile Change Request</h2>
-       <p><strong>${player.first_name} ${player.last_name}</strong> requested a change to
+       <p><strong>${escapeHtml(player.first_name)} ${escapeHtml(player.last_name)}</strong> requested a change to
        <strong>${guardedFieldLabel(change.field)}</strong>.</p>
-       <p>From: <em>${oldValue ?? "—"}</em> → To: <strong>${change.value}</strong></p>
+       <p>From: <em>${oldValue != null ? escapeHtml(String(oldValue)) : "—"}</em> → To: <strong>${escapeHtml(change.value)}</strong></p>
        <p><a href="https://talkinflag.com/admin/change-requests">Review in Admin</a></p>
      </div>`
   );
