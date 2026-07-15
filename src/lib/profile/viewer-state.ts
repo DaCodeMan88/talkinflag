@@ -1,7 +1,7 @@
 export interface ClaimFields {
-  is_claimed: boolean | null;
-  claim_pending: boolean | null;
-  claimed_by: string | null;
+  is_claimed: boolean | null | undefined;
+  claim_pending: boolean | null | undefined;
+  claimed_by: string | null | undefined;
 }
 
 export type ProfileBadge = "claimed" | "unclaimed" | "none";
@@ -16,7 +16,7 @@ export interface ProfileViewerState {
   showEditBar: boolean;
   /** Show the owner-only "claim pending review" bar. */
   showPendingBar: boolean;
-  /** Show the "data compiled from public sources" notice (unclaimed, non-owner). */
+  /** Show the "data compiled from public sources" notice (not publicly claimed, non-owner). */
   showDataNotice: boolean;
   badge: ProfileBadge;
 }
@@ -42,7 +42,10 @@ export function profileViewerState(player: ClaimFields, userId: string | null): 
   const showClaimCta = !isClaimed && !isOwner;
   const showEditBar = isOwner && claimApproved;
   const showPendingBar = isOwner && isClaimed && isPending;
-  const showDataNotice = !isClaimed && !isOwner;
+  // Keyed off claimApproved (not raw isClaimed) so this matches the badge's
+  // public-facing signal: a pending claim reads as unclaimed to a stranger,
+  // so the "data compiled from public sources" notice should show for them too.
+  const showDataNotice = !claimApproved && !isOwner;
 
   let badge: ProfileBadge;
   if (claimApproved) {
