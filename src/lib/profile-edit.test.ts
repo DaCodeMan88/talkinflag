@@ -4,6 +4,7 @@ import {
   sanitizeStatsPayload,
   shouldResetVerification,
 } from "./profile-edit";
+import { sanitizeIdentityPayload } from "./profile-edit";
 
 describe("EDITABLE_STATS_KEYS", () => {
   it("contains exactly the editable stats keys", () => {
@@ -212,5 +213,25 @@ describe("shouldResetVerification", () => {
     expect(shouldResetVerification({}, { caps: null, achievements: null, tournaments: null })).toBe(
       false
     );
+  });
+});
+
+describe("sanitizeIdentityPayload (soft fields)", () => {
+  it("accepts a valid position and passes it through", () => {
+    expect(sanitizeIdentityPayload({ position: "WR" })).toEqual({ position: "WR" });
+  });
+  it("rejects an out-of-allowlist position → null (clears)", () => {
+    expect(sanitizeIdentityPayload({ position: "Kicker" })).toEqual({ position: null });
+  });
+  it("caps and trims city/country", () => {
+    expect(sanitizeIdentityPayload({ city: "  Rome  ", country: "Italy" }))
+      .toEqual({ city: "Rome", country: "Italy" });
+  });
+  it("only returns keys present in the body (PATCH semantics)", () => {
+    expect(sanitizeIdentityPayload({ city: "Rome" })).toEqual({ city: "Rome" });
+  });
+  it("never returns name/team/level even if sent (guarded fields are stripped)", () => {
+    const out = sanitizeIdentityPayload({ first_name: "X", last_name: "Y", school_or_team: "Z", level: "pro" });
+    expect(out).toEqual({});
   });
 });

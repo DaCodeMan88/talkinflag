@@ -17,6 +17,7 @@ import FlagIQBadge from "@/components/player/FlagIQBadge";
 import { formatHeight, formatWeight } from "@/lib/measurements";
 import { hasDisplayableValue } from "@/lib/profile-visibility";
 import ReportProfileButton from "@/components/players/ReportProfileButton";
+import { profileViewerState } from "@/lib/profile/viewer-state";
 
 export const revalidate = 300;
 
@@ -183,7 +184,8 @@ export default async function PlayerDetailPage({
   // a scammer could impersonate a high-profile athlete just by claiming their page.
   // Until approved, the profile presents as unclaimed (no badge, no self-reported
   // labels) and the claimant can't edit it (enforced server-side in the write routes).
-  const claimApproved = !!player.is_claimed && !player.claim_pending;
+  const view = profileViewerState(player, user?.id ?? null);
+  const claimApproved = view.claimApproved; // keep existing references working
 
   let isVerifiedCoach = false;
   if (user) {
@@ -321,6 +323,28 @@ export default async function PlayerDetailPage({
             </div>
           )}
 
+          {view.showEditBar && (
+            <div className="bg-brand-yellow/10 border border-brand-yellow/40 p-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <span className="text-brand-yellow text-sm font-display uppercase tracking-widest">
+                This is your profile
+              </span>
+              <div className="flex items-center gap-4">
+                <Link href="/dashboard/edit" className="bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-xs px-4 py-2 hover:bg-brand-yellow/90 transition-colors">
+                  Edit Profile
+                </Link>
+                <Link href="/dashboard" className="text-brand-yellow/70 text-xs font-display uppercase tracking-widest hover:text-brand-yellow transition-colors">
+                  Dashboard →
+                </Link>
+              </div>
+            </div>
+          )}
+          {view.showPendingBar && (
+            <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-6 text-brand-yellow text-sm leading-relaxed">
+              <span className="font-display uppercase tracking-widest">Claim pending review.</span>{" "}
+              <span className="text-brand-yellow/70">Editing and your public &ldquo;Claimed&rdquo; badge unlock once an admin approves it.</span>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-end gap-6">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
@@ -337,7 +361,7 @@ export default async function PlayerDetailPage({
                   </span>
                 </div>
               )}
-              {!player.is_claimed && (
+              {view.badge === "unclaimed" && (
                 <div className="absolute -bottom-1 -right-1 bg-brand-black border border-brand-white/20 rounded-full px-2 py-0.5">
                   <span className="text-[9px] font-display uppercase tracking-widest text-brand-white/40">Unclaimed</span>
                 </div>
@@ -381,11 +405,11 @@ export default async function PlayerDetailPage({
                     Class of {player.grad_year}
                   </span>
                 )}
-                {claimApproved ? (
+                {view.badge === "claimed" ? (
                   <span className="border border-brand-yellow/50 text-brand-yellow text-xs px-3 py-1 uppercase tracking-wide font-display">
                     ✓ Claimed
                   </span>
-                ) : !player.is_claimed ? (
+                ) : view.badge === "unclaimed" ? (
                   <span className="border border-brand-white/15 text-brand-white/30 text-xs px-3 py-1 uppercase tracking-wide font-display">
                     Unclaimed
                   </span>
@@ -398,7 +422,7 @@ export default async function PlayerDetailPage({
               </div>
 
               {/* Claim CTA */}
-              {!player.is_claimed && (
+              {view.showClaimCta && (
                 <div className="mt-5 flex items-center gap-4">
                   <Link
                     href={`/auth/claim/${player.id}`}
@@ -414,7 +438,7 @@ export default async function PlayerDetailPage({
                 <ReportProfileButton playerId={player.id} />
               </div>
 
-              {!player.is_claimed && (
+              {view.showDataNotice && (
                 <p className="mt-3 text-brand-white/40 text-xs">
                   Data compiled from public sources.{" "}
                   <Link href="/privacy" className="underline hover:text-brand-white/60 transition-colors">

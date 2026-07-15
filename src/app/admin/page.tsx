@@ -31,6 +31,7 @@ export default async function AdminHomePage({
     { count: openReports },
     { count: pendingPlayers },
     { count: pendingClaims },
+    { count: pendingChangeRequests },
   ] = await Promise.all([
     adminDb
       .from("stat_verifications")
@@ -62,6 +63,7 @@ export default async function AdminHomePage({
     adminDb.from("profile_reports").select("id", { count: "exact", head: true }).eq("status", "open"),
     adminDb.from("players").select("id", { count: "exact", head: true }).eq("is_approved", false),
     adminDb.from("players").select("id", { count: "exact", head: true }).eq("claim_pending", true),
+    adminDb.from("profile_change_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
   ]);
 
   const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
@@ -123,6 +125,12 @@ export default async function AdminHomePage({
       count: pendingCareer ?? 0,
     },
     {
+      label: "Change Requests",
+      description: "Player-requested edits to name, team/school, or level",
+      href: "/admin/change-requests",
+      count: pendingChangeRequests ?? 0,
+    },
+    {
       label: "Recent Claims",
       description: "Approve pending claims · audit log of claims + releases",
       href: "/admin/claims",
@@ -143,7 +151,7 @@ export default async function AdminHomePage({
     },
   ];
 
-  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0) + (pendingPlayers ?? 0) + (pendingClaims ?? 0);
+  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0) + (pendingPlayers ?? 0) + (pendingClaims ?? 0) + (pendingChangeRequests ?? 0);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12">

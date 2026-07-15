@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
 import EditProfileForm from "./EditProfileForm";
+import ChangeRequestForm from "./ChangeRequestForm";
 
 export const metadata = buildMetadata({
   title: "Edit Profile | Talkin Flag",
@@ -65,6 +66,9 @@ export default async function EditProfilePage() {
             first_name: player.first_name,
             last_name: player.last_name,
             photo_url: player.photo_url ?? null,
+            position: player.position ?? "",
+            city: player.city ?? "",
+            country: player.country ?? "",
             bio: player.bio ?? "",
             instagram: player.instagram ?? "",
             highlight_url: player.highlight_url ?? "",
@@ -86,6 +90,18 @@ export default async function EditProfilePage() {
             tournaments,
           }}
         />
+
+        <div className="mt-12">
+          <ChangeRequestForm
+            player={{
+              id: player.id,
+              first_name: player.first_name,
+              last_name: player.last_name,
+              school_or_team: player.school_or_team ?? "",
+              level: player.level ?? "",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
