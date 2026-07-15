@@ -24,7 +24,7 @@ export interface RawVideo {
   description: string;
   thumbnail: string;
   publishedAt: string;
-  durationSec: number; // 0 when unknown (playlist path without a contentDetails call)
+  durationSec: number; // 0 when unknown (channel-search path has no contentDetails call)
 }
 
 const SHORT_MAX_SEC = 180; // anything under 3 min is treated as a Short/reel
@@ -100,7 +100,14 @@ const API_KEY = process.env.YOUTUBE_API_KEY;
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID;
 const PLAYLIST_ID = process.env.YOUTUBE_PLAYLIST_ID;
 
-/** Fetch a playlist's videos (with durations) as RawVideo[]. Empty on any failure. */
+type PlaylistSnippet = {
+  title: string;
+  description?: string;
+  publishedAt: string;
+  thumbnails?: Record<string, { url: string }>;
+};
+
+/** Fetch a playlist's videos (with durations) as RawVideo[], in playlist order. Empty on any failure. */
 async function fetchPlaylistVideos(playlistId: string, maxResults: number): Promise<RawVideo[]> {
   if (!API_KEY || API_KEY === "PLACEHOLDER_YOUTUBE_API_KEY") return [];
   try {
@@ -110,33 +117,58 @@ async function fetchPlaylistVideos(playlistId: string, maxResults: number): Prom
     listUrl.searchParams.set("maxResults", String(Math.min(maxResults, 50)));
     listUrl.searchParams.set("part", "snippet,contentDetails");
     const res = await fetch(listUrl.toString(), { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error("YouTube playlistItems API error:", res.status);
+      return [];
+    }
     const data = await res.json();
-    const items: Array<{ snippet?: Record<string, unknown>; contentDetails?: { videoId?: string } }> = data.items ?? [];
+    // Preserve playlist order — this is the source of truth for ordering
+    // (playlistItems.list is ordered by playlist position; videos.list by
+    // `id` is NOT guaranteed to preserve that order).
+    const items: Array<{ snippet?: PlaylistSnippet; contentDetails?: { videoId?: string } }> = data.items ?? [];
     const ids = items.map((i) => i.contentDetails?.videoId).filter(Boolean) as string[];
     if (ids.length === 0) return [];
 
-    // One videos call gets durations so we can drop Shorts.
+    // One videos call gets durations so we can drop Shorts — snippet fields
+    // (title/description/thumbnail/publishedAt) already came from playlistItems
+    // above, so we only pull contentDetails.duration out of this response.
     const vidUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
     vidUrl.searchParams.set("key", API_KEY);
     vidUrl.searchParams.set("id", ids.join(","));
-    vidUrl.searchParams.set("part", "snippet,contentDetails");
+    vidUrl.searchParams.set("part", "contentDetails");
     const vres = await fetch(vidUrl.toString(), { next: { revalidate: 3600 } });
-    if (!vres.ok) return [];
+    if (!vres.ok) {
+      console.error("YouTube videos API error:", vres.status);
+      return [];
+    }
     const vdata = await vres.json();
-    return (vdata.items ?? []).map((it: {
-      id: string;
-      snippet: { title: string; description?: string; publishedAt: string; thumbnails?: Record<string, { url: string }> };
-      contentDetails: { duration: string };
-    }): RawVideo => ({
-      id: it.id,
-      title: it.snippet.title,
-      description: it.snippet.description ?? "",
-      thumbnail: it.snippet.thumbnails?.maxres?.url ?? it.snippet.thumbnails?.high?.url ?? it.snippet.thumbnails?.medium?.url ?? "",
-      publishedAt: it.snippet.publishedAt,
-      durationSec: parseIsoDuration(it.contentDetails.duration),
-    }));
-  } catch {
+    const durationById = new Map<string, number>(
+      (vdata.items ?? []).map((it: { id: string; contentDetails: { duration: string } }) => [
+        it.id,
+        parseIsoDuration(it.contentDetails.duration),
+      ])
+    );
+
+    // Iterate the ORIGINAL playlistItems array (in playlist order) and
+    // attach durations by id — this is what keeps ordering correct.
+    return items
+      .filter((i): i is { snippet: PlaylistSnippet; contentDetails: { videoId: string } } =>
+        Boolean(i.snippet && i.contentDetails?.videoId)
+      )
+      .map((i) => {
+        const id = i.contentDetails.videoId;
+        const s = i.snippet;
+        return {
+          id,
+          title: s.title,
+          description: s.description ?? "",
+          thumbnail: s.thumbnails?.maxres?.url ?? s.thumbnails?.high?.url ?? s.thumbnails?.medium?.url ?? "",
+          publishedAt: s.publishedAt,
+          durationSec: durationById.get(id) ?? 0,
+        };
+      });
+  } catch (err) {
+    console.error("YouTube playlist fetch error:", err);
     return [];
   }
 }
