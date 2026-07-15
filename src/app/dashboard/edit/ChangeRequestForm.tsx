@@ -37,6 +37,16 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
     level: player.level ? levelLabel(player.level) : "",
   };
 
+  // Raw (non-display) current values, used for no-op comparison — for `level` the
+  // submitted `value` is the raw enum, not the human label in `currentValues`.
+  const rawCurrentValues: Record<GuardedField, string> = {
+    first_name: player.first_name,
+    last_name: player.last_name,
+    school_or_team: player.school_or_team,
+    level: player.level,
+  };
+  const isNoOp = value.trim().length > 0 && value.trim() === (rawCurrentValues[field] ?? "").trim();
+
   function handleFieldChange(next: GuardedField) {
     setField(next);
     setValue("");
@@ -47,6 +57,10 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!value.trim()) return;
+    if (isNoOp) {
+      setError("That's already the current value.");
+      return;
+    }
     setSubmitting(true);
     setSuccess(false);
     setError(null);
@@ -90,10 +104,11 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+          <label htmlFor="cr-field" className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
             Field
           </label>
           <select
+            id="cr-field"
             value={field}
             onChange={(e) => handleFieldChange(e.target.value as GuardedField)}
             className="w-full bg-[#111111] border border-brand-white/10 text-brand-white px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
@@ -111,11 +126,12 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
         </p>
 
         <div>
-          <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+          <label htmlFor="cr-value" className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
             New value
           </label>
           {field === "level" ? (
             <select
+              id="cr-value"
               value={value}
               onChange={(e) => setValue(e.target.value)}
               className="w-full bg-[#111111] border border-brand-white/10 text-brand-white px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
@@ -129,6 +145,7 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
             </select>
           ) : (
             <input
+              id="cr-value"
               type="text"
               value={value}
               onChange={(e) => setValue(e.target.value.slice(0, 120))}
@@ -139,12 +156,12 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
         </div>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-500/30 text-red-400 text-sm px-4 py-3">
+          <div className="bg-red-900/30 border border-red-500/30 text-red-400 text-sm px-4 py-3" role="alert">
             {error}
           </div>
         )}
         {success && (
-          <div className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-sm px-4 py-3 font-display uppercase tracking-widest">
+          <div className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-sm px-4 py-3 font-display uppercase tracking-widest" role="status">
             Sent for review — we&apos;ll email you when it&apos;s approved.
           </div>
         )}
@@ -155,7 +172,7 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
           className="w-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm py-4 hover:bg-brand-yellow/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {submitting && (
-            <span className="animate-spin border-2 border-brand-black border-t-transparent rounded-full w-4 h-4" />
+            <span aria-hidden="true" className="animate-spin border-2 border-brand-black border-t-transparent rounded-full w-4 h-4" />
           )}
           Request Change
         </button>
