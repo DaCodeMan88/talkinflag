@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { hasDisplayableValue } from "@/lib/profile-visibility";
-import { sanitizeStatsPayload, shouldResetVerification } from "@/lib/profile-edit";
+import { sanitizeStatsPayload, shouldResetVerification, sanitizeIdentityPayload } from "@/lib/profile-edit";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -57,6 +57,10 @@ export async function PATCH(
     const v = parseInt(body.weight_lbs);
     identity.weight_lbs = isNaN(v) || v < 80 || v > 400 ? null : v;
   }
+
+  // Soft identity fields the player may self-edit (position, city, country).
+  // Guarded fields (name/team/level) are never touched here.
+  Object.assign(identity, sanitizeIdentityPayload(body as Record<string, unknown>));
 
   // Stats JSONB fields — allowlisted + sanitized (anything else the client
   // sends, e.g. team_designation/source/seed_batch/roster_year, is stripped).

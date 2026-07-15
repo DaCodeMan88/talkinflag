@@ -125,6 +125,25 @@ export function sanitizeStatsPayload(body: Record<string, unknown>): Record<stri
   return out;
 }
 
+export const ALLOWED_POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"] as const;
+
+/**
+ * Soft identity fields a claimed player may self-edit (direct columns).
+ * Guarded fields (first_name, last_name, school_or_team, level) are intentionally
+ * NOT here — they go through profile_change_requests + admin approval.
+ * PATCH semantics: only keys present in `body` appear in the result.
+ */
+export function sanitizeIdentityPayload(body: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (body.position !== undefined) {
+    const p = String(body.position).trim();
+    out.position = (ALLOWED_POSITIONS as readonly string[]).includes(p) ? p : null;
+  }
+  if (body.city !== undefined) out.city = cappedString(body.city, 80);
+  if (body.country !== undefined) out.country = cappedString(body.country, 60);
+  return out;
+}
+
 /** Coerce numeric-looking values ("25" vs 25) so legacy string data compares equal. */
 function asNumberish(v: unknown): unknown {
   if (v === null || v === undefined) return null;
