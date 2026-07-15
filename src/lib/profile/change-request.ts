@@ -13,7 +13,7 @@ export interface SanitizedChange {
 export function sanitizeChangeRequest(field: unknown, value: unknown): SanitizedChange | null {
   if (typeof field !== "string" || !(GUARDED_FIELDS as readonly string[]).includes(field)) return null;
   const f = field as GuardedField;
-  const v = String(value ?? "").trim().slice(0, MAX);
+  const v = String(value ?? "").replace(/[\r\n\t]+/g, " ").trim().slice(0, MAX);
   if (!v) return null;
   if (f === "level" && !(ALLOWED_LEVELS as readonly string[]).includes(v)) return null;
   return { field: f, value: v };
