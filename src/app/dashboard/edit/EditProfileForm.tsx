@@ -178,7 +178,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        position,
+        ...(position !== player.position ? { position } : {}),
         city,
         country,
         bio,
