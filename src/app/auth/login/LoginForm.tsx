@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, useSyncExternalStore, use } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { isInAppBrowser } from "@/lib/in-app-browser";
 
 export default function LoginForm({
   searchParams,
@@ -15,6 +16,14 @@ export default function LoginForm({
   const [googleLoading, setGoogleLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Server renders false (no banner); client snapshot is computed after
+  // hydration — no hydration mismatch, no setState-in-effect.
+  const inAppBrowser = useSyncExternalStore(
+    subscribeNoop,
+    () => isInAppBrowser(navigator.userAgent),
+    () => false
+  );
 
   const postLoginPath = claimCoach
     ? `/auth/claim-coach/${claimCoach}`
@@ -95,6 +104,20 @@ export default function LoginForm({
         </div>
       )}
 
+      {inAppBrowser && (
+        <div
+          role="status"
+          className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-xs px-4 py-3 leading-relaxed"
+        >
+          <p className="font-display uppercase tracking-widest mb-1">Heads up</p>
+          <p className="text-brand-yellow/80">
+            You&apos;re inside an app&apos;s built-in browser (Instagram, WhatsApp, etc.), where
+            Google sign-in is blocked by Google. Use the <strong>email magic link</strong>{" "}
+            below &mdash; or tap the &hellip; menu and choose &ldquo;Open in Browser&rdquo; first.
+          </p>
+        </div>
+      )}
+
       {/* Google OAuth */}
       <button
         onClick={handleGoogleSignIn}
@@ -148,6 +171,11 @@ export default function LoginForm({
       </p>
     </div>
   );
+}
+
+// UA never changes during a page's lifetime — nothing to subscribe to.
+function subscribeNoop() {
+  return () => {};
 }
 
 function GoogleIcon() {

@@ -9,7 +9,7 @@ export const memberTourSteps: TourStep[] = [
   {
     target: '[data-tour="profile"]',
     title: "Your Player Profile",
-    body: "Claim and build your profile so coaches, scouts, and fans can find you. The completion bar shows what's left to add.",
+    body: "Build out your profile so coaches, scouts, and fans can find you. The completion bar shows what's left to add.",
   },
   {
     target: '[data-tour="insights"]',
