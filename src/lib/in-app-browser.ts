@@ -3,7 +3,10 @@
  *
  *  Leading \b only: a trailing \b would fail on tokens like
  *  "musical_ly_2022..." (underscore is a word char, so no boundary).
- *  The leading \b still prevents e.g. "Outline/" matching "Line/". */
+ *  The leading \b still prevents e.g. "Outline/" matching "Line/".
+ *
+ *  Deliberate allowlist — extend as new referrer apps show up (LinkedIn,
+ *  Pinterest, X, and Gmail webviews are known-unmatched today). */
 const IN_APP_UA =
   /\b(Instagram|FBAN|FBAV|FB_IAB|Messenger|WhatsApp|Line\/|MicroMessenger|musical_ly|TikTok|Snapchat)/i;
 

@@ -105,7 +105,10 @@ export default function LoginForm({
       )}
 
       {inAppBrowser && (
-        <div className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-xs px-4 py-3 leading-relaxed">
+        <div
+          role="status"
+          className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-xs px-4 py-3 leading-relaxed"
+        >
           <p className="font-display uppercase tracking-widest mb-1">Heads up</p>
           <p className="text-brand-yellow/80">
             You&apos;re inside an app&apos;s built-in browser (Instagram, WhatsApp, etc.), where
