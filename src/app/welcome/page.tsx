@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/eval/admin-client";
+import { hasClaimedProfile } from "@/lib/claims";
 import { isAdminEmail } from "@/lib/admin";
 import { buildMetadata } from "@/lib/seo";
 
@@ -30,7 +32,14 @@ export default async function WelcomePage() {
   if (!user) redirect("/auth/login?next=/welcome");
 
   const admin = isAdminEmail(user.email);
-  const features = admin ? ADMIN_FEATURES : MEMBER_FEATURES;
+  const claimed = !admin && (await hasClaimedProfile(createAdminClient(), user.id));
+  const memberFeatures = claimed
+    ? [
+        { title: "Your profile is claimed ✓", body: "You own your player card. Keep stats, highlights, and photos fresh from your dashboard." },
+        ...MEMBER_FEATURES.slice(1),
+      ]
+    : MEMBER_FEATURES;
+  const features = admin ? ADMIN_FEATURES : memberFeatures;
   const tourHref = admin ? "/admin?tour=1" : "/dashboard?tour=1";
   const skipHref = admin ? "/admin" : "/dashboard";
 
