@@ -6,6 +6,8 @@ import PendingReviewActions from "./PendingReviewActions";
 
 export const dynamic = "force-dynamic";
 
+const PAGE_SIZE = 50;
+
 const LEVEL_LABEL: Record<string, string> = {
   high_school: "HS",
   college: "College",
@@ -15,33 +17,49 @@ const LEVEL_LABEL: Record<string, string> = {
 export default async function AdminPlayersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; tab?: string }>;
+  searchParams: Promise<{ q?: string; tab?: string; page?: string }>;
 }) {
   if (!(await getAdminUser())) redirect("/");
-  const { q, tab } = await searchParams;
+  const { q, tab, page: pageParam } = await searchParams;
   const pending = tab === "pending";
+  const searching = !pending && !!q?.trim();
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
   const supabase = createServerClient();
 
+  // Default view: newest additions first. Search results: alphabetical.
   let query = supabase
     .from("players")
     .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed, is_approved, claimed_by, created_at")
-    .order(pending ? "created_at" : "last_name", { ascending: pending })
-    .limit(100);
+    .order(pending ? "created_at" : searching ? "last_name" : "created_at", {
+      ascending: pending || searching,
+    })
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
+  const term = `%${q?.trim()}%`;
+  const searchFilter = `first_name.ilike.${term},last_name.ilike.${term},school_or_team.ilike.${term}`;
   if (pending) {
     query = query.eq("is_approved", false);
-  } else if (q?.trim()) {
-    const term = `%${q.trim()}%`;
-    query = query.or(
-      `first_name.ilike.${term},last_name.ilike.${term},school_or_team.ilike.${term}`
-    );
+  } else if (searching) {
+    query = query.or(searchFilter);
   }
 
   const { data: players } = await query;
-  const [{ count: total }, { count: pendingCount }] = await Promise.all([
+  const [{ count: total }, { count: pendingCount }, { count: searchCount }] = await Promise.all([
     supabase.from("players").select("id", { count: "exact", head: true }),
     supabase.from("players").select("id", { count: "exact", head: true }).eq("is_approved", false),
+    searching
+      ? supabase.from("players").select("id", { count: "exact", head: true }).or(searchFilter)
+      : Promise.resolve({ count: null as number | null }),
   ]);
+
+  const listCount = pending ? pendingCount ?? 0 : searching ? searchCount ?? 0 : total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(listCount / PAGE_SIZE));
+  const pageHref = (p: number) =>
+    `/admin/players?${new URLSearchParams({
+      ...(q?.trim() ? { q: q.trim() } : {}),
+      ...(tab ? { tab } : {}),
+      ...(p > 1 ? { page: String(p) } : {}),
+    }).toString()}`.replace(/\?$/, "");
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
@@ -91,9 +109,9 @@ export default async function AdminPlayersPage({
         </form>
       )}
 
-      {!pending && q?.trim() && (
+      {searching && (
         <p className="text-white/30 text-xs mb-4">
-          Showing matches for &ldquo;{q.trim()}&rdquo;{" "}
+          {searchCount ?? 0} result{(searchCount ?? 0) === 1 ? "" : "s"} for &ldquo;{q!.trim()}&rdquo;{" "}
           <Link href="/admin/players" className="text-[#FDDD58] hover:underline">clear</Link>
         </p>
       )}
@@ -138,10 +156,26 @@ export default async function AdminPlayersPage({
         )}
       </div>
 
-      {!pending && (players ?? []).length === 100 && (
-        <p className="text-white/25 text-xs mt-4 text-center">
-          Showing first 100. Use search to narrow down.
-        </p>
+      {!pending && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-6 mt-6">
+          {page > 1 ? (
+            <Link href={pageHref(page - 1)} className="text-[#FDDD58] text-xs font-display uppercase tracking-widest hover:underline">
+              ← Prev
+            </Link>
+          ) : (
+            <span className="w-14" />
+          )}
+          <span className="text-white/40 text-xs font-display uppercase tracking-widest">
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages ? (
+            <Link href={pageHref(page + 1)} className="text-[#FDDD58] text-xs font-display uppercase tracking-widest hover:underline">
+              Next →
+            </Link>
+          ) : (
+            <span className="w-14" />
+          )}
+        </div>
       )}
     </div>
   );
