@@ -50,8 +50,15 @@ const ATHLETICISM_LABELS: Record<string, string> = {
   world_appearances: "World Apps.",
   years_active:      "Yrs Active",
 };
-const META_KEYS = ["caps", "achievements", "occupation", "education", "tournaments",
-  ...ATHLETICISM_KEYS];
+// Public "Stats" card: explicit allowlist — internal keys (team_designation,
+// source, seed_batch, instagram, wingspan_in, …) never render.
+const IDENTITY_STAT_KEYS = ["club", "jersey", "nickname", "roster_year"] as const;
+const IDENTITY_STAT_LABELS: Record<string, string> = {
+  club: "Club",
+  jersey: "Jersey #",
+  nickname: "Nickname",
+  roster_year: "Roster Year",
+};
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -239,9 +246,9 @@ export default async function PlayerDetailPage({
     value: String(ext[k]),
   }));
 
-  const rawStats = Object.entries(ext).filter(
-    ([k, v]) => !META_KEYS.includes(k as typeof META_KEYS[number]) && hasDisplayableValue(v)
-  );
+  const identityStats = IDENTITY_STAT_KEYS
+    .filter((k) => hasDisplayableValue(ext[k]))
+    .map((k) => ({ key: k, label: IDENTITY_STAT_LABELS[k], value: String(ext[k]) }));
 
   const achievements = (Array.isArray(ext.achievements) ? ext.achievements : []).filter(
     hasDisplayableValue
@@ -694,15 +701,15 @@ export default async function PlayerDetailPage({
             )}
 
             {/* Raw game stats (if any) */}
-            {rawStats.length > 0 && (
+            {identityStats.length > 0 && (
               <div className="bg-[#0d0d0d] border border-brand-white/10 p-6">
                 <h2 className="font-display uppercase text-brand-yellow text-xs tracking-widest mb-4">Stats</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {rawStats.map(([key, val]) => (
-                    <div key={key} className="text-center p-4 bg-[#1a1a1a] border border-brand-white/5">
-                      <div className="font-display text-2xl text-brand-white">{String(val)}</div>
-                      <div className="text-brand-white/40 text-xs uppercase tracking-wide mt-1">
-                        {key.replace(/_/g, " ")}
+                <div className="grid grid-cols-2 gap-px bg-brand-white/10">
+                  {identityStats.map((s) => (
+                    <div key={s.key} className="bg-[#0d0d0d] p-4 min-w-0 text-center">
+                      <div className="font-display text-xl md:text-2xl text-brand-white break-words">{s.value}</div>
+                      <div className="text-brand-white/40 text-[10px] uppercase tracking-widest mt-1">
+                        {s.label}
                       </div>
                     </div>
                   ))}
@@ -730,7 +737,7 @@ export default async function PlayerDetailPage({
               )}
 
             {/* Empty state */}
-            {!hasDisplayableValue(player.bio) && achievements.length === 0 && rawStats.length === 0 && (
+            {!hasDisplayableValue(player.bio) && achievements.length === 0 && identityStats.length === 0 && (
               <div className="bg-[#0d0d0d] border border-brand-yellow/10 p-10 text-center">
                 <p className="text-brand-white/40 text-sm">More profile details coming soon.</p>
               </div>
