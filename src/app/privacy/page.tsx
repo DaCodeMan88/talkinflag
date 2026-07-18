@@ -22,7 +22,7 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="text-brand-white/40 text-xs uppercase tracking-widest">
-            Last updated: July 11, 2026
+            Last updated: July 18, 2026
           </p>
           <p className="text-brand-white/60 text-lg leading-relaxed max-w-xl mt-6">
             Talkin Flag is a flag football media and rankings platform. This page explains what
@@ -30,6 +30,10 @@ export default function PrivacyPage() {
             can correct or remove your profile.
           </p>
         </div>
+
+        {/* TODO(governance): data-controller location pending business formation decision —
+            Ambra's draft says Italy/Florence; likely Texas LLC per Daniel 2026-07-18.
+            Update BOTH privacy (controller) and terms (governing law) together when decided. */}
 
         {/* Section: What we collect */}
         <section className="mb-14">
@@ -66,6 +70,13 @@ export default function PrivacyPage() {
               We publish profiles and rankings for flag football athletes. Some of this data is
               compiled from public sources rather than provided directly by the athlete — see the next
               section for exactly where it comes from.
+            </li>
+            <li>
+              <span className="text-brand-white font-display uppercase tracking-widest text-[11px] block mb-1">
+                Technical &amp; usage data
+              </span>
+              We may collect your IP address, browser type, device information, pages visited, and
+              cookies and analytics data. This helps us operate and improve the site.
             </li>
           </ul>
         </section>
@@ -123,12 +134,49 @@ export default function PrivacyPage() {
           <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
             Data Retention
           </h2>
+          <ul className="space-y-3 text-brand-white/70 text-sm leading-relaxed mb-4">
+            <li className="border-l-2 border-brand-yellow/30 pl-4">
+              <span className="text-brand-white">Account data</span> — kept as long as your account
+              exists.
+            </li>
+            <li className="border-l-2 border-brand-yellow/30 pl-4">
+              <span className="text-brand-white">Athlete profile data</span> — kept as long as it
+              remains relevant to the public sporting record, unless you request removal.
+            </li>
+            <li className="border-l-2 border-brand-yellow/30 pl-4">
+              <span className="text-brand-white">Contact &amp; newsletter data</span> — kept until you
+              unsubscribe or ask us to delete it.
+            </li>
+            <li className="border-l-2 border-brand-yellow/30 pl-4">
+              <span className="text-brand-white">Technical logs &amp; analytics</span> — kept according
+              to provider settings (typically 12–24 months).
+            </li>
+          </ul>
           <p className="text-brand-white/70 text-sm leading-relaxed">
-            We keep account data for as long as your account exists. We keep athlete profile data for
-            as long as it remains relevant to the public sporting record, unless you ask us to remove
-            it. Contact and newsletter data is kept until you unsubscribe or ask us to delete it. When
-            you ask us to remove data, we act on the request as described below.
+            When you ask us to remove data, we act on the request as described below.
           </p>
+        </section>
+
+        {/* Section: GDPR rights */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Your Rights (GDPR)
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed mb-3">You have the right to:</p>
+          <ul className="list-disc list-inside space-y-1 text-brand-white/70 text-sm leading-relaxed">
+            <li>access the data we hold about you</li>
+            <li>correct inaccurate data</li>
+            <li>request deletion (&ldquo;right to be forgotten&rdquo;)</li>
+            <li>restrict processing</li>
+            <li>object to processing</li>
+            <li>request data portability</li>
+            <li>withdraw consent at any time</li>
+            <li>
+              lodge a complaint with the <span className="text-brand-white">Garante per la Protezione
+              dei Dati Personali</span> (Italian Data Protection Authority) or your local data
+              protection authority
+            </li>
+          </ul>
         </section>
 
         {/* Section: Correct or remove — the key section */}
@@ -175,6 +223,64 @@ export default function PrivacyPage() {
             You also have the right to access the data we hold about you, to object to our processing,
             and to have inaccurate data corrected. The two paths above are how you exercise those
             rights with us.
+          </p>
+        </section>
+
+        {/* Section: Cookies — no cookie banner or standalone Cookie Policy exists yet;
+            do not reference either until that owner decision is made. */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Cookies
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            Talkin Flag uses cookies for basic functionality, security, performance, and analytics.
+            You can manage cookie preferences through your browser settings.
+          </p>
+        </section>
+
+        {/* Section: Third-party processors */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Third-Party Processors
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            We use third-party services such as hosting providers, analytics tools, authentication
+            providers, and email delivery services. These providers may process data on our behalf
+            under GDPR-compliant agreements.
+          </p>
+        </section>
+
+        {/* Section: International transfers */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            International Transfers
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            If any provider processes data outside the EU, transfers occur under Standard Contractual
+            Clauses (SCCs) or EU adequacy decisions.
+          </p>
+        </section>
+
+        {/* Section: Security */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Data Security
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            We implement reasonable technical and organizational measures to protect your data from
+            unauthorized access, loss, or misuse. No online service can guarantee absolute security,
+            but we work to safeguard your information.
+          </p>
+        </section>
+
+        {/* Section: Changes */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Changes to This Policy
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            We may update this Privacy Policy from time to time. Any changes will be posted on this
+            page with an updated revision date.
           </p>
         </section>
 

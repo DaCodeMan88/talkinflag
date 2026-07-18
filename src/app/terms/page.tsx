@@ -22,7 +22,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-brand-white/40 text-xs uppercase tracking-widest">
-            Last updated: July 11, 2026
+            Last updated: July 18, 2026
           </p>
           <p className="text-brand-white/60 text-lg leading-relaxed max-w-xl mt-6">
             By using Talkin Flag you agree to these terms. They cover what you can submit, how our
@@ -41,6 +41,21 @@ export default function TermsPage() {
             host, display, reproduce, and distribute that content on and in connection with the
             service. You keep ownership of what you submit. You confirm that you have the right to
             submit it and that it does not infringe anyone else&apos;s rights.
+          </p>
+        </section>
+
+        {/* Section: Third-party content */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Third-Party Content
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            Talkin Flag displays information, images, logos, and data sourced from public team
+            rosters, federations and governing bodies, tournaments and leagues, and publicly
+            available media. All such third-party content remains the property of its respective
+            owners. Talkin Flag does not claim ownership and uses it for reporting, commentary, and
+            statistical purposes. Users may not reuse or redistribute third-party content without
+            permission from the owner.
           </p>
         </section>
 
@@ -96,8 +111,31 @@ export default function TermsPage() {
             Talkin Flag is provided &ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without
             warranties of any kind, whether express or implied, including fitness for a particular
             purpose and non-infringement. We do not warrant that the service will be uninterrupted,
-            secure, or error-free. To the fullest extent permitted by law, Talkin Flag is not liable
-            for any indirect or consequential damages arising from your use of the service.
+            secure, or error-free.
+          </p>
+          <p className="text-brand-white/70 text-sm leading-relaxed mt-4 mb-3">
+            To the fullest extent permitted by law, Talkin Flag is not liable for:
+          </p>
+          <ul className="list-disc list-inside space-y-1 text-brand-white/70 text-sm leading-relaxed">
+            <li>indirect or consequential damages</li>
+            <li>inaccuracies or omissions</li>
+            <li>downtime or service interruptions</li>
+            <li>data loss</li>
+            <li>issues caused by third-party links or external services</li>
+          </ul>
+          <p className="text-brand-white/70 text-sm leading-relaxed mt-4">
+            Use of the service is at your own risk.
+          </p>
+        </section>
+
+        {/* Section: Service availability */}
+        <section className="mb-14">
+          <h2 className="font-display text-2xl uppercase text-brand-yellow mb-6 tracking-widest">
+            Service Availability
+          </h2>
+          <p className="text-brand-white/70 text-sm leading-relaxed">
+            We may modify, update, suspend, or discontinue any part of the service at any time
+            without notice.
           </p>
         </section>
 
@@ -107,11 +145,15 @@ export default function TermsPage() {
             Account Eligibility
           </h2>
           <p className="text-brand-white/70 text-sm leading-relaxed">
-            You must be at least 13 years old to create an account on Talkin Flag. By creating an
+            You must be at least 14 years old to create an account on Talkin Flag. By creating an
             account you confirm that you meet this requirement. If we learn that we have collected
-            account information from someone under 13, we will delete it.
+            account information from someone under 14, we will delete it.
           </p>
         </section>
+
+        {/* TODO(governance): jurisdiction pending business formation decision —
+            Ambra's draft says Italy/Florence; likely Texas LLC per Daniel 2026-07-18.
+            Update BOTH terms (governing law) and privacy (controller) together when decided. */}
 
         {/* Section: Changes / contact */}
         <section>
