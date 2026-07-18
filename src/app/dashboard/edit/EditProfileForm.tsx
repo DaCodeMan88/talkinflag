@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 import { ALLOWED_POSITIONS } from "@/lib/profile-edit";
+import { inchesToCm, cmToInches, lbsToKg, kgToLbs } from "@/lib/measurements";
 
 type TournamentDraft = { year: string; event: string; result: string; location: string };
 
@@ -16,6 +17,7 @@ type ProfileDraft = {
   yearsActive: string; gradYear: string; occupation: string; education: string;
   caps: string; worldAppearances: string; jersey: string; club: string; nickname: string;
   achievements: string[]; tournaments: TournamentDraft[];
+  units?: "imperial" | "metric"; heightCm?: string; weightKg?: string; wingspanCm?: string;
 };
 
 interface PlayerFormData {
@@ -78,6 +80,30 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   const [highlightUrl, setHighlightUrl] = useState(player.highlight_url);
   const [weightLbs, setWeightLbs] = useState(player.weight_lbs ? String(player.weight_lbs) : "");
   const [wingspanIn, setWingspanIn] = useState(player.wingspan_in ? String(player.wingspan_in) : "");
+
+  // Entry units — storage stays imperial (height_in / weight_lbs / wingspan_in);
+  // metric mode is a form-layer conversion only.
+  const [units, setUnits] = useState<"imperial" | "metric">("imperial");
+  const [heightCm, setHeightCm] = useState("");
+  const [weightKg, setWeightKg] = useState("");
+  const [wingspanCm, setWingspanCm] = useState("");
+
+  function switchUnits(next: "imperial" | "metric") {
+    if (next === units) return;
+    if (next === "metric") {
+      const totalIn = inchesFromHeight(heightFt, heightIn);
+      setHeightCm(totalIn ? String(inchesToCm(totalIn)) : "");
+      setWeightKg(weightLbs ? String(lbsToKg(parseInt(weightLbs))) : "");
+      setWingspanCm(wingspanIn ? String(inchesToCm(parseInt(wingspanIn))) : "");
+    } else {
+      const totalIn = heightCm ? cmToInches(parseInt(heightCm)) : null;
+      setHeightFt(totalIn ? String(Math.floor(totalIn / 12)) : "");
+      setHeightIn(totalIn != null ? String(totalIn % 12) : "");
+      setWeightLbs(weightKg ? String(kgToLbs(parseInt(weightKg))) : "");
+      setWingspanIn(wingspanCm ? String(cmToInches(parseInt(wingspanCm))) : "");
+    }
+    setUnits(next);
+  }
   const [fortyYard, setFortyYard] = useState(player.forty_yard);
   const [verticalJump, setVerticalJump] = useState(player.vertical_jump ? String(player.vertical_jump) : "");
   const [yearsActive, setYearsActive] = useState(player.years_active ? String(player.years_active) : "");
@@ -113,6 +139,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
       heightFt, heightIn, bio, instagram, tiktok, highlightUrl, weightLbs, wingspanIn,
       fortyYard, verticalJump, yearsActive, gradYear, occupation, education,
       caps, worldAppearances, jersey, club, nickname, achievements, tournaments,
+      units, heightCm, weightKg, wingspanCm,
     },
   });
 
@@ -128,6 +155,8 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     setJersey(v.jersey ?? ""); setClub(v.club ?? ""); setNickname(v.nickname ?? "");
     setAchievements(Array.isArray(v.achievements) ? v.achievements : []);
     setTournaments(Array.isArray(v.tournaments) ? v.tournaments : []);
+    setUnits(v.units === "metric" ? "metric" : "imperial");
+    setHeightCm(v.heightCm ?? ""); setWeightKg(v.weightKg ?? ""); setWingspanCm(v.wingspanCm ?? "");
   }
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -187,9 +216,18 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
         instagram,
         tiktok,
         highlight_url: highlightUrl,
-        height_in: inchesFromHeight(heightFt, heightIn),
-        weight_lbs: weightLbs ? parseInt(weightLbs) : null,
-        wingspan_in: wingspanIn ? parseInt(wingspanIn) : null,
+        height_in:
+          units === "metric"
+            ? (heightCm ? cmToInches(parseInt(heightCm)) : null)
+            : inchesFromHeight(heightFt, heightIn),
+        weight_lbs:
+          units === "metric"
+            ? (weightKg ? kgToLbs(parseInt(weightKg)) : null)
+            : (weightLbs ? parseInt(weightLbs) : null),
+        wingspan_in:
+          units === "metric"
+            ? (wingspanCm ? cmToInches(parseInt(wingspanCm)) : null)
+            : (wingspanIn ? parseInt(wingspanIn) : null),
         forty_yard: fortyYard || null,
         vertical_jump: verticalJump ? parseInt(verticalJump) : null,
         years_active: yearsActive ? parseInt(yearsActive) : null,
@@ -452,71 +490,126 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
           Once you submit for verification they can earn a <span className="text-brand-yellow">✓ Verified</span> badge.
         </div>
 
+        {/* Entry units toggle — stored values stay imperial */}
+        <div className="flex items-center gap-2" role="group" aria-label="Measurement units">
+          {(["imperial", "metric"] as const).map((u) => (
+            <button
+              key={u}
+              type="button"
+              onClick={() => switchUnits(u)}
+              aria-pressed={units === u}
+              className={`font-display uppercase tracking-widest text-xs px-4 py-2 border transition-colors ${
+                units === u
+                  ? "bg-brand-yellow text-brand-black border-brand-yellow"
+                  : "border-brand-white/10 text-brand-white/40 hover:text-brand-white/70"
+              }`}
+            >
+              {u === "imperial" ? "FT / LBS" : "CM / KG"}
+            </button>
+          ))}
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           {/* Height */}
           <div>
             <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
-              Height
+              Height {units === "metric" && "(cm)"}
             </label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
+            {units === "metric" ? (
+              <div className="relative">
                 <input
                   type="number"
-                  value={heightFt}
-                  onChange={(e) => setHeightFt(e.target.value)}
-                  placeholder="5"
-                  min={4} max={7}
-                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-8"
+                  value={heightCm}
+                  onChange={(e) => setHeightCm(e.target.value)}
+                  placeholder="173"
+                  min={122} max={244}
+                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-10"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">ft</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">cm</span>
               </div>
-              <div className="relative flex-1">
-                <input
-                  type="number"
-                  value={heightIn}
-                  onChange={(e) => setHeightIn(e.target.value)}
-                  placeholder="8"
-                  min={0} max={11}
-                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-8"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">in</span>
+            ) : (
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    value={heightFt}
+                    onChange={(e) => setHeightFt(e.target.value)}
+                    placeholder="5"
+                    min={4} max={7}
+                    className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-8"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">ft</span>
+                </div>
+                <div className="relative flex-1">
+                  <input
+                    type="number"
+                    value={heightIn}
+                    onChange={(e) => setHeightIn(e.target.value)}
+                    placeholder="8"
+                    min={0} max={11}
+                    className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-8"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">in</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Weight */}
           <div>
             <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
-              Weight
+              Weight {units === "metric" && "(kg)"}
             </label>
             <div className="relative">
-              <input
-                type="number"
-                value={weightLbs}
-                onChange={(e) => setWeightLbs(e.target.value)}
-                placeholder="145"
-                min={80} max={400}
-                className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-10"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">lbs</span>
+              {units === "metric" ? (
+                <input
+                  type="number"
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  placeholder="66"
+                  min={36} max={181}
+                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-10"
+                />
+              ) : (
+                <input
+                  type="number"
+                  value={weightLbs}
+                  onChange={(e) => setWeightLbs(e.target.value)}
+                  placeholder="145"
+                  min={80} max={400}
+                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-10"
+                />
+              )}
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">{units === "metric" ? "kg" : "lbs"}</span>
             </div>
           </div>
 
           {/* Wingspan */}
           <div>
             <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
-              Wingspan
+              Wingspan {units === "metric" && "(cm)"}
             </label>
             <div className="relative">
-              <input
-                type="number"
-                value={wingspanIn}
-                onChange={(e) => setWingspanIn(e.target.value)}
-                placeholder="68"
-                min={48} max={108}
-                className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-8"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">in</span>
+              {units === "metric" ? (
+                <input
+                  type="number"
+                  value={wingspanCm}
+                  onChange={(e) => setWingspanCm(e.target.value)}
+                  placeholder="173"
+                  min={122} max={274}
+                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-10"
+                />
+              ) : (
+                <input
+                  type="number"
+                  value={wingspanIn}
+                  onChange={(e) => setWingspanIn(e.target.value)}
+                  placeholder="68"
+                  min={48} max={108}
+                  className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-3 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors pr-8"
+                />
+              )}
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-white/30 text-xs">{units === "metric" ? "cm" : "in"}</span>
             </div>
           </div>
 
