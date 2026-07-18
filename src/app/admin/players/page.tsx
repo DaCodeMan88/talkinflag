@@ -44,10 +44,9 @@ export default async function AdminPlayersPage({
   ]);
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12">
+    <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="flex items-center justify-between mb-8">
         <div className="border-l-4 border-[#FDDD58] pl-6">
-          <Link href="/admin" className="text-white/40 text-xs hover:text-white transition-colors">← Admin</Link>
           <h1 className="font-display text-4xl uppercase text-white leading-none mt-1">Players</h1>
           <p className="text-white/40 mt-2 text-sm">{total ?? 0} players in the database</p>
         </div>

@@ -36,10 +36,10 @@ export default async function AdminEventResultsPage({
   const results = (resultsRaw ?? []) as Result[];
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="flex items-center gap-3 mb-2">
-        <Link href="/admin" className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors">
-          ← Admin
+        <Link href="/admin/events" className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors">
+          ← Events
         </Link>
         <span className="text-white/10">/</span>
         <Link href={`/events/${id}`} className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors">

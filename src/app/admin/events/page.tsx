@@ -44,7 +44,7 @@ export default async function AdminEventsPage() {
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="border-l-4 border-brand-yellow pl-6 mb-10">
           <h1 className="font-display text-4xl uppercase text-brand-white leading-none">Event Submissions</h1>
           <p className="text-brand-white/40 mt-2 text-sm">{pending.length} pending review</p>

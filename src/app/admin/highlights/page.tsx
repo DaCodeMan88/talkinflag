@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { HighlightActions } from "./HighlightActions";
@@ -123,9 +122,6 @@ export default async function AdminHighlightsPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 py-12 space-y-14">
       <div>
-        <Link href="/admin" className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors">
-          ← Admin
-        </Link>
         <div className="border-l-4 border-[#FDDD58] pl-6 mt-4">
           <h1 className="font-display text-4xl uppercase text-white leading-none">Highlights</h1>
           <p className="text-white/40 mt-2 text-sm">

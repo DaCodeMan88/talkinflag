@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { FeaturedForm } from "./FeaturedForm";
-import Link from "next/link";
 
 type Player = {
   id: string;
@@ -46,15 +45,7 @@ export default async function AdminFeaturedPage() {
   const players = (playersRaw ?? []) as Player[];
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      <div className="flex items-center gap-4 mb-2">
-        <Link
-          href="/admin"
-          className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors"
-        >
-          ← Admin
-        </Link>
-      </div>
+    <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="border-l-4 border-[#FDDD58] pl-6 mb-10">
         <h1 className="font-display text-4xl uppercase text-white leading-none">
           Featured Athlete

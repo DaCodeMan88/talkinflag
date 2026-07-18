@@ -154,7 +154,7 @@ export default async function AdminHomePage({
   const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0) + (pendingPlayers ?? 0) + (pendingClaims ?? 0) + (pendingChangeRequests ?? 0);
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="max-w-6xl mx-auto px-6 py-12">
       <GuidedTour tourId="admin" steps={adminTourSteps} autoStart={tour === "1"} />
       <div className="flex items-start justify-between mb-10">
         <div className="border-l-4 border-[#FDDD58] pl-6">

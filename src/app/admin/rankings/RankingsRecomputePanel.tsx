@@ -33,11 +33,7 @@ export default function RankingsRecomputePanel({ totalPlayers, rankedPlayers, la
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12">
-      <Link href="/admin" className="text-white/30 font-display text-xs uppercase tracking-widest hover:text-white/60 mb-8 inline-block">
-        ← Admin
-      </Link>
-
+    <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="border-l-4 border-[#FDDD58] pl-6 mb-10">
         <h1 className="font-display text-4xl uppercase text-white leading-none">TF Rank</h1>
         <p className="text-white/40 mt-2 text-sm">

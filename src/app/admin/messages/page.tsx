@@ -45,9 +45,8 @@ export default async function AdminMessagesPage({
   const unread = showArchived ? 0 : messages.filter((m) => !m.is_read).length;
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12">
+    <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="border-l-4 border-[#FDDD58] pl-6 mb-8">
-        <Link href="/admin" className="text-white/40 text-xs hover:text-white transition-colors">← Admin</Link>
         <h1 className="font-display text-4xl uppercase text-white leading-none mt-1">Messages</h1>
         <p className="text-white/40 mt-2 text-sm">
           {showArchived

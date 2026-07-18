@@ -28,7 +28,7 @@ export default async function AdminCoachesPage() {
 
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex items-start justify-between mb-10">
           <div className="border-l-4 border-brand-yellow pl-6">
             <Link href="/admin/verifications" className="text-brand-white/30 text-xs font-display uppercase tracking-widest hover:text-brand-yellow transition-colors block mb-3">
