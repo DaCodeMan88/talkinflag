@@ -20,15 +20,29 @@ interface PlayerBasicInfo {
   roster_year: string;
 }
 
+export interface PendingChangeRequest {
+  field: string;
+  new_value: string;
+  created_at: string;
+}
+
 function levelLabel(value: string): string {
   return LEVEL_OPTIONS.find((o) => o.value === value)?.label ?? value;
 }
 
-export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo }) {
-  const [field, setField] = useState<GuardedField>("first_name");
+export default function ChangeRequestForm({
+  player,
+  pendingRequests,
+}: {
+  player: PlayerBasicInfo;
+  pendingRequests: PendingChangeRequest[];
+}) {
+  const [pendingByField, setPendingByField] = useState<Record<string, string>>(() =>
+    Object.fromEntries(pendingRequests.map((r) => [r.field, r.new_value]))
+  );
+  const [openField, setOpenField] = useState<GuardedField | null>(null);
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const currentValues: Record<GuardedField, string> = {
@@ -48,30 +62,31 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
     level: player.level,
     roster_year: player.roster_year,
   };
-  const isNoOp = value.trim().length > 0 && value.trim() === (rawCurrentValues[field] ?? "").trim();
+  const isNoOp =
+    openField !== null &&
+    value.trim().length > 0 &&
+    value.trim() === (rawCurrentValues[openField] ?? "").trim();
 
-  function handleFieldChange(next: GuardedField) {
-    setField(next);
+  function toggleField(field: GuardedField) {
+    setOpenField((prev) => (prev === field ? null : field));
     setValue("");
-    setSuccess(false);
     setError(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!value.trim()) return;
+    if (!openField || !value.trim()) return;
     if (isNoOp) {
       setError("That's already the current value.");
       return;
     }
     setSubmitting(true);
-    setSuccess(false);
     setError(null);
 
     const res = await fetch(`/api/players/${player.id}/change-request`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ field, new_value: value }),
+      body: JSON.stringify({ field: openField, new_value: value }),
     });
 
     setSubmitting(false);
@@ -86,7 +101,8 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
       return;
     }
 
-    setSuccess(true);
+    setPendingByField((prev) => ({ ...prev, [openField]: value.trim() }));
+    setOpenField(null);
     setValue("");
   }
 
@@ -101,95 +117,102 @@ export default function ChangeRequestForm({ player }: { player: PlayerBasicInfo 
       </div>
 
       <p className="text-brand-white/40 text-sm">
-        Your name, team, and competition level are protected to prevent impersonation and keep
-        rankings fair. Request a change and our team will apply it — usually within a day.
+        Your name, team, competition level, and roster year are protected to prevent impersonation
+        and keep rankings fair. Request a change and our team will apply it — usually within a day.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label htmlFor="cr-field" className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
-            Field
-          </label>
-          <select
-            id="cr-field"
-            value={field}
-            onChange={(e) => handleFieldChange(e.target.value as GuardedField)}
-            className="w-full bg-[#111111] border border-brand-white/10 text-brand-white px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
-          >
-            {GUARDED_FIELDS.map((f) => (
-              <option key={f} value={f}>
-                {guardedFieldLabel(f)}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="divide-y divide-brand-white/10 border border-brand-white/10">
+        {GUARDED_FIELDS.map((field) => {
+          const pending = pendingByField[field];
+          const isOpen = openField === field;
+          return (
+            <div key={field} className="bg-[#0d0d0d] p-4 space-y-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-display uppercase tracking-widest text-brand-white/50">
+                    {guardedFieldLabel(field)}
+                  </p>
+                  <p className="text-brand-white/70 text-sm mt-1 truncate">
+                    {currentValues[field] || "—"}
+                  </p>
+                </div>
+                {pending !== undefined ? (
+                  <span className="shrink-0 bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-xs px-3 py-1.5">
+                    Pending review: &ldquo;{field === "level" ? levelLabel(pending) : pending}&rdquo;
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => toggleField(field)}
+                    className="shrink-0 text-brand-yellow text-xs font-display uppercase tracking-widest hover:text-brand-yellow/80 transition-colors"
+                  >
+                    {isOpen ? "Cancel" : "Request change →"}
+                  </button>
+                )}
+              </div>
 
-        <p className="text-brand-white/30 text-xs">
-          Current: <span className="text-brand-white/60">{currentValues[field] || "—"}</span>
-        </p>
+              {isOpen && pending === undefined && (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  {field === "level" ? (
+                    <select
+                      id={`cr-value-${field}`}
+                      aria-label={`New ${guardedFieldLabel(field).toLowerCase()}`}
+                      value={value}
+                      onChange={(e) => setValue(e.target.value)}
+                      className="w-full bg-[#111111] border border-brand-white/10 text-brand-white px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                    >
+                      <option value="">Select a level…</option>
+                      {LEVEL_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : field === "roster_year" ? (
+                    <input
+                      id={`cr-value-${field}`}
+                      aria-label="New roster year"
+                      type="text"
+                      inputMode="numeric"
+                      value={value}
+                      onChange={(e) => setValue(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                      placeholder="e.g. 2025"
+                      className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                    />
+                  ) : (
+                    <input
+                      id={`cr-value-${field}`}
+                      aria-label={`New ${guardedFieldLabel(field).toLowerCase()}`}
+                      type="text"
+                      value={value}
+                      onChange={(e) => setValue(e.target.value.slice(0, 120))}
+                      placeholder={`New ${guardedFieldLabel(field).toLowerCase()}`}
+                      className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
+                    />
+                  )}
 
-        <div>
-          <label htmlFor="cr-value" className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
-            New value
-          </label>
-          {field === "level" ? (
-            <select
-              id="cr-value"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
-            >
-              <option value="">Select a level…</option>
-              {LEVEL_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          ) : field === "roster_year" ? (
-            <input
-              id="cr-value"
-              type="text"
-              inputMode="numeric"
-              value={value}
-              onChange={(e) => setValue(e.target.value.replace(/\D/g, "").slice(0, 4))}
-              placeholder="e.g. 2025"
-              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
-            />
-          ) : (
-            <input
-              id="cr-value"
-              type="text"
-              value={value}
-              onChange={(e) => setValue(e.target.value.slice(0, 120))}
-              placeholder={`New ${guardedFieldLabel(field).toLowerCase()}`}
-              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
-            />
-          )}
-        </div>
+                  {error && (
+                    <div className="bg-red-900/30 border border-red-500/30 text-red-400 text-sm px-4 py-3" role="alert">
+                      {error}
+                    </div>
+                  )}
 
-        {error && (
-          <div className="bg-red-900/30 border border-red-500/30 text-red-400 text-sm px-4 py-3" role="alert">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-sm px-4 py-3 font-display uppercase tracking-widest" role="status">
-            Sent for review — we&apos;ll email you when it&apos;s approved.
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={submitting || !value.trim()}
-          className="w-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm py-4 hover:bg-brand-yellow/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {submitting && (
-            <span aria-hidden="true" className="animate-spin border-2 border-brand-black border-t-transparent rounded-full w-4 h-4" />
-          )}
-          Request Change
-        </button>
-      </form>
+                  <button
+                    type="submit"
+                    disabled={submitting || !value.trim()}
+                    className="w-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm py-3 hover:bg-brand-yellow/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {submitting && (
+                      <span aria-hidden="true" className="animate-spin border-2 border-brand-black border-t-transparent rounded-full w-4 h-4" />
+                    )}
+                    Request Change
+                  </button>
+                </form>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

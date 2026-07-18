@@ -28,6 +28,12 @@ export default async function EditProfilePage() {
 
   if (!player) redirect("/dashboard");
 
+  const { data: pendingRequests } = await db
+    .from("profile_change_requests")
+    .select("field, new_value, status, created_at")
+    .eq("player_id", player.id)
+    .eq("status", "pending");
+
   const stats = (player.stats ?? {}) as Record<string, unknown>;
   const achievements = (Array.isArray(stats.achievements) ? stats.achievements : [])
     .filter((a): a is string => typeof a === "string");
@@ -101,6 +107,7 @@ export default async function EditProfilePage() {
               level: player.level ?? "",
               roster_year: (stats.roster_year as string) ?? "",
             }}
+            pendingRequests={pendingRequests ?? []}
           />
         </div>
       </div>
