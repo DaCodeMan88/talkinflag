@@ -4,7 +4,7 @@ import {
   sanitizeStatsPayload,
   shouldResetVerification,
 } from "./profile-edit";
-import { sanitizeIdentityPayload } from "./profile-edit";
+import { sanitizeIdentityPayload, sanitizeGradYear } from "./profile-edit";
 
 describe("EDITABLE_STATS_KEYS", () => {
   it("contains exactly the editable stats keys", () => {
@@ -233,5 +233,21 @@ describe("sanitizeIdentityPayload (soft fields)", () => {
   it("never returns name/team/level even if sent (guarded fields are stripped)", () => {
     const out = sanitizeIdentityPayload({ first_name: "X", last_name: "Y", school_or_team: "Z", level: "pro" });
     expect(out).toEqual({});
+  });
+});
+
+describe("sanitizeGradYear", () => {
+  it("accepts past graduation years (adults exist)", () => {
+    expect(sanitizeGradYear("2017")).toBe(2017);
+    expect(sanitizeGradYear(1995)).toBe(1995);
+  });
+  it("accepts near-future years", () => {
+    expect(sanitizeGradYear("2032")).toBe(2032);
+  });
+  it("rejects garbage and out-of-range", () => {
+    expect(sanitizeGradYear("abc")).toBeNull();
+    expect(sanitizeGradYear("1901")).toBeNull();
+    expect(sanitizeGradYear("2050")).toBeNull();
+    expect(sanitizeGradYear("")).toBeNull();
   });
 });

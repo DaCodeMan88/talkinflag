@@ -125,7 +125,13 @@ export function sanitizeStatsPayload(body: Record<string, unknown>): Record<stri
   return out;
 }
 
-export const ALLOWED_POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"] as const;
+/** Graduation year: any plausible HS/college year, past or future. */
+export function sanitizeGradYear(v: unknown): number | null {
+  const n = parseInt(String(v), 10);
+  return isNaN(n) || n < 1950 || n > 2040 ? null : n;
+}
+
+export const ALLOWED_POSITIONS =["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"] as const;
 
 /**
  * Soft identity fields a claimed player may self-edit (direct columns).
