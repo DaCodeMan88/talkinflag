@@ -17,6 +17,7 @@ import FlagIQBadge from "@/components/player/FlagIQBadge";
 import { formatHeight, formatWeight } from "@/lib/measurements";
 import { hasDisplayableValue } from "@/lib/profile-visibility";
 import ReportProfileButton from "@/components/players/ReportProfileButton";
+import SocialLinks from "@/components/players/SocialLinks";
 import { profileViewerState } from "@/lib/profile/viewer-state";
 
 export const revalidate = 300;
@@ -283,6 +284,7 @@ export default async function PlayerDetailPage({
   const igHandle = player.instagram ?? (ext.instagram as string | undefined);
   const sameAs: string[] = [];
   if (igHandle) sameAs.push(`https://instagram.com/${String(igHandle).replace(/^@/, "")}`);
+  if (player.tiktok) sameAs.push(`https://tiktok.com/@${String(player.tiktok).replace(/^@/, "")}`);
 
   const personJsonLd = {
     "@context": "https://schema.org",
@@ -576,7 +578,9 @@ export default async function PlayerDetailPage({
             )}
 
             {/* Social links */}
-            {(isSafeUrl(player.highlight_url) || hasDisplayableValue(player.instagram)) && (
+            {(isSafeUrl(player.highlight_url) ||
+              hasDisplayableValue(player.instagram) ||
+              hasDisplayableValue(player.tiktok)) && (
               <SideCard title="Links">
                 {isSafeUrl(player.highlight_url) && (
                   <a
@@ -588,20 +592,7 @@ export default async function PlayerDetailPage({
                     ▶ Highlight Reel
                   </a>
                 )}
-                {hasDisplayableValue(player.instagram) && (
-                  <a
-                    href={
-                      player.instagram!.startsWith("http")
-                        ? player.instagram!
-                        : `https://instagram.com/${player.instagram!.replace(/^@/, "")}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-brand-white/60 hover:text-brand-white text-sm transition-colors"
-                  >
-                    @ {player.instagram!.replace(/^@/, "")}
-                  </a>
-                )}
+                <SocialLinks instagram={player.instagram} tiktok={player.tiktok} />
               </SideCard>
             )}
           </div>
