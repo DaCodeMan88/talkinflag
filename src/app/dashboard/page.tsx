@@ -10,26 +10,13 @@ import GuidedTour from "@/components/onboarding/GuidedTour";
 import OnboardingChecklist, { type ChecklistItem } from "@/components/onboarding/OnboardingChecklist";
 import { memberTourSteps } from "@/components/onboarding/steps";
 import { createAdminClient } from "@/lib/eval/admin-client";
+import { completionScore } from "@/lib/profile/completion";
 
 export const metadata = buildMetadata({
   title: "Dashboard | Talkin Flag",
   description: "Manage your Talkin Flag player profile.",
   path: "/dashboard",
 });
-
-function completionScore(player: Record<string, unknown>, stats: Record<string, unknown>): number {
-  const fields = [
-    player.photo_url,
-    player.bio,
-    player.instagram,
-    player.highlight_url,
-    player.height_in,
-    player.weight_lbs,
-    stats.forty_yard,
-    stats.occupation,
-  ];
-  return Math.round((fields.filter(Boolean).length / fields.length) * 100);
-}
 
 function missingFields(player: Record<string, unknown>, stats: Record<string, unknown>): string[] {
   const missing: string[] = [];
