@@ -41,13 +41,16 @@ export default async function DashboardPage({
 
   const db = createAdminClient();
 
-  const [{ data: player, error: playerErr }, { data: coachApp }] = await Promise.all([
+  // .limit(1) instead of .maybeSingle(): maybeSingle() returns null data when
+  // duplicate claimed rows exist, which would silently hide the whole profile.
+  const [{ data: playerRows, error: playerErr }, { data: coachApp }] = await Promise.all([
     db
       .from("players")
       .select("id, first_name, last_name, position, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified, claim_pending")
       .eq("claimed_by", user.id)
       .eq("is_claimed", true)
-      .maybeSingle(),
+      .order("created_at")
+      .limit(1),
     supabase
       .from("coaches")
       .select("id, status, is_verified, first_name, last_name, team")
@@ -55,6 +58,7 @@ export default async function DashboardPage({
       .maybeSingle(),
   ]);
   if (playerErr) console.error("Dashboard player query failed:", playerErr.message);
+  const player = playerRows?.[0] ?? null;
 
   const stats = (player?.stats ?? {}) as Record<string, unknown>;
   const pct = player ? completionScore(player as Record<string, unknown>, stats) : 0;
