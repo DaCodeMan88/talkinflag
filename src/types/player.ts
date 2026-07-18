@@ -15,6 +15,7 @@ export interface Player {
   stats?: Record<string, unknown>;
   highlight_url?: string | null;
   instagram?: string | null;
+  tiktok?: string | null;
   ranking_national?: number | null;
   ranking_position?: number | null;
   gender?: "male" | "female" | null;

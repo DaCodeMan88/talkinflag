@@ -11,7 +11,7 @@ type TournamentDraft = { year: string; event: string; result: string; location: 
 
 type ProfileDraft = {
   position: string; city: string; country: string;
-  heightFt: string; heightIn: string; bio: string; instagram: string; highlightUrl: string;
+  heightFt: string; heightIn: string; bio: string; instagram: string; tiktok: string; highlightUrl: string;
   weightLbs: string; wingspanIn: string; fortyYard: string; verticalJump: string;
   yearsActive: string; gradYear: string; occupation: string; education: string;
   caps: string; worldAppearances: string; jersey: string; club: string; nickname: string;
@@ -28,6 +28,7 @@ interface PlayerFormData {
   country: string;
   bio: string;
   instagram: string;
+  tiktok: string;
   highlight_url: string;
   height_in: number | null;
   weight_lbs: number | null;
@@ -73,6 +74,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   const [country, setCountry] = useState(player.country);
   const [bio, setBio] = useState(player.bio);
   const [instagram, setInstagram] = useState(player.instagram);
+  const [tiktok, setTiktok] = useState(player.tiktok);
   const [highlightUrl, setHighlightUrl] = useState(player.highlight_url);
   const [weightLbs, setWeightLbs] = useState(player.weight_lbs ? String(player.weight_lbs) : "");
   const [wingspanIn, setWingspanIn] = useState(player.wingspan_in ? String(player.wingspan_in) : "");
@@ -108,7 +110,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     ref: player.id,
     value: {
       position, city, country,
-      heightFt, heightIn, bio, instagram, highlightUrl, weightLbs, wingspanIn,
+      heightFt, heightIn, bio, instagram, tiktok, highlightUrl, weightLbs, wingspanIn,
       fortyYard, verticalJump, yearsActive, gradYear, occupation, education,
       caps, worldAppearances, jersey, club, nickname, achievements, tournaments,
     },
@@ -117,7 +119,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   function applyDraft(v: ProfileDraft) {
     setPosition(v.position ?? ""); setCity(v.city ?? ""); setCountry(v.country ?? "");
     setHeightFt(v.heightFt ?? ""); setHeightIn(v.heightIn ?? "");
-    setBio(v.bio ?? ""); setInstagram(v.instagram ?? ""); setHighlightUrl(v.highlightUrl ?? "");
+    setBio(v.bio ?? ""); setInstagram(v.instagram ?? ""); setTiktok(v.tiktok ?? ""); setHighlightUrl(v.highlightUrl ?? "");
     setWeightLbs(v.weightLbs ?? ""); setWingspanIn(v.wingspanIn ?? "");
     setFortyYard(v.fortyYard ?? ""); setVerticalJump(v.verticalJump ?? "");
     setYearsActive(v.yearsActive ?? ""); setGradYear(v.gradYear ?? "");
@@ -183,6 +185,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
         country,
         bio,
         instagram,
+        tiktok,
         highlight_url: highlightUrl,
         height_in: inchesFromHeight(heightFt, heightIn),
         weight_lbs: weightLbs ? parseInt(weightLbs) : null,
@@ -355,6 +358,23 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
               value={instagram}
               onChange={(e) => setInstagram(e.target.value.replace(/^@/, ""))}
               placeholder="yourhandle"
+              className="flex-1 bg-transparent text-brand-white placeholder-brand-white/20 px-2 py-3 text-sm focus:outline-none"
+            />
+          </div>
+        </div>
+
+        {/* TikTok */}
+        <div>
+          <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
+            TikTok
+          </label>
+          <div className="flex items-center bg-[#111111] border border-brand-white/10 focus-within:border-brand-yellow/50 transition-colors">
+            <span className="pl-4 text-brand-white/30 text-sm select-none">@</span>
+            <input
+              type="text"
+              value={tiktok}
+              onChange={(e) => setTiktok(e.target.value.replace(/^@/, ""))}
+              placeholder="username"
               className="flex-1 bg-transparent text-brand-white placeholder-brand-white/20 px-2 py-3 text-sm focus:outline-none"
             />
           </div>

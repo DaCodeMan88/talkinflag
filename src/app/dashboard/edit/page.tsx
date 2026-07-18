@@ -77,6 +77,7 @@ export default async function EditProfilePage() {
             country: player.country ?? "",
             bio: player.bio ?? "",
             instagram: player.instagram ?? "",
+            tiktok: player.tiktok ?? "",
             highlight_url: player.highlight_url ?? "",
             height_in: player.height_in ?? null,
             weight_lbs: player.weight_lbs ?? null,

@@ -38,6 +38,10 @@ export async function PATCH(
     const handle = String(body.instagram).replace(/^@/, "").slice(0, 60);
     identity.instagram = handle || null;
   }
+  if (body.tiktok !== undefined) {
+    const handle = String(body.tiktok).replace(/^@/, "").slice(0, 60);
+    identity.tiktok = handle || null;
+  }
   if (body.highlight_url !== undefined) {
     const url = String(body.highlight_url).trim();
     const safe = url === "" ? null :
