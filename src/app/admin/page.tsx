@@ -66,6 +66,30 @@ export default async function AdminHomePage({
     adminDb.from("profile_change_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
   ]);
 
+  // Member growth + database stats
+  const now = Date.now();
+  const weekAgo = new Date(now - 7 * 864e5).toISOString();
+  const monthAgo = new Date(now - 30 * 864e5).toISOString();
+  const [
+    { data: usersPage },
+    { count: totalPlayers },
+    { count: claimedPlayers },
+    { count: verifiedPlayers },
+    { count: totalEvals },
+    { count: evalsThisWeek },
+  ] = await Promise.all([
+    adminDb.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+    adminDb.from("players").select("id", { count: "exact", head: true }),
+    adminDb.from("players").select("id", { count: "exact", head: true }).eq("is_claimed", true),
+    adminDb.from("players").select("id", { count: "exact", head: true }).eq("is_verified", true),
+    adminDb.from("eval_responses").select("id", { count: "exact", head: true }),
+    adminDb.from("eval_responses").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
+  ]);
+  const users = usersPage?.users ?? [];
+  const totalMembers = users.length;
+  const newThisWeek = users.filter((u) => u.created_at >= weekAgo).length;
+  const newThisMonth = users.filter((u) => u.created_at >= monthAgo).length;
+
   const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
     {
       label: "Players",
@@ -164,6 +188,52 @@ export default async function AdminHomePage({
           </p>
         </div>
         <ShowAroundButton tourId="admin" className="text-white/40 text-xs font-display uppercase tracking-widest hover:text-[#FDDD58] transition-colors shrink-0 mt-1" />
+      </div>
+
+      {/* Needs attention */}
+      <div className="mb-10">
+        {totalPending === 0 ? (
+          <p className="text-white/30 font-display text-xs uppercase tracking-widest">✓ All queues clear</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {sections
+              .filter((s) => s.count > 0)
+              .map((s) => (
+                <Link
+                  key={s.href}
+                  href={s.href}
+                  className="bg-[#FDDD58] text-black font-display text-xs uppercase tracking-widest px-3 py-2 hover:bg-[#FDDD58]/90 transition-colors"
+                >
+                  {s.count} {s.label} →
+                </Link>
+              ))}
+          </div>
+        )}
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10 mb-12">
+        {[
+          { label: "Members", value: totalMembers, sub: `+${newThisWeek} this week`, href: "/admin/members" },
+          { label: "New this month", value: newThisMonth, sub: null, href: "/admin/members" },
+          { label: "Players", value: totalPlayers ?? 0, sub: null, href: "/admin/players" },
+          { label: "Claimed", value: claimedPlayers ?? 0, sub: null, href: "/admin/players" },
+          {
+            label: "Verified",
+            value: verifiedPlayers ?? 0,
+            sub: totalPlayers ? `${Math.round(((verifiedPlayers ?? 0) / totalPlayers) * 100)}% of players` : null,
+            href: "/admin/players",
+          },
+          { label: "Evals completed", value: totalEvals ?? 0, sub: `+${evalsThisWeek ?? 0} this week`, href: "/admin" },
+          { label: "Open reports", value: openReports ?? 0, sub: null, href: "/admin/reports" },
+          { label: "Pending claims", value: pendingClaims ?? 0, sub: null, href: "/admin/claims" },
+        ].map((c) => (
+          <Link key={c.label} href={c.href} className="bg-[#0d0d0d] p-5 hover:bg-[#141414] transition-colors min-w-0">
+            <p className="font-display text-3xl text-white">{c.value}</p>
+            <p className="text-white/40 text-[10px] uppercase tracking-widest mt-1">{c.label}</p>
+            {c.sub && <p className="text-[#FDDD58] text-xs mt-1">{c.sub}</p>}
+          </Link>
+        ))}
       </div>
 
       <div className="space-y-3">
