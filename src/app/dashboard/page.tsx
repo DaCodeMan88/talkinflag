@@ -54,10 +54,10 @@ export default async function DashboardPage({
 
   const db = createAdminClient();
 
-  const [{ data: player }, { data: coachApp }] = await Promise.all([
+  const [{ data: player, error: playerErr }, { data: coachApp }] = await Promise.all([
     db
       .from("players")
-      .select("id, first_name, last_name, position, team, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified, claim_pending")
+      .select("id, first_name, last_name, position, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified, claim_pending")
       .eq("claimed_by", user.id)
       .eq("is_claimed", true)
       .maybeSingle(),
@@ -67,6 +67,7 @@ export default async function DashboardPage({
       .eq("user_id", user.id)
       .maybeSingle(),
   ]);
+  if (playerErr) console.error("Dashboard player query failed:", playerErr.message);
 
   const stats = (player?.stats ?? {}) as Record<string, unknown>;
   const pct = player ? completionScore(player as Record<string, unknown>, stats) : 0;
@@ -223,7 +224,7 @@ export default async function DashboardPage({
                     {player.first_name} {player.last_name}
                   </p>
                   <p className="text-brand-white/40 text-sm">
-                    {player.position} · {player.school_or_team ?? player.team}
+                    {player.position} · {player.school_or_team}
                   </p>
                 </div>
               </div>
