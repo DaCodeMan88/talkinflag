@@ -10,6 +10,7 @@
 //   ranking_position  — ordinal rank within position bucket
 
 import { DIMENSION_KEYS, DimensionKey } from "@/lib/eval/dimensions";
+import { cohortForLevel, type Cohort } from "./cohort";
 
 export type WeightMap = Record<string, number>;
 
@@ -246,4 +247,19 @@ export function computeTfRank(
 
     return { ...s, ranking_national: lastNatRank, ranking_position: posRank };
   });
+}
+
+export type CohortRankedPlayer = RankedPlayer & { cohort: Cohort };
+
+// Rank each cohort (HS 18U vs College/World) as an independent pool.
+export function computeCohortRanks(
+  players: Array<Parameters<typeof computeTfRank>[0][number] & { level?: string | null }>,
+  weights: WeightMap,
+): CohortRankedPlayer[] {
+  const pools: Record<Cohort, typeof players> = { hs: [], cw: [] };
+  for (const p of players) pools[cohortForLevel(p.level)].push(p);
+
+  return (Object.keys(pools) as Cohort[]).flatMap((cohort) =>
+    computeTfRank(pools[cohort], weights).map((r) => ({ ...r, cohort })),
+  );
 }

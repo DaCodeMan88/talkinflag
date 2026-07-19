@@ -1,8 +1,9 @@
-import { test, expect } from "vitest";
+import { test, expect, describe, it } from "vitest";
 import {
   blendWeights,
   computePlayerTfScore,
   computeTfRank,
+  computeCohortRanks,
   playerDimensionScores,
   verificationFactor,
   positionBucket,
@@ -173,4 +174,58 @@ test("computeTfRank: ties share the same national rank", () => {
   ];
   const ranked = computeTfRank(players, {});
   expect(ranked.every((r) => r.ranking_national === 1)).toBe(true);
+});
+
+// ── computeCohortRanks ─────────────────────────────────────────────────────
+
+describe("computeCohortRanks", () => {
+  // total_tds kept under the production cap so scores (and ranks 1/2) are
+  // deterministic; uniformWeights gives every dimension nonzero weight.
+  const mk = (id: string, level: string, tds: number) => ({
+    id,
+    level,
+    position: "WR",
+    is_verified: true,
+    is_claimed: true,
+    stats: { total_tds: tds },
+    difficulty: 1.0,
+  });
+  const weights = uniformWeights(5);
+
+  it("ranks each cohort independently from 1", () => {
+    const players = [
+      mk("hs-best", "high_school", 10),
+      mk("hs-second", "youth", 2),
+      mk("cw-best", "national", 9),
+      mk("cw-second", "college", 1),
+    ];
+    const ranked = computeCohortRanks(players, weights);
+    const byId = Object.fromEntries(ranked.map((r) => [r.playerId, r]));
+    expect(byId["hs-best"].ranking_national).toBe(1);
+    expect(byId["hs-second"].ranking_national).toBe(2);
+    expect(byId["cw-best"].ranking_national).toBe(1);
+    expect(byId["cw-second"].ranking_national).toBe(2);
+  });
+
+  it("tags every result with its cohort", () => {
+    const ranked = computeCohortRanks(
+      [mk("a", "high_school", 10), mk("b", "national", 10)],
+      weights,
+    );
+    const byId = Object.fromEntries(ranked.map((r) => [r.playerId, r]));
+    expect(byId["a"].cohort).toBe("hs");
+    expect(byId["b"].cohort).toBe("cw");
+  });
+
+  it("REGRESSION (Ambra bug): a national player never consumes an hs cohort rank", () => {
+    const players = [
+      mk("national-star", "national", 999),
+      mk("hs-kid-1", "high_school", 10),
+      mk("hs-kid-2", "high_school", 5),
+    ];
+    const ranked = computeCohortRanks(players, weights);
+    const hs = ranked.filter((r) => r.cohort === "hs");
+    expect(hs.map((r) => r.playerId).sort()).toEqual(["hs-kid-1", "hs-kid-2"]);
+    expect(hs.find((r) => r.playerId === "hs-kid-1")!.ranking_national).toBe(1);
+  });
 });
