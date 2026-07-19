@@ -6,13 +6,9 @@ import { PlayerCard } from "./PlayerCard";
 import { RankingsTable } from "./RankingsTable";
 import Link from "next/link";
 import type { Player } from "@/types/player";
+import { COHORT_LABELS, cohortForLevel } from "@/lib/rankings/cohort";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
-const LEVELS: { value: string; label: string }[] = [
-  { value: "high_school", label: "High School" },
-  { value: "college",     label: "College"      },
-  { value: "world",       label: "World"         },
-];
 
 interface PlayersFilterProps {
   players: Player[];
@@ -40,6 +36,25 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
     const set = new Set<number>();
     players.forEach((p) => { if (p.grad_year != null) set.add(p.grad_year); });
     return Array.from(set).sort((a, b) => a - b);
+  }, [players]);
+
+  // Per-cohort/level counts for the segmented control
+  const counts = useMemo(() => {
+    const hs = players.filter((p) => cohortForLevel(p.level) === "hs").length;
+    const college = players.filter((p) => p.level === "college").length;
+    const world = players.filter((p) => p.level === "national" || p.level === "international").length;
+    return { all: players.length, hs, college, world };
+  }, [players]);
+
+  // Top-5 leaderboards per cohort for the All Players view
+  const top5 = useMemo(() => {
+    const ranked = players.filter((p) => p.ranking_national != null);
+    const take = (pred: (p: Player) => boolean) =>
+      ranked.filter(pred).sort((a, b) => a.ranking_national! - b.ranking_national!).slice(0, 5);
+    return {
+      hs: take((p) => cohortForLevel(p.level) === "hs"),
+      cw: take((p) => cohortForLevel(p.level) === "cw"),
+    };
   }, [players]);
 
   const filtered = useMemo(() => {
@@ -111,7 +126,8 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
   return (
     <div>
       {/* Search + filter bar */}
-      <div className="space-y-3 mb-8">
+      <div className="sticky top-16 z-20 bg-brand-black/95 backdrop-blur-sm -mx-4 px-4 pt-2 pb-3 border-b border-brand-white/10 mb-8">
+      <div className="space-y-3">
         {/* Gender toggle */}
         <div className="flex items-center gap-2" role="group" aria-label="Filter by gender">
           {(["", "male", "female"] as const).map((g) => {
@@ -190,21 +206,20 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
           {/* Divider */}
           <div className="w-px h-6 bg-brand-white/10 hidden sm:block" aria-hidden="true" />
 
-          {/* Level pills */}
-          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by level">
-            {LEVELS.map(({ value, label }) => (
-              <button
-                key={value}
-                onClick={() => setLevel(value === level ? "" : value)}
-                className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors ${
-                  level === value
-                    ? "bg-brand-yellow text-brand-black"
-                    : "border border-brand-white/20 text-brand-white/60 hover:border-brand-white/40 hover:text-brand-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          {/* Cohort segmented control */}
+          <div className="flex flex-wrap items-stretch gap-1.5" role="group" aria-label="Browse by level">
+            <SegBtn active={level === ""} onClick={() => setLevel("")} label="All Players" count={counts.all} />
+            <SegBtn active={level === "high_school"} onClick={() => setLevel(level === "high_school" ? "" : "high_school")} label="High School (18U)" count={counts.hs} />
+            <div className="w-px self-stretch bg-brand-white/15 mx-1" aria-hidden="true" />
+            <div
+              className="flex gap-1.5 border border-brand-white/10 p-1 -m-1"
+              role="group"
+              aria-label="College and World players are ranked together in one pool"
+              title="College and World players are ranked together in one pool"
+            >
+              <SegBtn active={level === "college"} onClick={() => setLevel(level === "college" ? "" : "college")} label="College" count={counts.college} />
+              <SegBtn active={level === "world"} onClick={() => setLevel(level === "world" ? "" : "world")} label="World" count={counts.world} />
+            </div>
           </div>
         </div>
         {/* Class year filter — only shown when multiple grad years present */}
@@ -275,21 +290,40 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
           </div>
         )}
       </div>
+      </div>
 
       {/* Results summary */}
-      <div className="flex items-center justify-between mb-6 min-h-[1.5rem]">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-6 min-h-[1.5rem]">
         <p className="text-brand-white/40 text-xs font-display uppercase tracking-widest">
           {filtered.length === players.length
             ? `${players.length} player${players.length === 1 ? "" : "s"}`
             : `${filtered.length} of ${players.length} player${players.length === 1 ? "" : "s"}`}
         </p>
         {hasAnyFilter && (
-          <button
-            onClick={clearAll}
-            className="text-brand-white/40 hover:text-brand-yellow font-display text-xs uppercase tracking-widest transition-colors"
-          >
-            × Clear filters
-          </button>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {gender && (
+              <Chip
+                label={gender === "male" ? "Men's / Boys'" : "Women's / Girls'"}
+                onClear={() => setGender("")}
+              />
+            )}
+            {level && (
+              <Chip
+                label={level === "high_school" ? "High School (18U)" : level === "world" ? "World" : "College"}
+                onClear={() => setLevel("")}
+              />
+            )}
+            {position && <Chip label={position} onClear={() => setPosition("")} />}
+            {country && <Chip label={country} onClear={() => setCountry("")} />}
+            {gradYear && <Chip label={`Class ${gradYear}`} onClear={() => setGradYear("")} />}
+            {query.trim() && <Chip label={`"${query.trim()}"`} onClear={() => setQuery("")} />}
+            <button
+              onClick={clearAll}
+              className="text-brand-white/40 hover:text-brand-yellow font-display text-xs uppercase tracking-widest transition-colors ml-1"
+            >
+              × Clear all
+            </button>
+          </div>
         )}
       </div>
 
@@ -309,18 +343,58 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
         </div>
       ) : (
         <>
-          {/* Rankings table — only for currently filtered ranked players */}
-          {rankedFiltered.length > 0 && (
-            <RankingsTable
-              players={rankedFiltered}
-              title={
-                level === "college"
-                  ? gender === "female" ? "Women's College Rankings" : gender === "male" ? "Men's College Rankings" : "College Rankings"
-                  : level === "world"
-                  ? gender === "female" ? "Women's World Rankings" : gender === "male" ? "Men's World Rankings" : "World Rankings"
-                  : gender === "female" ? "Women's High School Rankings" : gender === "male" ? "Men's High School Rankings" : "High School Rankings"
-              }
-            />
+          {/* Rankings — dual top-5 leaderboards in All view; cohort table when a level is selected.
+              Never render a mixed-cohort ranked table. */}
+          {level === "" ? (
+            (top5.hs.length > 0 || top5.cw.length > 0) && (
+              <div className="grid sm:grid-cols-2 gap-4 mb-10">
+                {([["hs", "high_school"], ["cw", "college"]] as const).map(([cohort, linkLevel]) =>
+                  top5[cohort].length > 0 ? (
+                    <div key={cohort} className="border border-brand-white/10 bg-[#0d0d0d] p-5">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xs uppercase tracking-widest text-brand-yellow">
+                          {COHORT_LABELS[cohort]} Top 5
+                        </h3>
+                        <button
+                          onClick={() => setLevel(linkLevel)}
+                          className="text-brand-white/40 hover:text-brand-yellow text-xs font-display uppercase tracking-widest transition-colors"
+                        >
+                          Full rankings →
+                        </button>
+                      </div>
+                      <ol className="space-y-2">
+                        {top5[cohort].map((p) => (
+                          <li key={p.id} className="flex items-center gap-3">
+                            <span className="text-brand-yellow font-display text-sm w-6 text-right tabular-nums">
+                              {p.ranking_national}
+                            </span>
+                            <Link
+                              href={`/players/${p.id}`}
+                              className="text-brand-white text-sm hover:text-brand-yellow transition-colors truncate"
+                            >
+                              {p.first_name} {p.last_name}
+                            </Link>
+                            {p.position && (
+                              <span className="text-brand-white/30 text-xs uppercase font-display ml-auto shrink-0">
+                                {p.position}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ) : null
+                )}
+              </div>
+            )
+          ) : (
+            rankedFiltered.length > 0 && (
+              <RankingsTable
+                players={rankedFiltered}
+                cohort={level === "high_school" ? "hs" : "cw"}
+                genderLabel={gender === "female" ? "Women's" : gender === "male" ? "Men's" : undefined}
+              />
+            )
           )}
 
           {/* Player grid */}
@@ -345,5 +419,33 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
         </Link>
       </div>
     </div>
+  );
+}
+
+function SegBtn({ active, onClick, label, count }: { active: boolean; onClick: () => void; label: string; count: number }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={active}
+      className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors flex items-center gap-1.5 ${
+        active
+          ? "bg-brand-yellow text-brand-black"
+          : "border border-brand-white/20 text-brand-white/60 hover:border-brand-white/40 hover:text-brand-white"
+      }`}
+    >
+      {label}
+      <span className={`text-[10px] tabular-nums ${active ? "text-brand-black/60" : "text-brand-white/30"}`}>{count}</span>
+    </button>
+  );
+}
+
+function Chip({ label, onClear }: { label: string; onClear: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow text-xs font-display uppercase tracking-widest px-2.5 py-1">
+      {label}
+      <button onClick={onClear} aria-label={`Remove ${label} filter`} className="hover:text-brand-white transition-colors">
+        <X size={11} />
+      </button>
+    </span>
   );
 }

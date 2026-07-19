@@ -1,18 +1,30 @@
 import Link from "next/link";
 import { Player } from "@/types/player";
+import { COHORT_LABELS, cohortForLevel, type Cohort } from "@/lib/rankings/cohort";
 
-export function RankingsTable({ players, title }: { players: Player[]; title?: string }) {
-  if (players.length === 0) return null;
-
-  // Only show players that actually have a national ranking assigned
-  const ranked = players.filter((p) => p.ranking_national != null);
+export function RankingsTable({
+  players,
+  cohort,
+  genderLabel,
+}: {
+  players: Player[];
+  cohort: Cohort;
+  genderLabel?: string; // "Women's" | "Men's" | undefined
+}) {
+  // Defensive: only rows that belong to this cohort AND have a rank.
+  const ranked = players.filter(
+    (p) => p.ranking_national != null && cohortForLevel(p.level) === cohort,
+  );
   if (ranked.length === 0) return null;
+  const sorted = [...ranked].sort(
+    (a, b) => (a.ranking_national ?? 0) - (b.ranking_national ?? 0),
+  );
 
   return (
     <div className="overflow-x-auto mb-12">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
-          {title ?? "Rankings"}
+          {genderLabel ? `${genderLabel} ` : ""}{COHORT_LABELS[cohort]} Rankings
         </h2>
         <span className="text-brand-white/30 text-xs">{ranked.length} ranked players</span>
       </div>
@@ -27,7 +39,7 @@ export function RankingsTable({ players, title }: { players: Player[]; title?: s
           </tr>
         </thead>
         <tbody>
-          {ranked.map((player) => (
+          {sorted.map((player) => (
             <tr
               key={player.id}
               className="border-b border-brand-white/5 hover:bg-brand-white/5 transition-colors group"

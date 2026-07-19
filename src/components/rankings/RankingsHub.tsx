@@ -48,12 +48,6 @@ export function RankingsHub({ players }: RankingsHubProps) {
     world:    worldPlayers,
   };
 
-  const tierLabels: Record<RankTier, string> = {
-    national: "National Rankings",
-    college:  "College Rankings",
-    world:    "World Player Rankings",
-  };
-
   const tierDescriptions: Record<RankTier, string> = {
     national: "Top high school players ranked nationally.",
     college:  "Top players competing at the college level.",
@@ -142,7 +136,7 @@ export function RankingsHub({ players }: RankingsHubProps) {
             <>
               <RankingsTable
                 players={tierPlayers[rankTier]}
-                title={tierLabels[rankTier]}
+                cohort={rankTier === "national" ? "hs" : "cw"}
               />
               <div className="mt-6 text-center">
                 <Link
