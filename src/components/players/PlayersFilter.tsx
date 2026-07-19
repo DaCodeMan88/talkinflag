@@ -126,7 +126,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
   return (
     <div>
       {/* Search + filter bar */}
-      <div className="sticky top-16 z-20 bg-brand-black/95 backdrop-blur-sm -mx-4 px-4 pt-2 pb-3 border-b border-brand-white/10 mb-8">
+      <div className="sticky top-16 md:top-20 z-20 bg-brand-black/95 backdrop-blur-sm -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 pt-2 pb-3 border-b border-brand-white/10 mb-8">
       <div className="space-y-3">
         {/* Gender toggle */}
         <div className="flex items-center gap-2" role="group" aria-label="Filter by gender">
