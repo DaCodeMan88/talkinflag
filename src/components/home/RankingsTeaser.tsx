@@ -93,7 +93,10 @@ export async function RankingsTeaser() {
 
         <div className="mt-8 flex items-center justify-between border-t border-brand-white/10 pt-6">
           <p className="text-brand-white/30 text-xs">
-            Source: MaxPreps Top 100 · Updated 2025–26
+            Talkin Flag community rankings ·{" "}
+            <Link href="/how-rankings-work" className="underline hover:text-brand-yellow transition-colors">
+              How rankings work
+            </Link>
           </p>
           <Link
             href="/players?level=high_school"
