@@ -84,6 +84,10 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
         result = result.filter((p) => p.level === "high_school" || p.level === "youth");
       } else if (level === "world") {
         result = result.filter((p) => p.level === "national" || p.level === "international");
+      } else if (level === "cw") {
+        // Full College / World cohort — includes null/other levels so every
+        // player shown in the CW Top-5 card is reachable here.
+        result = result.filter((p) => cohortForLevel(p.level) === "cw");
       } else {
         result = result.filter((p) => p.level === level);
       }
@@ -212,7 +216,11 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             <SegBtn active={level === "high_school"} onClick={() => setLevel(level === "high_school" ? "" : "high_school")} label="High School (18U)" count={counts.hs} />
             <div className="w-px self-stretch bg-brand-white/15 mx-1" aria-hidden="true" />
             <div
-              className="flex gap-1.5 border border-brand-white/10 p-1 -m-1"
+              className={`flex gap-1.5 border p-1 -m-1 ${
+                level === "cw" || level === "college" || level === "world"
+                  ? "border-brand-yellow/40"
+                  : "border-brand-white/10"
+              }`}
               role="group"
               aria-label="College and World players are ranked together in one pool"
               title="College and World players are ranked together in one pool"
@@ -309,13 +317,13 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             )}
             {level && (
               <Chip
-                label={level === "high_school" ? "High School (18U)" : level === "world" ? "World" : "College"}
+                label={level === "high_school" ? "High School (18U)" : level === "world" ? "World" : level === "cw" ? "College / World" : "College"}
                 onClear={() => setLevel("")}
               />
             )}
             {position && <Chip label={position} onClear={() => setPosition("")} />}
             {country && <Chip label={country} onClear={() => setCountry("")} />}
-            {gradYear && <Chip label={`Class ${gradYear}`} onClear={() => setGradYear("")} />}
+            {gradYear && <Chip label={`Class of ${gradYear}`} onClear={() => setGradYear("")} />}
             {query.trim() && <Chip label={`"${query.trim()}"`} onClear={() => setQuery("")} />}
             <button
               onClick={clearAll}
@@ -348,7 +356,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
           {level === "" ? (
             (top5.hs.length > 0 || top5.cw.length > 0) && (
               <div className="grid sm:grid-cols-2 gap-4 mb-10">
-                {([["hs", "high_school"], ["cw", "college"]] as const).map(([cohort, linkLevel]) =>
+                {([["hs", "high_school"], ["cw", "cw"]] as const).map(([cohort, linkLevel]) =>
                   top5[cohort].length > 0 ? (
                     <div key={cohort} className="border border-brand-white/10 bg-[#0d0d0d] p-5">
                       <div className="flex items-center justify-between mb-4">
