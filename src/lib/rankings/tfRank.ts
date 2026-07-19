@@ -6,8 +6,8 @@
 //   blend.coach / blend.expert / blend.host — constituency blend (default 55/30/15)
 //
 // Output:
-//   ranking_national  — ordinal rank across all players (1 = best)
-//   ranking_position  — ordinal rank within position bucket
+//   ranking_national  — ordinal rank within the player's cohort (hs = 18U, cw = college/world); 1 = best
+//   ranking_position  — ordinal rank within position bucket (also per cohort)
 
 import { DIMENSION_KEYS, DimensionKey } from "@/lib/eval/dimensions";
 import { cohortForLevel, type Cohort } from "./cohort";
@@ -195,17 +195,20 @@ export type RankedPlayer = TfScore & {
   ranking_position: number;
 };
 
+// Player input shape for ranking computation.
+export type TfRankInput = {
+  id: string;
+  position?: string | null;
+  is_verified?: boolean;
+  is_claimed?: boolean;
+  stats?: Stats;
+  difficulty?: number;
+};
+
 // Compute TF Rank for an entire player cohort.
 // Returns array sorted by score desc, with national + position ordinal ranks.
 export function computeTfRank(
-  players: Array<{
-    id: string;
-    position?: string | null;
-    is_verified?: boolean;
-    is_claimed?: boolean;
-    stats?: Stats;
-    difficulty?: number;
-  }>,
+  players: TfRankInput[],
   weights: WeightMap,
 ): RankedPlayer[] {
   const blended = blendWeights(weights);
@@ -253,7 +256,7 @@ export type CohortRankedPlayer = RankedPlayer & { cohort: Cohort };
 
 // Rank each cohort (HS 18U vs College/World) as an independent pool.
 export function computeCohortRanks(
-  players: Array<Parameters<typeof computeTfRank>[0][number] & { level?: string | null }>,
+  players: Array<TfRankInput & { level?: string | null }>,
   weights: WeightMap,
 ): CohortRankedPlayer[] {
   const pools: Record<Cohort, typeof players> = { hs: [], cw: [] };

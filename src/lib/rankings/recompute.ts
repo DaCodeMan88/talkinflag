@@ -2,7 +2,7 @@
 // Correct order:
 //   1. Rebuild player vectors (league-adjusted KNN profile_vector)
 //   2. Aggregate eval role weights from eval_responses
-//   3. computeTfRank → national + position ordinals
+//   3. computeCohortRanks → per-cohort national + position ordinals
 //   4. Write ranks back to players table
 //   5. Snapshot to ranking_snapshots
 
@@ -13,7 +13,7 @@ import { DIMENSION_KEYS } from "@/lib/eval/dimensions";
 import { loadCoachCredibility } from "@/lib/eval/coachCredibility";
 import { BASELINE_WEIGHT } from "@/lib/eval/coachWeight";
 import { buildPlayerVector } from "@/lib/knn/profile";
-import { computeTfRank } from "./tfRank";
+import { computeCohortRanks } from "./tfRank";
 
 type Role = "coach" | "expert" | "host";
 const ROLES: Role[] = ["coach", "expert", "host"];
@@ -115,7 +115,7 @@ async function recomputeEvalWeights(db: ReturnType<typeof createAdminClient>) {
 
 async function scoreAndWriteRanks(db: ReturnType<typeof createAdminClient>) {
   const [{ data: players }, { data: rawWeights }] = await Promise.all([
-    db.from("players").select("id, position, is_verified, is_claimed, stats, league_key"),
+    db.from("players").select("id, position, level, is_verified, is_claimed, stats, league_key"),
     db.from("ranking_weights").select("key, value"),
   ]);
 
@@ -132,7 +132,7 @@ async function scoreAndWriteRanks(db: ReturnType<typeof createAdminClient>) {
     difficulty: diffMap[p.league_key ?? "other"] ?? 0.8,
   }));
 
-  const ranked = computeTfRank(playersWithDifficulty, weightMap);
+  const ranked = computeCohortRanks(playersWithDifficulty, weightMap);
 
   // Write back to players table
   const updates = ranked.map((r) => ({
@@ -146,19 +146,26 @@ async function scoreAndWriteRanks(db: ReturnType<typeof createAdminClient>) {
     await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
   }
 
-  // Snapshot (top 100 by score)
-  const top100 = ranked.slice(0, 100).map((r) => ({
-    player_id: r.playerId,
-    ranking_national: r.ranking_national,
-    ranking_position: r.ranking_position,
-    tf_score: r.score,
-    position_bucket: r.positionBucket,
-    dim_scores: r.dimScores,
-    verification_factor: r.verificationFactor,
-    snapshotted_at: new Date().toISOString(),
-  }));
-  if (top100.length) {
-    await db.from("ranking_snapshots").insert(top100);
+  // Snapshot (top 100 per cohort by score)
+  const snapshotRows = (["hs", "cw"] as const).flatMap((cohort) =>
+    ranked
+      .filter((r) => r.cohort === cohort)
+      .sort((a, b) => a.ranking_national - b.ranking_national)
+      .slice(0, 100)
+      .map((r) => ({
+        player_id: r.playerId,
+        cohort: r.cohort,
+        ranking_national: r.ranking_national,
+        ranking_position: r.ranking_position,
+        tf_score: r.score,
+        position_bucket: r.positionBucket,
+        dim_scores: r.dimScores,
+        verification_factor: r.verificationFactor,
+        snapshotted_at: new Date().toISOString(),
+      })),
+  );
+  if (snapshotRows.length) {
+    await db.from("ranking_snapshots").insert(snapshotRows);
   }
 
   return { rankedCount: ranked.length };
