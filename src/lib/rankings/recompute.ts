@@ -49,10 +49,19 @@ async function rebuildPlayerVectors(db: ReturnType<typeof createAdminClient>) {
     profile_built_at: new Date().toISOString(),
   }));
 
-  // Batch upsert in chunks of 100
-  for (let i = 0; i < updates.length; i += 100) {
-    const { error } = await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
-    if (error) throw new Error(`player vector upsert failed: ${error.message}`);
+  // Partial-column upsert is impossible on players (NOT NULL first/last name are
+  // checked before ON CONFLICT), so write back with real UPDATEs, batched.
+  for (let i = 0; i < updates.length; i += 25) {
+    const chunk = updates.slice(i, i + 25);
+    const results = await Promise.all(
+      chunk.map(({ id, ...fields }) =>
+        db.from("players").update(fields).eq("id", id),
+      ),
+    );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      throw new Error(`player vector update failed: ${failed.error.message}`);
+    }
   }
 }
 
@@ -143,9 +152,19 @@ async function scoreAndWriteRanks(db: ReturnType<typeof createAdminClient>) {
     updated_at: new Date().toISOString(),
   }));
 
-  for (let i = 0; i < updates.length; i += 100) {
-    const { error } = await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
-    if (error) throw new Error(`players rank upsert failed: ${error.message}`);
+  // Partial-column upsert is impossible on players (NOT NULL first/last name are
+  // checked before ON CONFLICT), so write back with real UPDATEs, batched.
+  for (let i = 0; i < updates.length; i += 25) {
+    const chunk = updates.slice(i, i + 25);
+    const results = await Promise.all(
+      chunk.map(({ id, ...fields }) =>
+        db.from("players").update(fields).eq("id", id),
+      ),
+    );
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      throw new Error(`players rank update failed: ${failed.error.message}`);
+    }
   }
 
   // Snapshot (top 100 per cohort by score)
