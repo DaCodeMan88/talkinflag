@@ -51,7 +51,8 @@ async function rebuildPlayerVectors(db: ReturnType<typeof createAdminClient>) {
 
   // Batch upsert in chunks of 100
   for (let i = 0; i < updates.length; i += 100) {
-    await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
+    const { error } = await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
+    if (error) throw new Error(`player vector upsert failed: ${error.message}`);
   }
 }
 
@@ -143,7 +144,8 @@ async function scoreAndWriteRanks(db: ReturnType<typeof createAdminClient>) {
   }));
 
   for (let i = 0; i < updates.length; i += 100) {
-    await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
+    const { error } = await db.from("players").upsert(updates.slice(i, i + 100), { onConflict: "id" });
+    if (error) throw new Error(`players rank upsert failed: ${error.message}`);
   }
 
   // Snapshot (top 100 per cohort by score)
@@ -165,7 +167,8 @@ async function scoreAndWriteRanks(db: ReturnType<typeof createAdminClient>) {
       })),
   );
   if (snapshotRows.length) {
-    await db.from("ranking_snapshots").insert(snapshotRows);
+    const { error } = await db.from("ranking_snapshots").insert(snapshotRows);
+    if (error) throw new Error(`ranking snapshot insert failed: ${error.message}`);
   }
 
   return { rankedCount: ranked.length };
