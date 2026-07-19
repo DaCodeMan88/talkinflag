@@ -6,6 +6,7 @@ import { createServerClient } from "@/lib/supabase";
 import { buildMetadata } from "@/lib/seo";
 import { CompareShareButton } from "./CompareShareButton";
 import { formatHeight, formatWeight } from "@/lib/measurements";
+import { cohortForLevel, cohortRankLabel } from "@/lib/rankings/cohort";
 
 export const revalidate = 0; // always fresh — URL params drive content
 
@@ -68,14 +69,17 @@ function buildStatRows(a: ComparePlayer, b: ComparePlayer): StatRow[] {
   const statsB = b.stats ?? {};
   const rows: StatRow[] = [];
 
-  // National rank
+  // TF rank (cohort-labeled — players may be ranked in different cohorts).
+  // Only highlight a "winner" when both players are in the same cohort; ranks
+  // across cohorts (HS vs College/World) are not comparable.
   if (a.ranking_national || b.ranking_national) {
+    const sameCohort = cohortForLevel(a.level) === cohortForLevel(b.level);
     rows.push({
-      label: "National Rank",
-      aVal: a.ranking_national ? `#${a.ranking_national}` : null,
-      bVal: b.ranking_national ? `#${b.ranking_national}` : null,
-      aNum: a.ranking_national,
-      bNum: b.ranking_national,
+      label: "TF Rank",
+      aVal: cohortRankLabel(a.level, a.ranking_national),
+      bVal: cohortRankLabel(b.level, b.ranking_national),
+      aNum: sameCohort ? a.ranking_national : null,
+      bNum: sameCohort ? b.ranking_national : null,
       lowerIsBetter: true,
     });
   }

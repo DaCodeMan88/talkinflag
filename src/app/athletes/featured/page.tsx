@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 export const revalidate = 3600;
 
@@ -153,9 +154,9 @@ function FeaturedCard({
                 <span className="bg-[#FDDD58] text-black font-display text-xs uppercase tracking-widest px-2.5 py-1">
                   This Week
                 </span>
-                {player.ranking_national && (
+                {cohortRankLabel(player.level, player.ranking_national) && (
                   <span className="text-white/40 text-xs font-display uppercase tracking-widest">
-                    #{player.ranking_national} National
+                    {cohortRankLabel(player.level, player.ranking_national)}
                   </span>
                 )}
               </div>
@@ -207,9 +208,9 @@ function FeaturedCard({
             </p>
             <p className="text-white/20 text-xs mt-0.5">{formatWeek(row.featured_from)}</p>
           </div>
-          {player.ranking_national && (
+          {cohortRankLabel(player.level, player.ranking_national) && (
             <span className="ml-auto shrink-0 text-white/20 font-display text-xs uppercase tracking-widest">
-              #{player.ranking_national}
+              {cohortRankLabel(player.level, player.ranking_national)}
             </span>
           )}
         </div>

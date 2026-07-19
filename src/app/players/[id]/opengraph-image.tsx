@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@supabase/supabase-js";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 export const runtime = "edge";
 export const alt = "Player Profile | Talkin Flag";
@@ -36,7 +37,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       playerName = `${data.first_name} ${data.last_name}`;
       initials = `${data.first_name[0] ?? ""}${data.last_name[0] ?? ""}`;
       position = data.position ?? "";
-      ranking = data.ranking_national ? `#${data.ranking_national}` : "";
+      ranking = cohortRankLabel(data.level, data.ranking_national) ?? "";
       level = data.level
         ? data.level.replaceAll("_", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
         : "";
@@ -134,7 +135,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                   display: "flex",
                 }}
               >
-                {ranking} NATIONALLY
+                {ranking.toUpperCase()}
               </div>
             )}
           </div>

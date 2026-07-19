@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@supabase/supabase-js";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 // Shareable player card as a real PNG (1080×1080 post / 1080×1920 story) so the
 // OS share sheet can hand an image file to Instagram (Post/Story). This is the
@@ -77,7 +78,7 @@ export async function GET(
     playerName = `${data.first_name} ${data.last_name}`;
     initials = `${data.first_name?.[0] ?? ""}${data.last_name?.[0] ?? ""}`;
     position = data.position ?? "";
-    ranking = data.ranking_national ? `#${data.ranking_national}` : "";
+    ranking = cohortRankLabel(data.level, data.ranking_national) ?? "";
     level = data.level
       ? data.level.replaceAll("_", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
       : "";
@@ -191,7 +192,7 @@ export async function GET(
                 display: "flex",
               }}
             >
-              {ranking} NATIONALLY
+              {ranking.toUpperCase()}
             </div>
           )}
         </div>

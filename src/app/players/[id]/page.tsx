@@ -19,6 +19,7 @@ import { hasDisplayableValue } from "@/lib/profile-visibility";
 import ReportProfileButton from "@/components/players/ReportProfileButton";
 import SocialLinks from "@/components/players/SocialLinks";
 import { profileViewerState } from "@/lib/profile/viewer-state";
+import { cohortForLevel, COHORT_LABELS } from "@/lib/rankings/cohort";
 
 export const revalidate = 300;
 
@@ -270,6 +271,7 @@ export default async function PlayerDetailPage({
   ].some(hasDisplayableValue);
 
   const isNational = player.level === "national" || player.level === "international";
+  const rankStatLabel = cohortForLevel(player.level) === "hs" ? "HS Rank" : "College/World Rank";
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -485,7 +487,7 @@ export default async function PlayerDetailPage({
           {/* Key stats bar */}
           <div className="flex flex-wrap gap-6 mt-8 pt-8 border-t border-brand-white/10">
             {player.ranking_national && (
-              <StatChip label="World Rank" value={`#${player.ranking_national}`} highlight />
+              <StatChip label={rankStatLabel} value={`#${player.ranking_national}`} highlight />
             )}
             {hasDisplayableValue(ext.caps) && (
               <StatChip label="Caps" value={String(ext.caps)} />
@@ -546,7 +548,7 @@ export default async function PlayerDetailPage({
             {(player.ranking_national || player.ranking_position) && (
               <SideCard title="Rankings">
                 {player.ranking_national && (
-                  <DetailRow label="World Rank" value={`#${player.ranking_national}`} highlight />
+                  <DetailRow label={rankStatLabel} value={`#${player.ranking_national}`} highlight />
                 )}
                 {player.ranking_position && (
                   <DetailRow
@@ -678,7 +680,7 @@ export default async function PlayerDetailPage({
                     )}
                     {player.ranking_national && (
                       <div className="text-brand-white/50 text-xs mt-0.5">
-                        Ranked #{player.ranking_national} in the world (IFAF Women&apos;s)
+                        Ranked #{player.ranking_national} in the Talkin Flag {COHORT_LABELS[cohortForLevel(player.level)]} rankings
                       </div>
                     )}
                   </div>

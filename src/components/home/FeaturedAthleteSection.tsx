@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createAdminClient } from "@/lib/eval/admin-client";
+import { cohortForLevel, COHORT_LABELS } from "@/lib/rankings/cohort";
 
 type FeaturedAthlete = {
   id: string;
@@ -80,7 +81,9 @@ export async function FeaturedAthleteSection() {
               <div className="mt-4 inline-flex items-center gap-2 bg-black text-[#FDDD58] px-4 py-2">
                 <span className="font-display text-xs uppercase tracking-widest">Ranked</span>
                 <span className="font-display text-2xl">#{player.ranking_national}</span>
-                <span className="font-display text-xs uppercase tracking-widest text-[#FDDD58]/60">National</span>
+                <span className="font-display text-xs uppercase tracking-widest text-[#FDDD58]/60">
+                  {COHORT_LABELS[cohortForLevel(player.level)]}
+                </span>
               </div>
             )}
 

@@ -2,6 +2,7 @@ import { buildMetadata } from "@/lib/seo";
 import { createServerClient } from "@/lib/supabase";
 import Link from "next/link";
 import { DIMENSION_LABELS, type DimensionKey } from "@/lib/eval/dimensions";
+import { cohortForLevel, COHORT_LABELS } from "@/lib/rankings/cohort";
 
 export const revalidate = 300;
 
@@ -58,6 +59,14 @@ export default async function RankingsPage() {
 
   const hasWeights = blendedDisplay.some((d) => d.blended > 0);
   const ranked = players ?? [];
+
+  const cohorts = (["hs", "cw"] as const).map((c) => ({
+    cohort: c,
+    label: COHORT_LABELS[c],
+    players: ranked
+      .filter((p) => cohortForLevel(p.level) === c)
+      .sort((a, b) => (a.ranking_national ?? 0) - (b.ranking_national ?? 0)),
+  }));
 
   return (
     <div className="bg-brand-black min-h-screen pt-28 pb-24 px-6">
@@ -132,16 +141,15 @@ export default async function RankingsPage() {
           </div>
         )}
 
-        {/* Rankings table */}
-        <div>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
-              National Rankings
-            </h2>
-            <span className="text-brand-white/30 text-xs">{ranked.length} ranked players</span>
-          </div>
-
-          {ranked.length === 0 ? (
+        {/* Rankings tables — one per cohort */}
+        {ranked.length === 0 ? (
+          <div>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
+                Rankings
+              </h2>
+              <span className="text-brand-white/30 text-xs">0 ranked players</span>
+            </div>
             <div className="border border-brand-yellow/20 bg-[#111111] p-12 text-center">
               <p className="font-display text-lg uppercase text-brand-yellow mb-2">
                 Rankings Coming Soon
@@ -165,58 +173,71 @@ export default async function RankingsPage() {
                 </Link>
               </div>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm" aria-label="TF national player rankings">
-                <thead>
-                  <tr className="border-b border-brand-yellow/20">
-                    <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 w-10">#</th>
-                    <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3">Player</th>
-                    <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 w-12">Pos</th>
-                    <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 hidden sm:table-cell">Pos #</th>
-                    <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 hidden md:table-cell">Level</th>
-                    <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 hidden lg:table-cell">Team</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ranked.map((player) => (
-                    <tr
-                      key={player.id}
-                      className="border-b border-brand-white/5 hover:bg-brand-white/5 transition-colors group"
-                    >
-                      <td className="py-3 pr-3 text-brand-yellow font-display tabular-nums">
-                        {player.ranking_national}
-                      </td>
-                      <td className="py-3 pr-3">
-                        <Link
-                          href={`/players/${player.id}`}
-                          className="text-brand-white font-medium group-hover:text-brand-yellow transition-colors"
+          </div>
+        ) : (
+          cohorts
+            .filter((c) => c.players.length > 0)
+            .map(({ cohort, label, players: cohortPlayers }) => (
+              <div key={cohort} className="mb-14">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
+                    {label} Rankings
+                  </h2>
+                  <span className="text-brand-white/30 text-xs">{cohortPlayers.length} ranked players</span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" aria-label={`TF ${label} player rankings`}>
+                    <thead>
+                      <tr className="border-b border-brand-yellow/20">
+                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 w-10">#</th>
+                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3">Player</th>
+                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 w-12">Pos</th>
+                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 hidden sm:table-cell">Pos #</th>
+                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 hidden md:table-cell">Level</th>
+                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 hidden lg:table-cell">Team</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cohortPlayers.map((player) => (
+                        <tr
+                          key={player.id}
+                          className="border-b border-brand-white/5 hover:bg-brand-white/5 transition-colors group"
                         >
-                          {player.first_name} {player.last_name}
-                          {player.is_verified && (
-                            <span className="ml-1.5 text-brand-yellow text-xs" title="Verified profile">✓</span>
-                          )}
-                        </Link>
-                      </td>
-                      <td className="py-3 pr-3">
-                        <span className="text-brand-yellow font-display text-xs uppercase">{player.position ?? "—"}</span>
-                      </td>
-                      <td className="py-3 pr-3 text-brand-white/40 text-xs hidden sm:table-cell tabular-nums">
-                        #{player.ranking_position}
-                      </td>
-                      <td className="py-3 pr-3 text-brand-white/40 text-xs hidden md:table-cell capitalize">
-                        {player.level?.replace("_", " ") ?? "—"}
-                      </td>
-                      <td className="py-3 text-brand-white/40 text-xs hidden lg:table-cell">
-                        {player.school_or_team ?? player.country ?? "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                          <td className="py-3 pr-3 text-brand-yellow font-display tabular-nums">
+                            {player.ranking_national}
+                          </td>
+                          <td className="py-3 pr-3">
+                            <Link
+                              href={`/players/${player.id}`}
+                              className="text-brand-white font-medium group-hover:text-brand-yellow transition-colors"
+                            >
+                              {player.first_name} {player.last_name}
+                              {player.is_verified && (
+                                <span className="ml-1.5 text-brand-yellow text-xs" title="Verified profile">✓</span>
+                              )}
+                            </Link>
+                          </td>
+                          <td className="py-3 pr-3">
+                            <span className="text-brand-yellow font-display text-xs uppercase">{player.position ?? "—"}</span>
+                          </td>
+                          <td className="py-3 pr-3 text-brand-white/40 text-xs hidden sm:table-cell tabular-nums">
+                            #{player.ranking_position}
+                          </td>
+                          <td className="py-3 pr-3 text-brand-white/40 text-xs hidden md:table-cell capitalize">
+                            {player.level?.replace("_", " ") ?? "—"}
+                          </td>
+                          <td className="py-3 text-brand-white/40 text-xs hidden lg:table-cell">
+                            {player.school_or_team ?? player.country ?? "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))
+        )}
 
         {/* CTA strip */}
         <div className="mt-14 flex flex-wrap gap-4 border-t border-brand-white/10 pt-10">

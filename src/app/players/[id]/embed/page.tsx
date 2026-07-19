@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase";
 import { formatHeight, formatWeight } from "@/lib/measurements";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 export const revalidate = 3600;
 
@@ -170,9 +171,9 @@ export default async function PlayerEmbedPage({ params }: Props) {
           </div>
 
           {/* Rank */}
-          {player.ranking_national && (
+          {cohortRankLabel(player.level, player.ranking_national) && (
             <div>
-              <span className="rank">#{player.ranking_national} National Rank</span>
+              <span className="rank">{cohortRankLabel(player.level, player.ranking_national)} — TF Rank</span>
             </div>
           )}
 

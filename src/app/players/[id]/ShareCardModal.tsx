@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ImageShareButtons from "@/components/share/ImageShareButtons";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 type Props = {
   playerId: string;
@@ -325,7 +326,7 @@ export default function ShareCardModal(props: Props) {
                           padding: "3px 8px",
                         }}
                       >
-                        #{rankNational} NATIONALLY
+                        {cohortRankLabel(level, rankNational)?.toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -451,7 +452,7 @@ export default function ShareCardModal(props: Props) {
                   <Toggle label="Show Photo" checked={showPhoto} onChange={setShowPhoto} />
                   <Toggle label="Show School" checked={showSchool} onChange={setShowSchool} />
                   <Toggle label="Show Class Year" checked={showClassYear} onChange={setShowClassYear} />
-                  <Toggle label="Show National Rank" checked={showRank} onChange={setShowRank} />
+                  <Toggle label="Show Rank" checked={showRank} onChange={setShowRank} />
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "14px", marginTop: "14px" }}>

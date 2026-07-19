@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Player } from "@/types/player";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 function isSafeUrl(url: string | null | undefined): boolean {
   return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
@@ -30,9 +31,9 @@ export function PlayerCard({ player }: { player: Player }) {
 
       <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
         <div>
-          {player.ranking_national && (
+          {cohortRankLabel(player.level, player.ranking_national) && (
             <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
-              #{player.ranking_national}
+              {cohortRankLabel(player.level, player.ranking_national)}
             </span>
           )}
           <h3 className="font-display text-lg uppercase text-brand-white leading-tight mt-0.5 group-hover:text-brand-yellow transition-colors">{name}</h3>

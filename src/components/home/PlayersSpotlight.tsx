@@ -24,7 +24,7 @@ export async function PlayersSpotlight() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="font-display text-brand-yellow text-xs uppercase tracking-[0.3em] mb-2">
-              National Rankings
+              TF Rankings
             </p>
             <h2 className="font-display text-4xl md:text-6xl uppercase text-brand-white">
               Top Players
