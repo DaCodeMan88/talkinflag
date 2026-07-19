@@ -135,8 +135,11 @@ export const ALLOWED_POSITIONS =["QB", "WR", "DB", "LB", "C", "Rusher", "Utility
 
 /**
  * Soft identity fields a claimed player may self-edit (direct columns).
- * Guarded fields (first_name, last_name, school_or_team, level) are intentionally
- * NOT here — they go through profile_change_requests + admin approval.
+ * Guarded fields (first_name, last_name, school_or_team, level, roster_year,
+ * country) are intentionally NOT here — they go through profile_change_requests
+ * + admin approval. `country` was moved here from soft in 2026-07 once we
+ * noticed it drives public representation claims (flag, "X National Team"
+ * matching, JSON-LD nationality) rather than being cosmetic like `city`.
  * PATCH semantics: only keys present in `body` appear in the result.
  */
 export function sanitizeIdentityPayload(body: Record<string, unknown>): Record<string, unknown> {
@@ -146,7 +149,6 @@ export function sanitizeIdentityPayload(body: Record<string, unknown>): Record<s
     out.position = (ALLOWED_POSITIONS as readonly string[]).includes(p) ? p : null;
   }
   if (body.city !== undefined) out.city = cappedString(body.city, 80);
-  if (body.country !== undefined) out.country = cappedString(body.country, 60);
   return out;
 }
 

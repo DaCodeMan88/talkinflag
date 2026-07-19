@@ -1,4 +1,4 @@
-export const GUARDED_FIELDS = ["first_name", "last_name", "school_or_team", "level", "roster_year"] as const;
+export const GUARDED_FIELDS = ["first_name", "last_name", "school_or_team", "level", "roster_year", "country"] as const;
 export type GuardedField = (typeof GUARDED_FIELDS)[number];
 
 /**
@@ -44,5 +44,6 @@ export function guardedFieldLabel(field: GuardedField): string {
     school_or_team: "Team / School",
     level: "Competition level",
     roster_year: "National roster year",
+    country: "Country / Nationality",
   }[field];
 }

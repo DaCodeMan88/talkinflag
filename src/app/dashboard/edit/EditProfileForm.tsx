@@ -11,7 +11,7 @@ import { inchesToCm, cmToInches, lbsToKg, kgToLbs } from "@/lib/measurements";
 type TournamentDraft = { year: string; event: string; result: string; location: string };
 
 type ProfileDraft = {
-  position: string; city: string; country: string;
+  position: string; city: string;
   heightFt: string; heightIn: string; bio: string; instagram: string; tiktok: string; highlightUrl: string;
   weightLbs: string; wingspanIn: string; fortyYard: string; verticalJump: string;
   yearsActive: string; gradYear: string; occupation: string; education: string;
@@ -27,7 +27,6 @@ interface PlayerFormData {
   photo_url: string | null;
   position: string;
   city: string;
-  country: string;
   bio: string;
   instagram: string;
   tiktok: string;
@@ -73,7 +72,6 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
 
   const [position, setPosition] = useState(player.position);
   const [city, setCity] = useState(player.city);
-  const [country, setCountry] = useState(player.country);
   const [bio, setBio] = useState(player.bio);
   const [instagram, setInstagram] = useState(player.instagram);
   const [tiktok, setTiktok] = useState(player.tiktok);
@@ -135,7 +133,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
     kind: "profile",
     ref: player.id,
     value: {
-      position, city, country,
+      position, city,
       heightFt, heightIn, bio, instagram, tiktok, highlightUrl, weightLbs, wingspanIn,
       fortyYard, verticalJump, yearsActive, gradYear, occupation, education,
       caps, worldAppearances, jersey, club, nickname, achievements, tournaments,
@@ -144,7 +142,7 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
   });
 
   function applyDraft(v: ProfileDraft) {
-    setPosition(v.position ?? ""); setCity(v.city ?? ""); setCountry(v.country ?? "");
+    setPosition(v.position ?? ""); setCity(v.city ?? "");
     setHeightFt(v.heightFt ?? ""); setHeightIn(v.heightIn ?? "");
     setBio(v.bio ?? ""); setInstagram(v.instagram ?? ""); setTiktok(v.tiktok ?? ""); setHighlightUrl(v.highlightUrl ?? "");
     setWeightLbs(v.weightLbs ?? ""); setWingspanIn(v.wingspanIn ?? "");
@@ -211,7 +209,6 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
       body: JSON.stringify({
         ...(position !== player.position ? { position } : {}),
         city,
-        country,
         bio,
         instagram,
         tiktok,
@@ -418,7 +415,9 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
           </div>
         </div>
 
-        {/* Position / City / Country */}
+        {/* Position / City — Country moved to the guarded Basic Info section
+            below since it drives public nationality claims (flag, "X National
+            Team" matching, JSON-LD), unlike City which is purely cosmetic. */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
@@ -444,18 +443,6 @@ export default function EditProfileForm({ player }: { player: PlayerFormData }) 
               value={city}
               onChange={(e) => setCity(e.target.value.slice(0, 80))}
               placeholder="e.g. Rome"
-              className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-display uppercase tracking-widest text-brand-white/50 mb-2">
-              Country
-            </label>
-            <input
-              type="text"
-              value={country}
-              onChange={(e) => setCountry(e.target.value.slice(0, 60))}
-              placeholder="e.g. Italy"
               className="w-full bg-[#111111] border border-brand-white/10 text-brand-white placeholder-brand-white/20 px-4 py-3 text-sm focus:outline-none focus:border-brand-yellow/50 transition-colors"
             />
           </div>

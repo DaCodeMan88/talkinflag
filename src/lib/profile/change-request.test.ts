@@ -3,7 +3,14 @@ import { GUARDED_FIELDS, sanitizeChangeRequest, isStatsField } from "./change-re
 
 describe("sanitizeChangeRequest", () => {
   it("lists the guarded fields", () => {
-    expect(GUARDED_FIELDS).toEqual(["first_name", "last_name", "school_or_team", "level", "roster_year"]);
+    expect(GUARDED_FIELDS).toEqual([
+      "first_name",
+      "last_name",
+      "school_or_team",
+      "level",
+      "roster_year",
+      "country",
+    ]);
   });
   it("accepts a valid name change", () => {
     expect(sanitizeChangeRequest("first_name", "  Ambra ")).toEqual({ field: "first_name", value: "Ambra" });
@@ -28,6 +35,10 @@ describe("sanitizeChangeRequest", () => {
   it("flags roster_year as a stats-backed field", () => {
     expect(isStatsField("roster_year")).toBe(true);
     expect(isStatsField("first_name")).toBe(false);
+  });
+  it("accepts a country change as a plain top-level field (not stats-backed)", () => {
+    expect(sanitizeChangeRequest("country", "  Italy ")).toEqual({ field: "country", value: "Italy" });
+    expect(isStatsField("country")).toBe(false);
   });
   it("rejects empty values", () => {
     expect(sanitizeChangeRequest("last_name", "   ")).toBeNull();

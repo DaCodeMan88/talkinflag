@@ -223,15 +223,20 @@ describe("sanitizeIdentityPayload (soft fields)", () => {
   it("rejects an out-of-allowlist position → null (clears)", () => {
     expect(sanitizeIdentityPayload({ position: "Kicker" })).toEqual({ position: null });
   });
-  it("caps and trims city/country", () => {
-    expect(sanitizeIdentityPayload({ city: "  Rome  ", country: "Italy" }))
-      .toEqual({ city: "Rome", country: "Italy" });
+  it("caps and trims city", () => {
+    expect(sanitizeIdentityPayload({ city: "  Rome  " })).toEqual({ city: "Rome" });
   });
   it("only returns keys present in the body (PATCH semantics)", () => {
     expect(sanitizeIdentityPayload({ city: "Rome" })).toEqual({ city: "Rome" });
   });
-  it("never returns name/team/level even if sent (guarded fields are stripped)", () => {
-    const out = sanitizeIdentityPayload({ first_name: "X", last_name: "Y", school_or_team: "Z", level: "pro" });
+  it("never returns name/team/level/country even if sent (guarded fields are stripped)", () => {
+    const out = sanitizeIdentityPayload({
+      first_name: "X",
+      last_name: "Y",
+      school_or_team: "Z",
+      level: "pro",
+      country: "Nowhere",
+    });
     expect(out).toEqual({});
   });
 });

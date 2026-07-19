@@ -39,7 +39,7 @@ export async function POST(
   const db = createServerClient();
   const { data: player } = await db
     .from("players")
-    .select("id, first_name, last_name, claimed_by, is_claimed, claim_pending, school_or_team, level, stats")
+    .select("id, first_name, last_name, claimed_by, is_claimed, claim_pending, school_or_team, level, country, stats")
     .eq("id", id)
     .single();
   if (!player || !player.is_claimed || player.claim_pending || player.claimed_by !== user.id) {

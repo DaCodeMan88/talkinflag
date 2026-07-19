@@ -18,6 +18,7 @@ interface PlayerBasicInfo {
   school_or_team: string;
   level: string;
   roster_year: string;
+  country: string;
 }
 
 export interface PendingChangeRequest {
@@ -51,6 +52,7 @@ export default function ChangeRequestForm({
     school_or_team: player.school_or_team,
     level: player.level ? levelLabel(player.level) : "",
     roster_year: player.roster_year,
+    country: player.country,
   };
 
   // Raw (non-display) current values, used for no-op comparison — for `level` the
@@ -61,6 +63,7 @@ export default function ChangeRequestForm({
     school_or_team: player.school_or_team,
     level: player.level,
     roster_year: player.roster_year,
+    country: player.country,
   };
   const isNoOp =
     openField !== null &&
@@ -117,8 +120,9 @@ export default function ChangeRequestForm({
       </div>
 
       <p className="text-brand-white/40 text-sm">
-        Your name, team, competition level, and roster year are protected to prevent impersonation
-        and keep rankings fair. Request a change and our team will apply it — usually within a day.
+        Your name, team, competition level, roster year, and country are protected to prevent
+        impersonation and keep rankings fair. Request a change and our team will apply it — usually
+        within a day.
       </p>
 
       <div className="divide-y divide-brand-white/10 border border-brand-white/10">

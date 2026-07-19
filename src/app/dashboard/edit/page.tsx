@@ -74,7 +74,6 @@ export default async function EditProfilePage() {
             photo_url: player.photo_url ?? null,
             position: player.position ?? "",
             city: player.city ?? "",
-            country: player.country ?? "",
             bio: player.bio ?? "",
             instagram: player.instagram ?? "",
             tiktok: player.tiktok ?? "",
@@ -107,6 +106,7 @@ export default async function EditProfilePage() {
               school_or_team: player.school_or_team ?? "",
               level: player.level ?? "",
               roster_year: (stats.roster_year as string) ?? "",
+              country: player.country ?? "",
             }}
             pendingRequests={pendingRequests ?? []}
           />

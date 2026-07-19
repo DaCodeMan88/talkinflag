@@ -62,8 +62,8 @@ export async function PATCH(
     identity.weight_lbs = isNaN(v) || v < 80 || v > 400 ? null : v;
   }
 
-  // Soft identity fields the player may self-edit (position, city, country).
-  // Guarded fields (name/team/level) are never touched here.
+  // Soft identity fields the player may self-edit (position, city).
+  // Guarded fields (name/team/level/roster_year/country) are never touched here.
   Object.assign(identity, sanitizeIdentityPayload(body as Record<string, unknown>));
 
   // Stats JSONB fields — allowlisted + sanitized (anything else the client
