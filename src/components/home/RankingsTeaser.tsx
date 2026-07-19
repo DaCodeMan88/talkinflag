@@ -32,7 +32,7 @@ export async function RankingsTeaser() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="font-display text-brand-yellow text-xs uppercase tracking-[0.3em] mb-2">
-              Girls High School
+              Girls High School (18U)
             </p>
             <h2 className="font-display text-4xl md:text-6xl uppercase text-brand-white">
               Top 10 Rankings
