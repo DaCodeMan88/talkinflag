@@ -3,6 +3,7 @@ import { createServerClient } from "@/lib/supabase";
 import Link from "next/link";
 import { DIMENSION_LABELS, type DimensionKey } from "@/lib/eval/dimensions";
 import { cohortForLevel, COHORT_LABELS } from "@/lib/rankings/cohort";
+import { RankingsCohortTable } from "@/components/rankings/RankingsCohortTable";
 
 export const revalidate = 300;
 
@@ -27,14 +28,14 @@ const DIM_ORDER: DimensionKey[] = [
 export default async function RankingsPage() {
   const supabase = createServerClient();
 
-  // Fetch ranked players (national rank set) with top-100 limit
+  // Fetch all ranked players (national rank set); tables paginate client-side
   const { data: players } = await supabase
     .from("players")
     .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed, ranking_national, ranking_position, stats, gender")
     .eq("is_approved", true)
     .not("ranking_national", "is", null)
     .order("ranking_national", { ascending: true })
-    .limit(100);
+    .limit(1000);
 
   // Fetch latest ranking_weights to show what the community currently values
   const { data: rawWeights } = await supabase
@@ -178,64 +179,7 @@ export default async function RankingsPage() {
           cohorts
             .filter((c) => c.players.length > 0)
             .map(({ cohort, label, players: cohortPlayers }) => (
-              <div key={cohort} className="mb-14">
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow">
-                    {label} Rankings
-                  </h2>
-                  <span className="text-brand-white/30 text-xs">{cohortPlayers.length} ranked players</span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm" aria-label={`TF ${label} player rankings`}>
-                    <thead>
-                      <tr className="border-b border-brand-yellow/20">
-                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 w-10">#</th>
-                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3">Player</th>
-                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 w-12">Pos</th>
-                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 hidden sm:table-cell">Pos #</th>
-                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 pr-3 hidden md:table-cell">Level</th>
-                        <th className="text-left font-display text-xs uppercase tracking-widest text-brand-yellow pb-3 hidden lg:table-cell">Team</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cohortPlayers.map((player) => (
-                        <tr
-                          key={player.id}
-                          className="border-b border-brand-white/5 hover:bg-brand-white/5 transition-colors group"
-                        >
-                          <td className="py-3 pr-3 text-brand-yellow font-display tabular-nums">
-                            {player.ranking_national}
-                          </td>
-                          <td className="py-3 pr-3">
-                            <Link
-                              href={`/players/${player.id}`}
-                              className="text-brand-white font-medium group-hover:text-brand-yellow transition-colors"
-                            >
-                              {player.first_name} {player.last_name}
-                              {player.is_verified && (
-                                <span className="ml-1.5 text-brand-yellow text-xs" title="Verified profile">✓</span>
-                              )}
-                            </Link>
-                          </td>
-                          <td className="py-3 pr-3">
-                            <span className="text-brand-yellow font-display text-xs uppercase">{player.position ?? "—"}</span>
-                          </td>
-                          <td className="py-3 pr-3 text-brand-white/40 text-xs hidden sm:table-cell tabular-nums">
-                            #{player.ranking_position}
-                          </td>
-                          <td className="py-3 pr-3 text-brand-white/40 text-xs hidden md:table-cell capitalize">
-                            {player.level?.replace("_", " ") ?? "—"}
-                          </td>
-                          <td className="py-3 text-brand-white/40 text-xs hidden lg:table-cell">
-                            {player.school_or_team ?? player.country ?? "—"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <RankingsCohortTable key={cohort} label={label} players={cohortPlayers} />
             ))
         )}
 
