@@ -41,7 +41,15 @@ async function runNudges() {
       : 0;
     const ageDays = (now - new Date(u.created_at).getTime()) / 86_400_000;
 
-    if (!isEligibleForAutoNudge({ ageDays, completionPct, alreadyAutoNudged: autoNudgedUsers.has(u.id) })) {
+    if (
+      !isEligibleForAutoNudge({
+        ageDays,
+        completionPct,
+        alreadyAutoNudged: autoNudgedUsers.has(u.id),
+        emailConfirmed: Boolean(u.email_confirmed_at),
+        createdAt: u.created_at,
+      })
+    ) {
       continue;
     }
 

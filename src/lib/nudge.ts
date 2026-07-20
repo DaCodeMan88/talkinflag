@@ -4,16 +4,30 @@ export const NUDGE_MIN_AGE_DAYS = 10;
 export const NUDGE_MAX_AGE_DAYS = 45;
 export const NUDGE_COMPLETION_THRESHOLD = 75;
 
+// SAFETY CUTOFF: the automated cron must NEVER email the pre-launch backlog of
+// login accounts (imported/early users who don't know about the site and whose
+// email addresses were never confirmed). Only accounts created on/after this
+// launch date are eligible for auto-nudges. The manual admin "Nudge" button is
+// unaffected — an admin deliberately chooses each recipient.
+export const NUDGE_LAUNCH_CUTOFF = "2026-07-19T00:00:00.000Z";
+
 export function isEligibleForAutoNudge({
   ageDays,
   completionPct,
   alreadyAutoNudged,
+  emailConfirmed,
+  createdAt,
 }: {
   ageDays: number;
   completionPct: number;
   alreadyAutoNudged: boolean;
+  emailConfirmed: boolean;
+  createdAt: string;
 }): boolean {
   if (alreadyAutoNudged) return false;
+  // Never auto-email an unconfirmed address, and never touch the pre-launch backlog.
+  if (!emailConfirmed) return false;
+  if (createdAt < NUDGE_LAUNCH_CUTOFF) return false;
   if (ageDays < NUDGE_MIN_AGE_DAYS || ageDays > NUDGE_MAX_AGE_DAYS) return false;
   return completionPct < NUDGE_COMPLETION_THRESHOLD;
 }

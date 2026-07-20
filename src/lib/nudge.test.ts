@@ -2,7 +2,14 @@ import { describe, it, expect } from "vitest";
 import { isEligibleForAutoNudge, nudgeEmailHtml, NUDGE_MIN_AGE_DAYS } from "./nudge";
 
 describe("isEligibleForAutoNudge", () => {
-  const base = { ageDays: 12, completionPct: 40, alreadyAutoNudged: false };
+  // A post-launch, email-confirmed signup that is 12 days old and 40% complete.
+  const base = {
+    ageDays: 12,
+    completionPct: 40,
+    alreadyAutoNudged: false,
+    emailConfirmed: true,
+    createdAt: "2026-08-01T00:00:00.000Z",
+  };
   it("nudges an incomplete 12-day-old user", () => {
     expect(isEligibleForAutoNudge(base)).toBe(true);
   });
@@ -20,6 +27,12 @@ describe("isEligibleForAutoNudge", () => {
   });
   it("skips dormant accounts older than the max window", () => {
     expect(isEligibleForAutoNudge({ ...base, ageDays: 46 })).toBe(false);
+  });
+  it("never emails an unconfirmed address", () => {
+    expect(isEligibleForAutoNudge({ ...base, emailConfirmed: false })).toBe(false);
+  });
+  it("never emails the pre-launch backlog", () => {
+    expect(isEligibleForAutoNudge({ ...base, createdAt: "2026-07-01T00:00:00.000Z" })).toBe(false);
   });
   it("exposes the day-10 threshold", () => {
     expect(NUDGE_MIN_AGE_DAYS).toBe(10);
