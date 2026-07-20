@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import { deleteMember } from "./actions";
+import { deleteMember, sendNudge } from "./actions";
 
 export interface MemberRow {
   id: string;
@@ -89,6 +89,39 @@ function ProfileCell({ m }: { m: MemberRow }) {
           ✓ Verified
         </span>
       )}
+    </span>
+  );
+}
+
+function NudgeMember({ member }: { member: MemberRow }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+
+  return (
+    <span className="inline-flex items-center gap-2">
+      <button
+        type="button"
+        disabled={pending || sent}
+        onClick={() =>
+          startTransition(async () => {
+            setError(null);
+            try {
+              await sendNudge(member.id);
+              setSent(true);
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "Failed to send nudge.");
+            }
+          })
+        }
+        className="text-white/30 hover:text-[#FDDD58] text-xs transition-colors disabled:opacity-50"
+      >
+        {sent ? "Sent ✓" : pending ? "Sending…" : "Nudge"}
+      </button>
+      {!sent && member.lastNudgeAt && (
+        <span className="text-white/20 text-[10px]">nudged {timeAgo(member.lastNudgeAt)}</span>
+      )}
+      {error && <span className="text-red-400 text-xs">{error}</span>}
     </span>
   );
 }
@@ -253,7 +286,12 @@ export default function MembersTable({ members, currentUserId }: { members: Memb
                 </td>
                 <td className="px-4 py-3 text-white/50">{m.iqBest != null ? `${m.iqBest}%` : "—"}</td>
                 <td className="px-4 py-3">{m.profilePct != null ? <ProfileBar pct={m.profilePct} /> : <span className="text-white/25">—</span>}</td>
-                <td className="px-4 py-3"><DeleteMember member={m} currentUserId={currentUserId} /></td>
+                <td className="px-4 py-3">
+                  <span className="inline-flex items-center gap-3">
+                    <NudgeMember member={m} />
+                    <DeleteMember member={m} currentUserId={currentUserId} />
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -277,7 +315,10 @@ export default function MembersTable({ members, currentUserId }: { members: Memb
               {m.iqBest != null && ` · IQ ${m.iqBest}%`}
             </p>
             {m.profilePct != null && <ProfileBar pct={m.profilePct} />}
-            <div className="pt-1"><DeleteMember member={m} currentUserId={currentUserId} /></div>
+            <div className="pt-1 flex items-center gap-4">
+              <NudgeMember member={m} />
+              <DeleteMember member={m} currentUserId={currentUserId} />
+            </div>
           </div>
         ))}
         {rows.length === 0 && <p className="text-white/30 text-sm p-6 text-center">No members match.</p>}
