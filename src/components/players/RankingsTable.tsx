@@ -1,6 +1,10 @@
+"use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Player } from "@/types/player";
 import { COHORT_LABELS, cohortForLevel, type Cohort } from "@/lib/rankings/cohort";
+import { paginate, PAGE_SIZE } from "@/lib/pagination";
+import { Paginator } from "@/components/ui/Paginator";
 
 export function RankingsTable({
   players,
@@ -11,6 +15,9 @@ export function RankingsTable({
   cohort: Cohort;
   genderLabel?: string; // "Women's" | "Men's" | undefined
 }) {
+  const [page, setPage] = useState(1);
+  useEffect(() => setPage(1), [players]);
+
   // Defensive: only rows that belong to this cohort AND have a rank.
   const ranked = players.filter(
     (p) => p.ranking_national != null && cohortForLevel(p.level) === cohort,
@@ -39,7 +46,7 @@ export function RankingsTable({
           </tr>
         </thead>
         <tbody>
-          {sorted.map((player) => (
+          {paginate(sorted, page).map((player) => (
             <tr
               key={player.id}
               className="border-b border-brand-white/5 hover:bg-brand-white/5 transition-colors group"
@@ -71,6 +78,13 @@ export function RankingsTable({
           ))}
         </tbody>
       </table>
+      <Paginator
+        total={sorted.length}
+        page={page}
+        perPage={PAGE_SIZE}
+        onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "instant" }); }}
+        itemNoun="ranked players"
+      />
     </div>
   );
 }

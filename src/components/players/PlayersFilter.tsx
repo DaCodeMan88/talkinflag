@@ -7,6 +7,8 @@ import { RankingsTable } from "./RankingsTable";
 import Link from "next/link";
 import type { Player } from "@/types/player";
 import { COHORT_LABELS, cohortForLevel } from "@/lib/rankings/cohort";
+import { Paginator } from "@/components/ui/Paginator";
+import { paginate, PAGE_SIZE } from "@/lib/pagination";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 
@@ -23,6 +25,18 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
   const [country, setCountry] = useState(searchParams.get("country") ?? "");
   const [gender, setGender] = useState(searchParams.get("gender") ?? "");
   const [gradYear, setGradYear] = useState(searchParams.get("gradYear") ?? "");
+  const [page, setPage] = useState(1);
+
+  // Reset to page 1 whenever any filter changes.
+  function withPageReset<T>(setter: (v: T) => void) {
+    return (v: T) => { setPage(1); setter(v); };
+  }
+  const setQueryP = withPageReset(setQuery);
+  const setPositionP = withPageReset(setPosition);
+  const setLevelP = withPageReset(setLevel);
+  const setCountryP = withPageReset(setCountry);
+  const setGenderP = withPageReset(setGender);
+  const setGradYearP = withPageReset(setGradYear);
 
   // Derive unique countries from the player list (sorted, non-null)
   const countries = useMemo(() => {
@@ -119,6 +133,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
   const hasAnyFilter = query.trim() !== "" || position !== "" || level !== "" || country !== "" || gender !== "" || gradYear !== "";
 
   function clearAll() {
+    setPage(1);
     setQuery("");
     setPosition("");
     setLevel("");
@@ -139,7 +154,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             return (
               <button
                 key={g}
-                onClick={() => setGender(g === gender ? "" : g)}
+                onClick={() => setGenderP(g === gender ? "" : g)}
                 className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors ${
                   gender === g
                     ? "bg-brand-yellow text-brand-black"
@@ -162,14 +177,14 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => setQueryP(e.target.value)}
             placeholder="Search by name, team, or country…"
             aria-label="Search players"
             className="w-full bg-[#111111] border border-brand-white/15 text-brand-white pl-10 pr-10 py-3 text-sm focus:border-brand-yellow focus:outline-none placeholder:text-brand-white/30"
           />
           {query && (
             <button
-              onClick={() => setQuery("")}
+              onClick={() => setQueryP("")}
               aria-label="Clear search"
               className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-white/40 hover:text-brand-white transition-colors"
             >
@@ -183,7 +198,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
           {/* Position pills */}
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by position">
             <button
-              onClick={() => setPosition("")}
+              onClick={() => setPositionP("")}
               className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors ${
                 position === ""
                   ? "bg-brand-yellow text-brand-black"
@@ -195,7 +210,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             {POSITIONS.map((pos) => (
               <button
                 key={pos}
-                onClick={() => setPosition(pos === position ? "" : pos)}
+                onClick={() => setPositionP(pos === position ? "" : pos)}
                 className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors ${
                   position === pos
                     ? "bg-brand-yellow text-brand-black"
@@ -212,8 +227,8 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
 
           {/* Cohort segmented control */}
           <div className="flex flex-wrap items-stretch gap-1.5" role="group" aria-label="Browse by level">
-            <SegBtn active={level === ""} onClick={() => setLevel("")} label="All Players" count={counts.all} />
-            <SegBtn active={level === "high_school"} onClick={() => setLevel(level === "high_school" ? "" : "high_school")} label="High School (18U)" count={counts.hs} />
+            <SegBtn active={level === ""} onClick={() => setLevelP("")} label="All Players" count={counts.all} />
+            <SegBtn active={level === "high_school"} onClick={() => setLevelP(level === "high_school" ? "" : "high_school")} label="High School (18U)" count={counts.hs} />
             <div className="w-px self-stretch bg-brand-white/15 mx-1" aria-hidden="true" />
             <div
               className={`flex gap-1.5 border p-1 -m-1 ${
@@ -225,8 +240,8 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
               aria-label="College and World players are ranked together in one pool"
               title="College and World players are ranked together in one pool"
             >
-              <SegBtn active={level === "college"} onClick={() => setLevel(level === "college" ? "" : "college")} label="College" count={counts.college} />
-              <SegBtn active={level === "world"} onClick={() => setLevel(level === "world" ? "" : "world")} label="World" count={counts.world} />
+              <SegBtn active={level === "college"} onClick={() => setLevelP(level === "college" ? "" : "college")} label="College" count={counts.college} />
+              <SegBtn active={level === "world"} onClick={() => setLevelP(level === "world" ? "" : "world")} label="World" count={counts.world} />
             </div>
           </div>
         </div>
@@ -237,7 +252,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             <div className="relative">
               <select
                 value={gradYear}
-                onChange={(e) => setGradYear(e.target.value)}
+                onChange={(e) => setGradYearP(e.target.value)}
                 aria-label="Filter by class year"
                 className="appearance-none bg-[#111111] border border-brand-white/15 text-brand-white/70 pl-3 pr-8 py-1.5 text-xs font-display uppercase tracking-widest focus:border-brand-yellow focus:outline-none cursor-pointer"
               >
@@ -254,7 +269,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             </div>
             {gradYear && (
               <button
-                onClick={() => setGradYear("")}
+                onClick={() => setGradYearP("")}
                 aria-label="Clear class year filter"
                 className="text-brand-white/40 hover:text-brand-yellow transition-colors"
               >
@@ -271,7 +286,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             <div className="relative">
               <select
                 value={country}
-                onChange={(e) => setCountry(e.target.value)}
+                onChange={(e) => setCountryP(e.target.value)}
                 aria-label="Filter by country"
                 className="appearance-none bg-[#111111] border border-brand-white/15 text-brand-white/70 pl-3 pr-8 py-1.5 text-xs font-display uppercase tracking-widest focus:border-brand-yellow focus:outline-none cursor-pointer"
               >
@@ -288,7 +303,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             </div>
             {country && (
               <button
-                onClick={() => setCountry("")}
+                onClick={() => setCountryP("")}
                 aria-label="Clear country filter"
                 className="text-brand-white/40 hover:text-brand-yellow transition-colors"
               >
@@ -312,19 +327,19 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             {gender && (
               <Chip
                 label={gender === "male" ? "Men's / Boys'" : "Women's / Girls'"}
-                onClear={() => setGender("")}
+                onClear={() => setGenderP("")}
               />
             )}
             {level && (
               <Chip
                 label={level === "high_school" ? "High School (18U)" : level === "world" ? "World" : level === "cw" ? COHORT_LABELS.cw : "College"}
-                onClear={() => setLevel("")}
+                onClear={() => setLevelP("")}
               />
             )}
-            {position && <Chip label={position} onClear={() => setPosition("")} />}
-            {country && <Chip label={country} onClear={() => setCountry("")} />}
-            {gradYear && <Chip label={`Class of ${gradYear}`} onClear={() => setGradYear("")} />}
-            {query.trim() && <Chip label={`"${query.trim()}"`} onClear={() => setQuery("")} />}
+            {position && <Chip label={position} onClear={() => setPositionP("")} />}
+            {country && <Chip label={country} onClear={() => setCountryP("")} />}
+            {gradYear && <Chip label={`Class of ${gradYear}`} onClear={() => setGradYearP("")} />}
+            {query.trim() && <Chip label={`"${query.trim()}"`} onClear={() => setQueryP("")} />}
             <button
               onClick={clearAll}
               className="text-brand-white/40 hover:text-brand-yellow font-display text-xs uppercase tracking-widest transition-colors ml-1"
@@ -364,7 +379,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
                           {COHORT_LABELS[cohort]} Top 5
                         </h3>
                         <button
-                          onClick={() => setLevel(linkLevel)}
+                          onClick={() => setLevelP(linkLevel)}
                           className="text-brand-white/40 hover:text-brand-yellow text-xs font-display uppercase tracking-widest transition-colors"
                         >
                           Full rankings →
@@ -407,10 +422,11 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
 
           {/* Player grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((player) => (
+            {paginate(filtered, page).map((player) => (
               <PlayerCard key={player.id} player={player} />
             ))}
           </div>
+          <Paginator total={filtered.length} page={page} perPage={PAGE_SIZE} onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "instant" }); }} />
         </>
       )}
 
