@@ -34,7 +34,7 @@ export default async function TeamsPage() {
       .eq("level", "national"),
     supabase
       .from("players")
-      .select("id, first_name, last_name, position, country, gender, school_or_team, stats")
+      .select("id, first_name, last_name, position, country, gender, school_or_team, stats, level, ranking_national")
       .or("level.eq.national,level.eq.international")
       .eq("is_verified", true)
       .eq("is_approved", true),

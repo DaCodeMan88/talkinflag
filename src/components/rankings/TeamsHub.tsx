@@ -11,6 +11,7 @@ import {
   isActiveRosterPlayer,
   type WorldTeam,
 } from "@/lib/world-rankings";
+import { cohortRankLabel } from "@/lib/rankings/cohort";
 
 type NationalCoach = {
   id: string;
@@ -31,6 +32,8 @@ type NationalPlayer = {
   gender?: "male" | "female" | null;
   school_or_team: string | null;
   stats?: Record<string, unknown> | null;
+  level: string | null;
+  ranking_national: number | null;
 };
 
 type Tab = "highschool" | "college" | "world";
@@ -322,6 +325,9 @@ function WorldTeamRow({
         isActiveRosterPlayer(p.stats),
     )
     .sort((a, b) => {
+      const ra = a.ranking_national ?? Number.POSITIVE_INFINITY;
+      const rb = b.ranking_national ?? Number.POSITIVE_INFINITY;
+      if (ra !== rb) return ra - rb;
       const ja = Number((a.stats as Record<string, unknown>)?.jersey ?? 999);
       const jb = Number((b.stats as Record<string, unknown>)?.jersey ?? 999);
       return ja - jb;
@@ -431,8 +437,9 @@ function WorldTeamRow({
               {matchedPlayers.length > 0 && (
                 <div>
                   <div className="font-display text-[10px] uppercase tracking-widest text-brand-yellow mb-1.5">
-                    Roster ({matchedPlayers.length})
+                    2024 National Roster ({matchedPlayers.length})
                   </div>
+                  <p className="text-brand-white/35 text-[11px] mb-2">Team ranking above is IFAF&apos;s — individual player ranks are separate.</p>
                   <ul className="space-y-1">
                     {matchedPlayers.slice(0, 14).map((p) => (
                       <li key={p.id}>
@@ -442,6 +449,11 @@ function WorldTeamRow({
                         >
                           {p.first_name} {p.last_name}
                           {p.position && <span className="text-brand-white/35 ml-1">· {p.position}</span>}
+                          {p.ranking_national != null && (
+                            <span className="text-brand-yellow/70 text-[10px] font-display ml-1.5">
+                              {cohortRankLabel(p.level, p.ranking_national)}
+                            </span>
+                          )}
                         </Link>
                       </li>
                     ))}
@@ -509,7 +521,7 @@ function WorldTab({ coaches, players }: { coaches: NationalCoach[]; players: Nat
         </a>
       </div>
 
-      <p className="text-brand-white/35 text-xs mb-4">Click a nation to view team profile.</p>
+      <p className="text-brand-white/35 text-xs mb-4">Team rankings — click a nation to view its roster. For individual player rankings, see the <Link href="/rankings" className="text-brand-yellow hover:underline">TF Rankings</Link>.</p>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm" aria-label={`${gender === "mens" ? "Men's" : "Women's"} IFAF world rankings`}>
