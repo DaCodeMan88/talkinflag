@@ -5,7 +5,7 @@ export type Cohort = "hs" | "cw";
 
 export const COHORT_LABELS: Record<Cohort, string> = {
   hs: "High School (18U)",
-  cw: "College / World",
+  cw: "College / World (18+)",
 };
 
 export const COHORT_SHORT: Record<Cohort, string> = {

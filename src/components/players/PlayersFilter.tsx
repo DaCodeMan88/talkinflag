@@ -317,7 +317,7 @@ export function PlayersFilter({ players }: PlayersFilterProps) {
             )}
             {level && (
               <Chip
-                label={level === "high_school" ? "High School (18U)" : level === "world" ? "World" : level === "cw" ? "College / World" : "College"}
+                label={level === "high_school" ? "High School (18U)" : level === "world" ? "World" : level === "cw" ? COHORT_LABELS.cw : "College"}
                 onClear={() => setLevel("")}
               />
             )}

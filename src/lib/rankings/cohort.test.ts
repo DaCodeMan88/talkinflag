@@ -32,6 +32,6 @@ describe("cohortRankLabel", () => {
 describe("COHORT_LABELS", () => {
   it("has display labels for both cohorts", () => {
     expect(COHORT_LABELS.hs).toBe("High School (18U)");
-    expect(COHORT_LABELS.cw).toBe("College / World");
+    expect(COHORT_LABELS.cw).toBe("College / World (18+)");
   });
 });

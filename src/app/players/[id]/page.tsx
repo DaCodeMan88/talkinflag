@@ -271,7 +271,7 @@ export default async function PlayerDetailPage({
   ].some(hasDisplayableValue);
 
   const isNational = player.level === "national" || player.level === "international";
-  const rankStatLabel = cohortForLevel(player.level) === "hs" ? "HS Rank" : "College/World Rank";
+  const rankStatLabel = cohortForLevel(player.level) === "hs" ? "HS Rank" : "College/World (18+) Rank";
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
