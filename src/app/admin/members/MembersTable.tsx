@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
+import { deleteMember } from "./actions";
 
 export interface MemberRow {
   id: string;
@@ -75,7 +76,7 @@ function ProfileCell({ m }: { m: MemberRow }) {
       ) : m.coachName ? (
         <span className="text-white/70 truncate">{m.coachName} (coach)</span>
       ) : (
-        <span className="text-white/25">—</span>
+        <span className="border border-white/15 text-white/30 text-[10px] uppercase tracking-widest px-1.5 py-0.5">No player profile</span>
       )}
       {m.claimPending && (
         <span className="border border-white/20 text-white/40 text-[10px] uppercase tracking-widest px-1.5 py-0.5">
@@ -91,7 +92,60 @@ function ProfileCell({ m }: { m: MemberRow }) {
   );
 }
 
-export default function MembersTable({ members }: { members: MemberRow[] }) {
+function DeleteMember({ member, currentUserId }: { member: MemberRow; currentUserId: string }) {
+  const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  if (member.id === currentUserId) return null;
+
+  if (!confirming) {
+    return (
+      <button
+        type="button"
+        onClick={() => { setError(null); setConfirming(true); }}
+        className="text-white/30 hover:text-red-400 text-xs transition-colors"
+      >
+        Delete
+      </button>
+    );
+  }
+
+  return (
+    <span className="inline-flex flex-col gap-1">
+      <span className="inline-flex items-center gap-2">
+        <span className="text-white/60 text-xs">Delete this login permanently?</span>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() =>
+            startTransition(async () => {
+              try {
+                await deleteMember(member.id);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : "Failed to delete member.");
+              }
+            })
+          }
+          className="text-red-400 hover:text-red-300 text-xs disabled:opacity-50 transition-colors"
+        >
+          Confirm
+        </button>
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => { setConfirming(false); setError(null); }}
+          className="text-white/30 hover:text-white/60 text-xs disabled:opacity-50 transition-colors"
+        >
+          Cancel
+        </button>
+      </span>
+      {error && <span className="text-red-400 text-xs">{error}</span>}
+    </span>
+  );
+}
+
+export default function MembersTable({ members, currentUserId }: { members: MemberRow[]; currentUserId: string }) {
   const [q, setQ] = useState("");
   const [filters, setFilters] = useState<Set<Filter>>(new Set());
   const [sort, setSort] = useState<Sort>("newest");
@@ -180,6 +234,7 @@ export default function MembersTable({ members }: { members: MemberRow[] }) {
               <th className="px-4 py-3 font-normal">Evals</th>
               <th className="px-4 py-3 font-normal">IQ best</th>
               <th className="px-4 py-3 font-normal">Profile %</th>
+              <th className="px-4 py-3 font-normal">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
@@ -197,6 +252,7 @@ export default function MembersTable({ members }: { members: MemberRow[] }) {
                 </td>
                 <td className="px-4 py-3 text-white/50">{m.iqBest != null ? `${m.iqBest}%` : "—"}</td>
                 <td className="px-4 py-3">{m.profilePct != null ? <ProfileBar pct={m.profilePct} /> : <span className="text-white/25">—</span>}</td>
+                <td className="px-4 py-3"><DeleteMember member={m} currentUserId={currentUserId} /></td>
               </tr>
             ))}
           </tbody>
@@ -220,6 +276,7 @@ export default function MembersTable({ members }: { members: MemberRow[] }) {
               {m.iqBest != null && ` · IQ ${m.iqBest}%`}
             </p>
             {m.profilePct != null && <ProfileBar pct={m.profilePct} />}
+            <div className="pt-1"><DeleteMember member={m} currentUserId={currentUserId} /></div>
           </div>
         ))}
         {rows.length === 0 && <p className="text-white/30 text-sm p-6 text-center">No members match.</p>}

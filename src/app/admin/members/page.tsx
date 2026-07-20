@@ -7,7 +7,8 @@ import MembersTable, { type MemberRow } from "./MembersTable";
 export const dynamic = "force-dynamic";
 
 export default async function AdminMembersPage() {
-  if (!(await getAdminUser())) redirect("/");
+  const admin = await getAdminUser();
+  if (!admin) redirect("/");
 
   const db = createAdminClient();
 
@@ -71,7 +72,7 @@ export default async function AdminMembersPage() {
         <h1 className="font-display text-4xl uppercase text-white leading-none">Members</h1>
         <p className="text-white/40 mt-2 text-sm">Every signed-up account, with activity and linked profiles</p>
       </div>
-      <MembersTable members={members} />
+      <MembersTable members={members} currentUserId={admin.id} />
     </div>
   );
 }
