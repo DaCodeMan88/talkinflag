@@ -82,7 +82,7 @@ export function RankingsTable({
         total={sorted.length}
         page={page}
         perPage={PAGE_SIZE}
-        onPageChange={(p) => { setPage(p); window.scrollTo({ top: 0, behavior: "instant" }); }}
+        onPageChange={setPage}
         itemNoun="ranked players"
       />
     </div>

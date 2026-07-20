@@ -13,10 +13,14 @@ interface PaginatorProps {
 export function Paginator({ total, page, perPage, onPageChange, itemNoun = "players" }: PaginatorProps) {
   const pages = pageCount(total, perPage);
   if (pages <= 1) return null;
+  const go = (p: number) => {
+    onPageChange(p);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "instant" });
+  };
   return (
     <nav aria-label={`Pagination for ${itemNoun}`} className="mt-6 flex flex-wrap items-center justify-center gap-1.5">
       <button
-        onClick={() => onPageChange(page - 1)}
+        onClick={() => go(page - 1)}
         disabled={page <= 1}
         className="font-display text-xs uppercase tracking-widest px-3 py-1.5 border border-brand-white/20 text-brand-white/60 hover:border-brand-white/40 hover:text-brand-white transition-colors disabled:opacity-30 disabled:pointer-events-none"
       >
@@ -25,7 +29,7 @@ export function Paginator({ total, page, perPage, onPageChange, itemNoun = "play
       {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
         <button
           key={p}
-          onClick={() => onPageChange(p)}
+          onClick={() => go(p)}
           aria-current={p === page ? "page" : undefined}
           title={pageRangeLabel(p, perPage, total)}
           className={`font-display text-xs uppercase tracking-widest px-3 py-1.5 transition-colors tabular-nums ${
@@ -38,7 +42,7 @@ export function Paginator({ total, page, perPage, onPageChange, itemNoun = "play
         </button>
       ))}
       <button
-        onClick={() => onPageChange(page + 1)}
+        onClick={() => go(page + 1)}
         disabled={page >= pages}
         className="font-display text-xs uppercase tracking-widest px-3 py-1.5 border border-brand-white/20 text-brand-white/60 hover:border-brand-white/40 hover:text-brand-white transition-colors disabled:opacity-30 disabled:pointer-events-none"
       >
