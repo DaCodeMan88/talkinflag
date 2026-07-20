@@ -14,6 +14,7 @@ export interface MemberRow {
   claimPending: boolean;
   isVerifiedPlayer: boolean;
   profilePct: number | null;
+  lastNudgeAt: string | null;
   coachName: string | null;
   coachVerified: boolean;
   evalCount: number;

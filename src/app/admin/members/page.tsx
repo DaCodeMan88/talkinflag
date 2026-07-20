@@ -12,7 +12,7 @@ export default async function AdminMembersPage() {
 
   const db = createAdminClient();
 
-  const [{ data: usersPage }, { data: players }, { data: evals }, { data: iqRows }, { data: coaches }] =
+  const [{ data: usersPage }, { data: players }, { data: evals }, { data: iqRows }, { data: coaches }, { data: nudges }] =
     await Promise.all([
       db.auth.admin.listUsers({ page: 1, perPage: 1000 }),
       db
@@ -24,6 +24,7 @@ export default async function AdminMembersPage() {
       db.from("eval_responses").select("user_id, created_at"),
       db.from("iq_best").select("user_id, score_pct").eq("category", "general"),
       db.from("coaches").select("user_id, first_name, last_name, is_verified"),
+      db.from("profile_nudges").select("user_id, sent_at"),
     ]);
 
   const playerByUser = new Map((players ?? []).map((p) => [p.claimed_by as string, p]));
@@ -35,6 +36,12 @@ export default async function AdminMembersPage() {
     cur.count += 1;
     if (e.created_at > cur.last) cur.last = e.created_at;
     evalsByUser.set(e.user_id, cur);
+  }
+
+  const lastNudgeByUser = new Map<string, string>();
+  for (const n of nudges ?? []) {
+    const prev = lastNudgeByUser.get(n.user_id as string);
+    if (!prev || (n.sent_at as string) > prev) lastNudgeByUser.set(n.user_id as string, n.sent_at as string);
   }
 
   const members: MemberRow[] = (usersPage?.users ?? [])
@@ -62,6 +69,7 @@ export default async function AdminMembersPage() {
         evalCount: ev?.count ?? 0,
         lastEvalAt: ev?.last || null,
         iqBest: iqByUser.get(u.id) ?? null,
+        lastNudgeAt: lastNudgeByUser.get(u.id) ?? null,
       };
     })
     .sort((a, b) => (b.createdAt < a.createdAt ? -1 : 1));
