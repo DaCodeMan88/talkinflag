@@ -18,7 +18,7 @@ export default async function AdminMembersPage() {
       db
         .from("players")
         .select(
-          "id, first_name, last_name, claimed_by, claim_pending, is_verified, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats"
+          "id, first_name, last_name, claimed_by, claim_pending, is_verified, review_status, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats"
         )
         .not("claimed_by", "is", null),
       db.from("eval_responses").select("user_id, created_at"),
@@ -58,6 +58,7 @@ export default async function AdminMembersPage() {
         playerId: player ? (player.id as string) : null,
         claimPending: !!player?.claim_pending,
         isVerifiedPlayer: !!player?.is_verified,
+        reviewStatus: (player?.review_status as string | null) ?? null,
         profilePct: player
           ? completionScore(
               player as Record<string, unknown>,
