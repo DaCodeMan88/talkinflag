@@ -6,6 +6,9 @@ import { createServerClient } from "@/lib/supabase";
 import { getAdminUser } from "@/lib/admin";
 import { logClaimEvent } from "@/lib/claims";
 import { sendEmail } from "@/lib/email";
+import { approveUpdate, denyUpdate } from "@/lib/review/transitions";
+import { isDenialPreset } from "@/lib/review/denial-presets";
+import { approvedLiveEmail, deniedEmail, claimApprovedEmail } from "@/lib/emails/lifecycle";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS = ["high_school", "college", "national"];
@@ -102,37 +105,40 @@ export async function updatePlayer(id: string, formData: FormData) {
 }
 
 export async function approvePlayer(id: string) {
-  if (!(await getAdminUser())) throw new Error("Not authorized");
+  const admin = await getAdminUser();
+  if (!admin) throw new Error("Not authorized");
   const db = createServerClient();
-
   const { data: player, error } = await db
-    .from("players")
-    .update({ is_approved: true })
-    .eq("id", id)
-    .select("first_name, last_name, claimed_by")
-    .single();
+    .from("players").update(approveUpdate(admin.id)).eq("id", id)
+    .select("first_name, claimed_by").single();
   if (error) throw new Error(error.message);
-
   if (player?.claimed_by) {
-    const { data: userData } = await db.auth.admin.getUserById(player.claimed_by);
-    const email = userData?.user?.email;
-    if (email) {
-      await sendEmail({
-        to: email,
-        subject: "Your Talkin Flag profile is live!",
-        html: `
-          <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#FDDD58">You're Live!</h2>
-            <p>Hi ${player.first_name}, your profile on Talkin Flag has been approved and is now visible to coaches, scouts, and national team selectors.</p>
-            <p><a href="https://talkinflag.com/dashboard">View your dashboard →</a></p>
-          </div>
-        `,
-      });
+    const { data: u } = await db.auth.admin.getUserById(player.claimed_by);
+    if (u?.user?.email) {
+      const e = approvedLiveEmail(player.first_name);
+      await sendEmail({ to: u.user.email, subject: e.subject, html: e.html });
     }
   }
+  revalidatePath("/admin/players"); revalidatePath("/players");
+}
 
-  revalidatePath("/admin/players");
-  revalidatePath("/players");
+export async function denyPlayer(id: string, presetKey: string, note?: string) {
+  const admin = await getAdminUser();
+  if (!admin) throw new Error("Not authorized");
+  if (!isDenialPreset(presetKey)) throw new Error("Pick a denial reason.");
+  const db = createServerClient();
+  const { data: player, error } = await db
+    .from("players").update(denyUpdate(admin.id, presetKey, note)).eq("id", id)
+    .select("first_name, claimed_by").single();
+  if (error) throw new Error(error.message);
+  if (player?.claimed_by) {
+    const { data: u } = await db.auth.admin.getUserById(player.claimed_by);
+    if (u?.user?.email) {
+      const e = deniedEmail(player.first_name, presetKey, note);
+      await sendEmail({ to: u.user.email, subject: e.subject, html: e.html });
+    }
+  }
+  revalidatePath("/admin/players"); revalidatePath("/players");
 }
 
 export async function deletePlayer(id: string) {
@@ -209,26 +215,8 @@ export async function approveClaim(id: string) {
     const { data: userData } = await db.auth.admin.getUserById(player.claimed_by);
     const email = userData?.user?.email;
     if (email) {
-      await sendEmail({
-        to: email,
-        subject: "Your Talkin Flag profile claim is approved ✓",
-        html: `
-          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#000;color:#fff;padding:32px;">
-            <p style="color:#FDDD58;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 24px;">Talkin Flag</p>
-            <h1 style="font-size:24px;margin:0 0 12px;font-weight:900;text-transform:uppercase;">Claim Approved ✓</h1>
-            <p style="color:rgba(255,255,255,0.7);font-size:15px;line-height:1.6;">
-              Hi ${player.first_name}, your claim on your Talkin Flag profile has been verified. You can now
-              edit your profile, add highlights, and submit stats for verification.
-            </p>
-            <div style="margin:32px 0;">
-              <a href="https://talkinflag.com/dashboard" style="background:#FDDD58;color:#000;padding:12px 24px;font-weight:700;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;display:inline-block;">
-                Go to Dashboard →
-              </a>
-            </div>
-            <p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:32px;">Talkin Flag · talkinflag.com</p>
-          </div>
-        `,
-      });
+      const e = claimApprovedEmail(player.first_name);
+      await sendEmail({ to: email, subject: e.subject, html: e.html });
     }
   }
 

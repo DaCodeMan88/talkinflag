@@ -4,7 +4,8 @@ import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 import { cmToInches, kgToLbs } from "@/lib/measurements";
 import { hasClaimedProfile, logClaimEvent, notifyAdmins } from "@/lib/claims";
-import { sendEmail, confirmationEmailHtml } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
+import { pendingReceivedEmail } from "@/lib/emails/lifecycle";
 
 const VALID_POSITIONS = ["QB", "WR", "C", "DB", "Rusher", "Utility"];
 const VALID_LEVELS = ["high_school", "college", "national", "international", "youth"];
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
       claimed_by:     user.id,
       claimed_at:     new Date().toISOString(),
       is_approved:    false,
+      review_status:  "pending",
     }).select("id, first_name, last_name").single();
 
     if (error) {
@@ -155,14 +157,8 @@ export async function POST(req: NextRequest) {
 
     // Submitter confirmation — "we got it, pending review". Never blocks submission.
     if (user.email) {
-      await sendEmail({
-        to: user.email,
-        subject: "Your Talkin Flag profile is pending review 🏈",
-        html: confirmationEmailHtml({
-          heading: "Profile received!",
-          body: `Thanks ${created.first_name} — your player profile is in our review queue. An admin will approve it shortly, and you'll be able to see it live on talkinflag.com once it's published.`,
-        }),
-      });
+      const e = pendingReceivedEmail(created.first_name);
+      await sendEmail({ to: user.email, subject: e.subject, html: e.html });
     }
 
     return NextResponse.json({ success: true, id: created.id });
