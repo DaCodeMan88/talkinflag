@@ -16,8 +16,9 @@ const APP_DIR = join(__dirname, "..", "app");
 const ROUTES_THAT_MUST_EMAIL: { file: string; expect: RegExp }[] = [
   // Contact: admin copy (sendEmail) + submitter confirmation.
   { file: "api/contact/route.ts", expect: /confirmationEmailHtml/ },
-  // Player self-submission: admin notify (notifyAdmins) + submitter confirmation.
-  { file: "api/players/submit/route.ts", expect: /confirmationEmailHtml/ },
+  // Player self-submission: admin notify (notifyAdmins) + submitter confirmation
+  // (lifecycle builder pendingReceivedEmail wraps confirmationEmailHtml).
+  { file: "api/players/submit/route.ts", expect: /confirmationEmailHtml|pendingReceivedEmail/ },
   // Event submission: admin notify + optional submitter confirmation.
   { file: "api/events/submit/route.ts", expect: /notifyAdmins|confirmationEmailHtml/ },
   // Scout application: admin notify + applicant confirmation.

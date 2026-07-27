@@ -13,6 +13,7 @@ export interface MemberRow {
   playerId: string | null;
   claimPending: boolean;
   isVerifiedPlayer: boolean;
+  reviewStatus: string | null;
   profilePct: number | null;
   lastNudgeAt: string | null;
   coachName: string | null;
@@ -79,9 +80,29 @@ function ProfileCell({ m }: { m: MemberRow }) {
       ) : (
         <span className="border border-white/15 text-white/30 text-[10px] uppercase tracking-widest px-1.5 py-0.5">No player profile</span>
       )}
+      {m.playerId && m.reviewStatus === "approved" && (
+        <span className="border border-[#FDDD58]/40 text-[#FDDD58] text-[10px] uppercase tracking-widest px-1.5 py-0.5">
+          Live ✓
+        </span>
+      )}
+      {m.playerId && m.reviewStatus === "pending" && (
+        <span className="border border-white/40 text-white/60 text-[10px] uppercase tracking-widest px-1.5 py-0.5">
+          Awaiting review
+        </span>
+      )}
+      {m.playerId && m.reviewStatus === "denied" && (
+        <span className="border border-red-500/40 text-red-400 text-[10px] uppercase tracking-widest px-1.5 py-0.5">
+          Denied
+        </span>
+      )}
+      {m.playerId && m.reviewStatus === "unreviewed" && (
+        <span className="border border-white/30 text-white/40 text-[10px] uppercase tracking-widest px-1.5 py-0.5">
+          Imported · unreviewed
+        </span>
+      )}
       {m.claimPending && (
         <span className="border border-white/20 text-white/40 text-[10px] uppercase tracking-widest px-1.5 py-0.5">
-          Pending
+          Claim pending
         </span>
       )}
       {(m.isVerifiedPlayer || m.coachVerified) && (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/supabase";
 import { getAdminUser } from "@/lib/admin";
 import PendingReviewActions from "./PendingReviewActions";
+import { DENIAL_PRESETS } from "@/lib/review/denial-presets";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +23,17 @@ export default async function AdminPlayersPage({
   if (!(await getAdminUser())) redirect("/");
   const { q, tab, page: pageParam } = await searchParams;
   const pending = tab === "pending";
-  const searching = !pending && !!q?.trim();
+  const denied = tab === "denied";
+  const searching = !pending && !denied && !!q?.trim();
   const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
   const supabase = createServerClient();
 
   // Default view: newest additions first. Search results: alphabetical.
+  // Denied: most-recently denied first.
   let query = supabase
     .from("players")
-    .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed, is_approved, claimed_by, created_at")
-    .order(pending ? "created_at" : searching ? "last_name" : "created_at", {
+    .select("id, first_name, last_name, position, level, school_or_team, country, is_verified, is_claimed, is_approved, claimed_by, created_at, review_status, denial_reason, denied_at")
+    .order(denied ? "denied_at" : searching ? "last_name" : "created_at", {
       ascending: pending || searching,
     })
     .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
@@ -38,21 +41,24 @@ export default async function AdminPlayersPage({
   const term = `%${q?.trim()}%`;
   const searchFilter = `first_name.ilike.${term},last_name.ilike.${term},school_or_team.ilike.${term}`;
   if (pending) {
-    query = query.eq("is_approved", false);
+    query = query.eq("review_status", "pending");
+  } else if (denied) {
+    query = query.eq("review_status", "denied");
   } else if (searching) {
     query = query.or(searchFilter);
   }
 
   const { data: players } = await query;
-  const [{ count: total }, { count: pendingCount }, { count: searchCount }] = await Promise.all([
+  const [{ count: total }, { count: pendingCount }, { count: deniedCount }, { count: searchCount }] = await Promise.all([
     supabase.from("players").select("id", { count: "exact", head: true }),
-    supabase.from("players").select("id", { count: "exact", head: true }).eq("is_approved", false),
+    supabase.from("players").select("id", { count: "exact", head: true }).eq("review_status", "pending"),
+    supabase.from("players").select("id", { count: "exact", head: true }).eq("review_status", "denied"),
     searching
       ? supabase.from("players").select("id", { count: "exact", head: true }).or(searchFilter)
       : Promise.resolve({ count: null as number | null }),
   ]);
 
-  const listCount = pending ? pendingCount ?? 0 : searching ? searchCount ?? 0 : total ?? 0;
+  const listCount = pending ? pendingCount ?? 0 : denied ? deniedCount ?? 0 : searching ? searchCount ?? 0 : total ?? 0;
   const totalPages = Math.max(1, Math.ceil(listCount / PAGE_SIZE));
   const pageHref = (p: number) =>
     `/admin/players?${new URLSearchParams({
@@ -96,9 +102,20 @@ export default async function AdminPlayersPage({
             <span className="bg-[#FDDD58] text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pendingCount}</span>
           )}
         </Link>
+        <Link
+          href="/admin/players?tab=denied"
+          className={`px-4 py-2 text-xs font-display uppercase tracking-widest border-b-2 transition-colors flex items-center gap-2 ${
+            denied ? "border-[#FDDD58] text-[#FDDD58]" : "border-transparent text-white/40 hover:text-white/70"
+          }`}
+        >
+          Denied
+          {(deniedCount ?? 0) > 0 && (
+            <span className="bg-white/15 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{deniedCount}</span>
+          )}
+        </Link>
       </div>
 
-      {!pending && (
+      {!pending && !denied && (
         <form method="get" className="mb-6">
           <input
             name="q"
@@ -120,6 +137,10 @@ export default async function AdminPlayersPage({
         <p className="text-white/50 text-sm py-8 text-center">No pending registrations. ✓</p>
       )}
 
+      {denied && (players ?? []).length === 0 && (
+        <p className="text-white/50 text-sm py-8 text-center">No denied profiles.</p>
+      )}
+
       <div className="space-y-2">
         {(players ?? []).map((p) => (
           <div
@@ -135,6 +156,21 @@ export default async function AdminPlayersPage({
                   .filter(Boolean)
                   .join(" · ")}
               </p>
+              {denied && (
+                <p className="text-white/30 text-xs mt-1 truncate">
+                  <span className="text-red-400/80">
+                    {p.denial_reason
+                      ? DENIAL_PRESETS[p.denial_reason]?.label ?? p.denial_reason
+                      : "Denied"}
+                  </span>
+                  {p.denied_at && (
+                    <span className="text-white/25">
+                      {" · "}
+                      {new Date(p.denied_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </span>
+                  )}
+                </p>
+              )}
             </Link>
             <div className="flex items-center gap-3 shrink-0 ml-3">
               {p.is_verified && (
@@ -145,18 +181,20 @@ export default async function AdminPlayersPage({
               )}
               {pending ? (
                 <PendingReviewActions playerId={p.id} />
+              ) : denied ? (
+                <PendingReviewActions playerId={p.id} mode="denied" />
               ) : (
                 <Link href={`/admin/players/${p.id}/edit`} className="text-white/20 group-hover:text-[#FDDD58] transition-colors">→</Link>
               )}
             </div>
           </div>
         ))}
-        {!pending && (players ?? []).length === 0 && (
+        {!pending && !denied && (players ?? []).length === 0 && (
           <p className="text-white/30 text-sm py-8 text-center">No players found.</p>
         )}
       </div>
 
-      {!pending && totalPages > 1 && (
+      {!pending && !denied && totalPages > 1 && (
         <div className="flex items-center justify-center gap-6 mt-6">
           {page > 1 ? (
             <Link href={pageHref(page - 1)} className="text-[#FDDD58] text-xs font-display uppercase tracking-widest hover:underline">
