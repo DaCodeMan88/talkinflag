@@ -11,6 +11,7 @@ import OnboardingChecklist, { type ChecklistItem } from "@/components/onboarding
 import { memberTourSteps } from "@/components/onboarding/steps";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { completionScore } from "@/lib/profile/completion";
+import ResubmitCard from "./ResubmitCard";
 
 export const metadata = buildMetadata({
   title: "Dashboard | Talkin Flag",
@@ -46,7 +47,7 @@ export default async function DashboardPage({
   const [{ data: playerRows, error: playerErr }, { data: coachApp }] = await Promise.all([
     db
       .from("players")
-      .select("id, first_name, last_name, position, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified, claim_pending")
+      .select("id, first_name, last_name, position, level, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats, school_or_team, country, is_verified, claim_pending, review_status, denial_fix, denial_note")
       .eq("claimed_by", user.id)
       .eq("is_claimed", true)
       .order("created_at")
@@ -156,6 +157,21 @@ export default async function DashboardPage({
           <div className="bg-brand-yellow/10 border border-brand-yellow/30 p-4 mb-8 text-brand-yellow text-sm leading-relaxed">
             <span className="font-display uppercase tracking-widest">Coach profile claimed — pending review.</span>{" "}
             <span className="text-brand-yellow/70">Our team will verify it shortly and restore your verified badge.</span>
+          </div>
+        )}
+
+        {player?.review_status === "denied" && (
+          <ResubmitCard
+            playerId={player.id}
+            fix={(player.denial_fix as string | null) ?? null}
+            note={(player.denial_note as string | null) ?? null}
+          />
+        )}
+
+        {player?.review_status === "pending" && (
+          <div className="bg-brand-white/5 border border-brand-white/15 p-4 mb-8 text-brand-white/70 text-sm leading-relaxed">
+            <span className="font-display uppercase tracking-widest text-brand-white">In review</span>{" "}
+            <span>Your profile is in our queue — we&apos;ll email you the moment it&apos;s live. Nothing else needed right now.</span>
           </div>
         )}
 
