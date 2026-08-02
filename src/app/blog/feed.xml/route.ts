@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { staticPosts } from "@/lib/static-posts";
-import { getAllPosts, sanityConfigured } from "@/lib/sanity";
+import { getPublishedDbPosts } from "@/lib/blog/posts";
 
 export const revalidate = 3600;
 
@@ -26,30 +26,33 @@ export async function GET() {
     category: string;
   }
 
-  const posts: FeedPost[] = [...staticPosts].sort(
+  // Combine static + published DB posts, deduped by slug (DB wins), newest first.
+  const bySlug = new Map<string, FeedPost>();
+  for (const p of staticPosts) {
+    bySlug.set(p.slug, {
+      title: p.title,
+      slug: p.slug,
+      excerpt: p.excerpt,
+      author: p.author,
+      publishedAt: p.publishedAt,
+      category: p.category,
+    });
+  }
+  const dbPosts = await getPublishedDbPosts();
+  for (const p of dbPosts) {
+    bySlug.set(p.slug, {
+      title: p.title,
+      slug: p.slug,
+      excerpt: p.excerpt,
+      author: p.author,
+      publishedAt: p.publishedAt,
+      category: p.category || "Blog",
+    });
+  }
+
+  const posts: FeedPost[] = Array.from(bySlug.values()).sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
-
-  if (sanityConfigured) {
-    try {
-      const sanityPosts = await getAllPosts();
-      for (const p of sanityPosts) {
-        posts.push({
-          title: p.title,
-          slug: p.slug?.current ?? "",
-          excerpt: p.excerpt || "",
-          author: p.author || "Talkin Flag",
-          publishedAt: p.publishedAt,
-          category: p.category || "Blog",
-        });
-      }
-      posts.sort(
-        (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-      );
-    } catch {
-      // Sanity unavailable — use static posts only
-    }
-  }
 
   const items = posts
     .map((post) => {

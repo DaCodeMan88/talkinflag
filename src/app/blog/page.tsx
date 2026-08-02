@@ -1,7 +1,5 @@
 import { safeJsonLd } from "@/lib/jsonld";
-import { getAllPosts, sanityConfigured } from "@/lib/sanity";
-import { staticPosts } from "@/lib/static-posts";
-import { PostCard } from "@/components/blog/PostCard";
+import { getAllPostRecords } from "@/lib/blog/posts";
 import { BlogCategoryFilter } from "@/components/blog/BlogCategoryFilter";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -35,19 +33,18 @@ export default async function BlogPage({
   const { category: rawCategory } = await searchParams;
   const activeCategory = typeof rawCategory === "string" ? rawCategory : null;
 
-  const posts = await getAllPosts();
-  const hasSanityPosts = posts.length > 0;
+  const records = await getAllPostRecords();
 
   // Derive unique categories with counts, sorted by count descending (most popular first)
-  const categoryCounts = staticPosts.reduce<Record<string, number>>((acc, p) => {
+  const categoryCounts = records.reduce<Record<string, number>>((acc, p) => {
     acc[p.category] = (acc[p.category] ?? 0) + 1;
     return acc;
   }, {});
-  const categories = Array.from(new Set(staticPosts.map((p) => p.category)))
+  const categories = Array.from(new Set(records.map((p) => p.category)))
     .sort((a, b) => (categoryCounts[b] ?? 0) - (categoryCounts[a] ?? 0));
 
-  // Sort all posts by date descending (newest first)
-  const sortedPosts = [...staticPosts].sort(
+  // Sort all posts by date descending (newest first) — loader already sorts, but keep defensive
+  const sortedPosts = [...records].sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
 
@@ -104,16 +101,8 @@ export default async function BlogPage({
           </p>
         </div>
 
-        {hasSanityPosts ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <PostCard key={post._id} post={post} />
-            ))}
-          </div>
-        ) : (
-          <>
-            {/* Category filter pills */}
-            <Suspense
+        {/* Category filter pills */}
+        <Suspense
               fallback={
                 <div className="flex flex-wrap gap-2 mb-10">
                   {Array.from({ length: 6 }).map((_, i) => (
@@ -126,7 +115,7 @@ export default async function BlogPage({
                 categories={categories}
                 current={activeCategory}
                 counts={categoryCounts}
-                total={staticPosts.length}
+                total={records.length}
               />
             </Suspense>
 
@@ -263,8 +252,6 @@ export default async function BlogPage({
                 RSS Feed
               </a>
             </div>
-          </>
-        )}
       </div>
     </div>
   );

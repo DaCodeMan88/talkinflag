@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getEpisodes } from "@/lib/youtube";
 import { createServerClient } from "@/lib/supabase";
 import { staticPosts } from "@/lib/static-posts";
-import { getAllPosts, sanityConfigured } from "@/lib/sanity";
+import { getPublishedDbPosts } from "@/lib/blog/posts";
 import type { Player } from "@/types/player";
 
 const BASE_URL = "https://talkinflag.com";
@@ -49,27 +49,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ── Blog pages ────────────────────────────────────────────────────────────
-  const blogPages: MetadataRoute.Sitemap = staticPosts.map((post) => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
-    changeFrequency: "monthly" as const,
-    priority: 0.6,
-  }));
-
-  if (sanityConfigured) {
-    try {
-      const sanityPosts = await getAllPosts();
-      const sanityBlogPages: MetadataRoute.Sitemap = sanityPosts.map((post) => ({
-        url: `${BASE_URL}/blog/${post.slug.current}`,
-        lastModified: new Date(post.publishedAt),
-        changeFrequency: "monthly" as const,
-        priority: 0.6,
-      }));
-      blogPages.push(...sanityBlogPages);
-    } catch {
-      // Sanity unavailable
-    }
+  // Union of published DB posts + static posts, deduped by slug (DB wins).
+  const dbBlogPosts = await getPublishedDbPosts();
+  const blogBySlug = new Map<string, { slug: string; publishedAt: string }>();
+  for (const post of staticPosts) {
+    blogBySlug.set(post.slug, { slug: post.slug, publishedAt: post.publishedAt });
   }
+  for (const post of dbBlogPosts) {
+    blogBySlug.set(post.slug, { slug: post.slug, publishedAt: post.publishedAt });
+  }
+  const blogPages: MetadataRoute.Sitemap = Array.from(blogBySlug.values()).map(
+    (post) => ({
+      url: `${BASE_URL}/blog/${post.slug}`,
+      lastModified: post.publishedAt ? new Date(post.publishedAt) : now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })
+  );
 
   // ── Player, Event + Coach pages (from Supabase) ───────────────────────────
   let playerPages: MetadataRoute.Sitemap = [];

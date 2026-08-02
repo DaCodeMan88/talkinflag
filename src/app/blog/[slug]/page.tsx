@@ -1,6 +1,10 @@
 import { safeJsonLd } from "@/lib/jsonld";
-import { getAllPosts, getPostBySlug, sanityConfigured } from "@/lib/sanity";
-import { getStaticPostBySlug, staticPosts } from "@/lib/static-posts";
+import { staticPosts } from "@/lib/static-posts";
+import {
+  getAllPostRecords,
+  getPostRecordBySlug,
+  getPublishedDbPosts,
+} from "@/lib/blog/posts";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -12,22 +16,20 @@ import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  const params: { slug: string }[] = [];
+  const slugs = new Set<string>();
 
   // Always include static posts
-  staticPosts.forEach((p) => params.push({ slug: p.slug }));
+  staticPosts.forEach((p) => slugs.add(p.slug));
 
-  // Add Sanity posts if configured
-  if (sanityConfigured) {
-    const posts = await getAllPosts();
-    posts.forEach((p) => {
-      if (!params.find((x) => x.slug === p.slug.current)) {
-        params.push({ slug: p.slug.current });
-      }
-    });
+  // Add published DB posts (resilient — fall back to static-only if DB is down at build)
+  try {
+    const dbPosts = await getPublishedDbPosts();
+    dbPosts.forEach((p) => slugs.add(p.slug));
+  } catch {
+    // DB unreachable at build — static slugs still get prerendered
   }
 
-  return params;
+  return Array.from(slugs).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -44,44 +46,42 @@ export async function generateMetadata({
     return meta;
   }
 
-  // Check static posts first
-  const staticPost = getStaticPostBySlug(slug);
-  if (staticPost) {
-    // Truncate excerpt to ~155 chars for meta description (Google shows ~155-160)
-    const metaDescription = staticPost.excerpt.length > 155
-      ? staticPost.excerpt.slice(0, 152) + "…"
-      : staticPost.excerpt;
-    const base = withCustomOg(buildMetadata({
-      title: staticPost.title,
-      description: metaDescription,
-      path: `/blog/${staticPost.slug}`,
-      type: "article",
-    }));
-    // Enrich Open Graph with article-specific metadata
-    if (base.openGraph) {
-      (base.openGraph as Record<string, unknown>).publishedTime = staticPost.publishedAt;
-      (base.openGraph as Record<string, unknown>).modifiedTime = staticPost.publishedAt;
-      (base.openGraph as Record<string, unknown>).section = staticPost.category;
-      (base.openGraph as Record<string, unknown>).authors = [staticPost.author];
-      (base.openGraph as Record<string, unknown>).tags = [staticPost.category, "flag football"];
-    }
-    return base;
+  const post = await getPostRecordBySlug(slug);
+  if (!post) return { title: "Post Not Found | Talkin Flag" };
+
+  const title = post.seoTitle ?? post.title;
+  // Truncate excerpt to ~155 chars for meta description (Google shows ~155-160)
+  const metaDescription =
+    post.seoDescription ??
+    (post.excerpt.length > 155 ? post.excerpt.slice(0, 152) + "…" : post.excerpt);
+
+  const base = buildMetadata({
+    title,
+    description: metaDescription,
+    path: `/blog/${post.slug}`,
+    type: "article",
+  });
+
+  // OG image: prefer an explicit ogImageUrl/coverImageUrl; otherwise let
+  // opengraph-image.tsx take over via withCustomOg.
+  const ogImage = post.ogImageUrl ?? post.coverImageUrl;
+  if (ogImage) {
+    if (base.openGraph) (base.openGraph as Record<string, unknown>).images = [ogImage];
+    if (base.twitter) (base.twitter as Record<string, unknown>).images = [ogImage];
+  } else {
+    withCustomOg(base);
   }
 
-  // Fall through to Sanity
-  if (sanityConfigured) {
-    const post = await getPostBySlug(slug);
-    if (post) {
-      return withCustomOg(buildMetadata({
-        title: post.title,
-        description: post.excerpt || `${post.title} — Talkin Flag Blog`,
-        path: `/blog/${post.slug?.current ?? slug}`,
-        type: "article",
-      }));
-    }
+  // Enrich Open Graph with article-specific metadata
+  if (base.openGraph) {
+    (base.openGraph as Record<string, unknown>).publishedTime = post.publishedAt;
+    (base.openGraph as Record<string, unknown>).modifiedTime = post.publishedAt;
+    (base.openGraph as Record<string, unknown>).section = post.category;
+    (base.openGraph as Record<string, unknown>).authors = [post.author];
+    (base.openGraph as Record<string, unknown>).tags = [post.category, "flag football"];
   }
 
-  return { title: "Post Not Found | Talkin Flag" };
+  return base;
 }
 
 export default async function BlogPostPage({
@@ -91,26 +91,28 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
 
-  // ── Static post ──────────────────────────────────────────────────────────
-  const staticPost = getStaticPostBySlug(slug);
-  if (staticPost) {
+  const post = await getPostRecordBySlug(slug);
+  if (!post) notFound();
+
+  {
     // Prefer same-category posts sorted by date desc; fall back to others to fill 3 slots
-    const otherPosts = staticPosts
+    const allRecords = await getAllPostRecords();
+    const otherPosts = allRecords
       .filter((p) => p.slug !== slug)
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-    const sameCategory = otherPosts.filter((p) => p.category === staticPost.category);
-    const different = otherPosts.filter((p) => p.category !== staticPost.category);
+    const sameCategory = otherPosts.filter((p) => p.category === post.category);
+    const different = otherPosts.filter((p) => p.category !== post.category);
     const morePosts = [...sameCategory, ...different].slice(0, 3);
 
     // Estimated reading time (~200 wpm average)
-    const wordCount = staticPost.body.trim().split(/\s+/).length;
+    const wordCount = post.body.trim().split(/\s+/).length;
     const readingMinutes = Math.max(1, Math.round(wordCount / 200));
 
     // Extract section headings for Table of Contents (posts with 4+ headings get a TOC)
     function slugifyHeading(text: string): string {
       return text.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
     }
-    const headings = staticPost.body
+    const headings = post.body
       .split("\n\n")
       .map((b) => b.trim())
       .filter(Boolean)
@@ -119,11 +121,11 @@ export default async function BlogPostPage({
         return m ? [{ text: m[1], id: slugifyHeading(m[1]) }] : [];
       });
 
-    const faqJsonLd = staticPost.faqItems?.length
+    const faqJsonLd = post.faqItems?.length
       ? {
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          "mainEntity": staticPost.faqItems.map((item) => ({
+          "mainEntity": post.faqItems.map((item) => ({
             "@type": "Question",
             "name": item.q,
             "acceptedAnswer": {
@@ -140,20 +142,20 @@ export default async function BlogPostPage({
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
         { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://talkinflag.com/blog" },
-        { "@type": "ListItem", "position": 3, "name": staticPost.title, "item": `https://talkinflag.com/blog/${staticPost.slug}` },
+        { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://talkinflag.com/blog/${post.slug}` },
       ],
     };
 
     const articleJsonLd = {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": staticPost.title,
-      "description": staticPost.excerpt,
-      "datePublished": staticPost.publishedAt,
-      "dateModified": staticPost.publishedAt,
+      "headline": post.title,
+      "description": post.excerpt,
+      "datePublished": post.publishedAt,
+      "dateModified": post.publishedAt,
       "author": {
         "@type": "Person",
-        "name": staticPost.author,
+        "name": post.author,
         "url": "https://talkinflag.com/about",
       },
       "publisher": {
@@ -165,14 +167,14 @@ export default async function BlogPostPage({
           "url": "https://talkinflag.com/og-image.png",
         },
       },
-      "url": `https://talkinflag.com/blog/${staticPost.slug}`,
-      "mainEntityOfPage": `https://talkinflag.com/blog/${staticPost.slug}`,
-      "articleSection": staticPost.category,
+      "url": `https://talkinflag.com/blog/${post.slug}`,
+      "mainEntityOfPage": `https://talkinflag.com/blog/${post.slug}`,
+      "articleSection": post.category,
       "wordCount": wordCount,
       // Custom edge-rendered OG image (opengraph-image.tsx)
       "image": {
         "@type": "ImageObject",
-        "url": `https://talkinflag.com/blog/${staticPost.slug}/opengraph-image`,
+        "url": `https://talkinflag.com/blog/${post.slug}/opengraph-image`,
         "width": 1200,
         "height": 630,
       },
@@ -207,29 +209,29 @@ export default async function BlogPostPage({
 
           {/* Category */}
           <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
-            {staticPost.category}
+            {post.category}
           </span>
 
           {/* Title */}
           <h1 className="font-display text-3xl md:text-5xl uppercase text-brand-white mt-2 leading-tight">
-            {staticPost.title}
+            {post.title}
           </h1>
 
           {/* Guest byline (profile posts) */}
-          {staticPost.guestName && (
+          {post.guestName && (
             <p className="text-brand-yellow font-display text-xs uppercase tracking-widest mt-4">
-              Featuring {staticPost.guestName}
-              {staticPost.guestRole ? ` — ${staticPost.guestRole}` : ""}
+              Featuring {post.guestName}
+              {post.guestRole ? ` — ${post.guestRole}` : ""}
             </p>
           )}
 
           {/* Meta + share */}
           <div className="flex flex-wrap items-center justify-between gap-4 mt-4 mb-10">
             <div className="flex items-center gap-4 text-brand-white/40 text-xs">
-              <span>{staticPost.author}</span>
+              <span>{post.author}</span>
               <span aria-hidden="true">·</span>
-              <time dateTime={staticPost.publishedAt}>
-                {new Date(staticPost.publishedAt).toLocaleDateString("en-US", {
+              <time dateTime={post.publishedAt}>
+                {new Date(post.publishedAt).toLocaleDateString("en-US", {
                   month: "long", day: "numeric", year: "numeric",
                 })}
               </time>
@@ -239,8 +241,8 @@ export default async function BlogPostPage({
             <div className="flex items-center gap-2">
               <a
                 href={`https://x.com/intent/tweet?text=${encodeURIComponent(
-                  `"${staticPost.title}" via @TalkinFlagShow`
-                )}&url=${encodeURIComponent(`https://talkinflag.com/blog/${staticPost.slug}`)}`}
+                  `"${post.title}" via @TalkinFlagShow`
+                )}&url=${encodeURIComponent(`https://talkinflag.com/blog/${post.slug}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 border border-brand-white/20 text-brand-white/60 font-display text-xs uppercase tracking-widest px-3 py-1.5 hover:border-brand-white/40 hover:text-brand-white transition-colors"
@@ -253,7 +255,7 @@ export default async function BlogPostPage({
               </a>
               <a
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                  `https://talkinflag.com/blog/${staticPost.slug}`
+                  `https://talkinflag.com/blog/${post.slug}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -270,7 +272,7 @@ export default async function BlogPostPage({
 
           {/* Excerpt / pull quote */}
           <p className="text-brand-white/80 text-lg leading-relaxed mb-10 border-l-2 border-brand-yellow pl-5">
-            {staticPost.excerpt}
+            {post.excerpt}
           </p>
 
           {/* Table of Contents — shown for posts with 4+ sections */}
@@ -298,28 +300,28 @@ export default async function BlogPostPage({
           )}
 
           {/* Episode video embed (interview posts with a real video ID) */}
-          {staticPost.youtubeVideoId && staticPost.youtubeVideoId !== "TODO_OWNER" && (
+          {post.youtubeVideoId && post.youtubeVideoId !== "TODO_OWNER" && (
             <div className="mb-10">
               <p className="font-display text-[10px] uppercase tracking-[0.4em] text-brand-yellow mb-3">
                 Watch the Episode
               </p>
               <div className="relative aspect-video border border-brand-yellow/20">
-                <YouTubeFacade videoId={staticPost.youtubeVideoId} title={staticPost.title} />
+                <YouTubeFacade videoId={post.youtubeVideoId} title={post.title} />
               </div>
             </div>
           )}
 
           {/* Body */}
-          <RichText body={staticPost.body} />
+          <RichText body={post.body} />
 
           {/* FAQ section (if present) */}
-          {staticPost.faqItems && staticPost.faqItems.length > 0 && (
+          {post.faqItems && post.faqItems.length > 0 && (
             <div className="mt-14 pt-10 border-t border-brand-white/10">
               <h2 className="font-display text-2xl uppercase text-brand-white mb-8">
                 Frequently Asked Questions
               </h2>
               <div className="space-y-6">
-                {staticPost.faqItems.map((item, i) => (
+                {post.faqItems.map((item, i) => (
                   <div key={i} className="border-l-2 border-brand-yellow/30 pl-5">
                     <h3 className="font-display text-base uppercase text-brand-yellow mb-2">
                       {item.q}
@@ -379,8 +381,8 @@ export default async function BlogPostPage({
           {/* Share buttons */}
           <div className="mt-14 pt-10 border-t border-brand-white/10">
             <ShareButtons
-              title={staticPost.title}
-              url={`https://talkinflag.com/blog/${staticPost.slug}`}
+              title={post.title}
+              url={`https://talkinflag.com/blog/${post.slug}`}
             />
           </div>
 
@@ -420,54 +422,4 @@ export default async function BlogPostPage({
       </div>
     );
   }
-
-  // ── Sanity post ──────────────────────────────────────────────────────────
-  if (!sanityConfigured) notFound();
-
-  const post = await getPostBySlug(slug);
-  if (!post) notFound();
-
-  return (
-    <div className="min-h-screen bg-brand-black pt-24 pb-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-brand-white/50 hover:text-brand-yellow text-sm mb-10 transition-colors group"
-        >
-          <span className="transition-transform group-hover:-translate-x-1" aria-hidden="true">←</span>
-          All Posts
-        </Link>
-
-        {post.category && (
-          <span className="text-brand-yellow font-display text-xs uppercase tracking-widest">
-            {post.category}
-          </span>
-        )}
-        <h1 className="font-display text-3xl md:text-5xl uppercase text-brand-white mt-2 leading-tight">
-          {post.title}
-        </h1>
-        <div className="flex items-center gap-4 mt-4 mb-10 text-brand-white/40 text-xs">
-          <span>{post.author || "Talkin Flag"}</span>
-          <span aria-hidden="true">·</span>
-          <time dateTime={post.publishedAt}>
-            {new Date(post.publishedAt).toLocaleDateString("en-US", {
-              month: "long", day: "numeric", year: "numeric",
-            })}
-          </time>
-        </div>
-
-        {post.excerpt && (
-          <p className="text-brand-white/80 text-lg leading-relaxed mb-10 border-l-2 border-brand-yellow pl-5">
-            {post.excerpt}
-          </p>
-        )}
-
-        {/* Portable text body — install @portabletext/react when needed */}
-        <p className="text-brand-white/60 text-sm italic">
-          Rich content rendering coming soon.
-        </p>
-      </div>
-    </div>
-  );
 }
