@@ -1,5 +1,5 @@
 import { DIMENSION_KEYS, DimensionKey, Fingerprint } from "./dimensions";
-import { euclidean } from "./vector";
+import { center, cosine, stdev } from "./vector";
 
 // Archetype centroids on the 10 practical dimensions (0–10 scale).
 // Nearest centroid by Euclidean distance labels the member's evaluation style.
@@ -38,15 +38,32 @@ export const ARCHETYPES: Archetype[] = [
     blurb: "You reward the intangibles — leadership, coachability, durability, and disciplined defensive fundamentals.",
     centroid: C({ intangibles: 10, defense: 8, consistency: 8, clutch: 6, football_iq: 6, athleticism: 4, production: 3 }),
   },
+  {
+    name: "Balanced Evaluator",
+    blurb: "You don't over-index on any one trait — you weigh the whole player. Rare, and hard to fool.",
+    centroid: C({}), // 5 across the board — only reached via the flat-vector guard below.
+  },
 ];
 
+// A fingerprint whose dimensions barely vary expresses no real preference; the
+// old Euclidean classifier let sheer magnitude pick a label for it (a max-
+// everything vector always landed on the largest-norm centroid). We instead
+// match on SHAPE (cosine of the mean-centered vector) and, when there is no
+// shape to speak of, say so explicitly.
+const FLAT_STDEV_THRESHOLD = 1.0;
+
 export function classifyArchetype(fingerprint: Fingerprint): Archetype {
-  const v = DIMENSION_KEYS.map((k) => fingerprint[k]);
+  const v = DIMENSION_KEYS.map((k) => fingerprint[k] ?? 0);
+  if (stdev(v) < FLAT_STDEV_THRESHOLD) {
+    return ARCHETYPES.find((a) => a.name === "Balanced Evaluator")!;
+  }
+  const cv = center(v);
   let best = ARCHETYPES[0];
-  let bestDist = Infinity;
+  let bestSim = -Infinity;
   for (const a of ARCHETYPES) {
-    const d = euclidean(v, DIMENSION_KEYS.map((k) => a.centroid[k]));
-    if (d < bestDist) { bestDist = d; best = a; }
+    if (a.name === "Balanced Evaluator") continue;
+    const sim = cosine(cv, center(DIMENSION_KEYS.map((k) => a.centroid[k])));
+    if (sim > bestSim) { bestSim = sim; best = a; }
   }
   return best;
 }
