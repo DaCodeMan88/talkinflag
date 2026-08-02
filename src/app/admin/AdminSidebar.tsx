@@ -11,6 +11,7 @@ const NAV: { group: string; items: { label: string; href: string }[] }[] = [
       { label: "Dashboard", href: "/admin" },
       { label: "Members", href: "/admin/members" },
       { label: "Assessments", href: "/admin/assessments" },
+      { label: "Questions", href: "/admin/assessments/questions" },
     ],
   },
   {
