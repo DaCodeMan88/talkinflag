@@ -3,13 +3,14 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { loadActiveQuiz } from "@/lib/iq/load";
 import { scoreAttempt } from "@/lib/iq/score";
+import { getOwnedSession, recordEvent } from "@/lib/assessments/session";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  let body: { category?: string; answers?: Record<string, number> };
+  let body: { category?: string; answers?: Record<string, number>; sessionId?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid body" }, { status: 400 }); }
 
   const category = body.category ?? "general";
@@ -39,6 +40,18 @@ export async function POST(req: NextRequest) {
   if (error) {
     console.error("iq submit insert error:", error.message);
     return NextResponse.json({ error: "Could not save your attempt" }, { status: 500 });
+  }
+
+  // Best-effort: mark the telemetry session complete. A missing or foreign
+  // session id is ignored silently — it must never block the submission.
+  const sessionId = typeof body.sessionId === "string" ? body.sessionId : null;
+  if (sessionId) {
+    const owned = await getOwnedSession(sessionId, user.id);
+    if (owned) {
+      try {
+        await recordEvent({ sessionId, type: "complete", answeredCount: Object.keys(answers).length });
+      } catch (e) { console.error("session complete error:", e instanceof Error ? e.message : e); }
+    }
   }
 
   // Per-question feedback (now safe to reveal answers).

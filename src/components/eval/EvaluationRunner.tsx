@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import PerspectiveSummary, { EvalResult } from "./PerspectiveSummary";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
+import { useAssessmentSession } from "@/hooks/useAssessmentSession";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 
 type EvalDraft = { role: string; started: boolean; index: number; answers: Record<string, number> };
@@ -55,6 +56,13 @@ export default function EvaluationRunner({
     isEmpty: (v) => Object.keys(v.answers).length === 0,
   });
 
+  const { sessionId, track } = useAssessmentSession({
+    kind: "eval",
+    subjectKey: "active",
+    totalItems: total,
+    enabled: started,
+  });
+
   const submit = useCallback(
     async (finalAnswers: Record<string, number>) => {
       setSubmitting(true);
@@ -63,7 +71,7 @@ export default function EvaluationRunner({
         const res = await fetch("/api/eval/submit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ answers: finalAnswers, role }),
+          body: JSON.stringify({ answers: finalAnswers, role, sessionId }),
         });
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Submission failed");
         setResult(await res.json());
@@ -74,7 +82,7 @@ export default function EvaluationRunner({
         setSubmitting(false);
       }
     },
-    [role, draft]
+    [role, draft, sessionId]
   );
 
   const choose = useCallback(
@@ -82,12 +90,13 @@ export default function EvaluationRunner({
       if (!item) return;
       const next = { ...answers, [item.id]: choiceIdx };
       setAnswers(next);
+      track("answer", { itemIndex: index, itemId: item.id, answeredCount: Object.keys(next).length });
       setTimeout(() => {
         if (index + 1 >= total) submit(next);
         else setIndex((i) => i + 1);
       }, 140);
     },
-    [item, answers, index, total, submit]
+    [item, answers, index, total, submit, track]
   );
 
   useEffect(() => {
@@ -131,6 +140,7 @@ export default function EvaluationRunner({
                   setIndex(Math.min(v.index ?? 0, total - 1));
                   if (v.role) setRole(v.role);
                   setStarted(v.started ?? true);
+                  track("resume", { itemIndex: v.index ?? 0 });
                 }
               }}
               onDismiss={draft.dismissResume}
@@ -214,7 +224,7 @@ export default function EvaluationRunner({
       </div>
 
       <div className="flex justify-between items-center pb-4 text-xs uppercase tracking-widest text-white/50">
-        <button onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={index === 0} className="disabled:opacity-30">
+        <button onClick={() => { track("back", { itemIndex: index }); setIndex((i) => Math.max(0, i - 1)); }} disabled={index === 0} className="disabled:opacity-30">
           ← Back
         </button>
         {submitting && <span className="text-brand-yellow">Scoring…</span>}

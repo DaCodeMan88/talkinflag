@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useAutosaveDraft, type DraftKind } from "@/hooks/useAutosaveDraft";
+import { useAssessmentSession } from "@/hooks/useAssessmentSession";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 
 export type IQItem = { id: string; ordinal: number; prompt: string; choices: string[] };
@@ -43,6 +44,13 @@ export default function IQQuizRunner({
     isEmpty: (v) => Object.keys(v.answers).length === 0,
   });
 
+  const { sessionId, track } = useAssessmentSession({
+    kind: "iq",
+    subjectKey: category,
+    totalItems: total,
+    enabled: true,
+  });
+
   const submit = useCallback(async (finalAnswers: Record<string, number>) => {
     setSubmitting(true);
     setError(null);
@@ -50,7 +58,7 @@ export default function IQQuizRunner({
       const res = await fetch("/api/iq/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, answers: finalAnswers }),
+        body: JSON.stringify({ category, answers: finalAnswers, sessionId }),
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Submission failed");
       const data = await res.json();
@@ -61,17 +69,18 @@ export default function IQQuizRunner({
     } finally {
       setSubmitting(false);
     }
-  }, [category, draft]);
+  }, [category, draft, sessionId]);
 
   const choose = useCallback((choiceIdx: number) => {
     if (!q) return;
     const next = { ...answers, [q.id]: choiceIdx };
     setAnswers(next);
+    track("answer", { itemIndex: index, itemId: q.id, answeredCount: Object.keys(next).length });
     setTimeout(() => {
       if (index + 1 >= total) submit(next);
       else setIndex((i) => i + 1);
     }, 150);
-  }, [q, answers, index, total, submit]);
+  }, [q, answers, index, total, submit, track]);
 
   useEffect(() => {
     if (scored) return;
@@ -185,7 +194,7 @@ export default function IQQuizRunner({
             label="your quiz progress"
             onResume={() => {
               const v = draft.resume();
-              if (v) { setAnswers(v.answers ?? {}); setIndex(Math.min(v.index ?? 0, total - 1)); }
+              if (v) { setAnswers(v.answers ?? {}); setIndex(Math.min(v.index ?? 0, total - 1)); track("resume", { itemIndex: v.index ?? 0 }); }
             }}
             onDismiss={draft.dismissResume}
           />
@@ -210,7 +219,7 @@ export default function IQQuizRunner({
       </div>
 
       <div className="flex justify-between items-center pb-4 text-xs uppercase tracking-widest text-white/50">
-        <button onClick={() => setIndex((i) => Math.max(0, i - 1))} disabled={index === 0} className="disabled:opacity-30">← Back</button>
+        <button onClick={() => { track("back", { itemIndex: index }); setIndex((i) => Math.max(0, i - 1)); }} disabled={index === 0} className="disabled:opacity-30">← Back</button>
         {submitting && <span className="text-brand-yellow">Scoring…</span>}
         {error && <span className="text-red-400 normal-case tracking-normal">{error} — <button className="underline" onClick={() => submit(answers)}>retry</button></span>}
         <span className="hidden sm:inline">Press 1–{Math.min(9, q.choices.length)} · ← → to move</span>

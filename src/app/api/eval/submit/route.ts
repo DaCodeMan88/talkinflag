@@ -7,6 +7,7 @@ import { classifyArchetype } from "@/lib/eval/archetype";
 import { scienceRollup } from "@/lib/eval/science";
 import { aggregateRoleWeights } from "@/lib/eval/aggregate";
 import { getEligibleRoles } from "@/lib/eval/eligibility";
+import { getOwnedSession, recordEvent } from "@/lib/assessments/session";
 import { DIMENSION_KEYS, DIMENSION_SCIENCE, Fingerprint } from "@/lib/eval/dimensions";
 
 const ROLES = ["host", "coach", "expert", "player"] as const;
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  let body: { answers?: Record<string, number>; role?: string };
+  let body: { answers?: Record<string, number>; role?: string; sessionId?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid body" }, { status: 400 }); }
 
   const answers = body.answers ?? {};
@@ -64,6 +65,18 @@ export async function POST(req: NextRequest) {
   // Recompute this role's aggregate weights (skip players — no poll power).
   if (role !== "player") {
     await recomputeRoleWeights(role);
+  }
+
+  // Best-effort: mark the telemetry session complete. A missing or foreign
+  // session id is ignored silently — it must never block the submission.
+  const sessionId = typeof body.sessionId === "string" ? body.sessionId : null;
+  if (sessionId) {
+    const owned = await getOwnedSession(sessionId, user.id);
+    if (owned) {
+      try {
+        await recordEvent({ sessionId, type: "complete", answeredCount: Object.keys(answers).length });
+      } catch (e) { console.error("session complete error:", e instanceof Error ? e.message : e); }
+    }
   }
 
   // Reference vector for the summary "gap vs elite ideal".
