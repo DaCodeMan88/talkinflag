@@ -85,3 +85,24 @@ test("aggregateRoleWeights returns element-wise mean", () => {
 test("aggregateRoleWeights handles empty input", () => {
   expect(aggregateRoleWeights([]).clutch).toBe(0);
 });
+
+test("maxPerDimensionFrom credits max attainable points for EVERY dimension present", () => {
+  const items = [
+    { options: [ { dimension: "football_iq", points: 4 }, { dimension: "athleticism", points: 4 } ] },
+    { options: [ { dimension: "football_iq", points: 4 }, { dimension: "clutch", points: 4 } ] },
+  ];
+  expect(maxPerDimensionFrom(items)).toEqual({ football_iq: 8, athleticism: 4, clutch: 4 });
+});
+
+test("maxPerDimensionFrom takes the best option per dimension within one item", () => {
+  const items = [{ options: [ { dimension: "defense", points: 1 }, { dimension: "defense", points: 3 } ] }];
+  expect(maxPerDimensionFrom(items)).toEqual({ defense: 3 });
+});
+
+test("maxPerDimensionFrom still matches old behaviour for single-dimension Likert items", () => {
+  const items = [
+    { options: [0,1,2,3,4].map((p) => ({ dimension: "clutch", points: p })) },
+    { options: [0,1,2,3,4].map((p) => ({ dimension: "clutch", points: p })) },
+  ];
+  expect(maxPerDimensionFrom(items)).toEqual({ clutch: 8 });
+});

@@ -43,15 +43,23 @@ export function normalizeFingerprint(
   return out;
 }
 
-/** Build the maxPerDimension map from the full item set (max option points × items in that dim). */
+/**
+ * Highest attainable raw score per dimension across the whole bank.
+ * For each item, a dimension can earn at most the best points any single option
+ * awards it (you pick one option), so we sum that per-item best across items.
+ * Correct for single-dimension Likert AND mixed-dimension forced-choice items.
+ */
 export function maxPerDimensionFrom(items: (ScoringItem & { section_key?: string })[]): Record<string, number> {
   const max: Record<string, number> = {};
   for (const item of items) {
-    // an importance item awards its max points to its section dimension
-    const best = Math.max(...item.options.map((o) => o.points));
-    const bestOpt = item.options.find((o) => o.points === best);
-    const dim = bestOpt?.dimension;
-    if (dim) max[dim] = (max[dim] ?? 0) + best;
+    const bestInItem: Record<string, number> = {};
+    for (const o of item.options) {
+      if (!o?.dimension) continue;
+      bestInItem[o.dimension] = Math.max(bestInItem[o.dimension] ?? 0, o.points);
+    }
+    for (const [dim, pts] of Object.entries(bestInItem)) {
+      if (pts > 0) max[dim] = (max[dim] ?? 0) + pts;
+    }
   }
   return max;
 }
