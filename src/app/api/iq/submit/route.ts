@@ -5,6 +5,7 @@ import { loadActiveQuiz } from "@/lib/iq/load";
 import { scoreAttempt } from "@/lib/iq/score";
 import { toStoredAnswers, displayedCorrectIndex } from "@/lib/iq/shuffle-map";
 import { getOwnedSession, recordEvent } from "@/lib/assessments/session";
+import { percentileOf } from "@/lib/assessments/percentile";
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerClient();
@@ -81,5 +82,47 @@ export async function POST(req: NextRequest) {
     };
   });
 
-  return NextResponse.json({ score_pct: pct, raw, max, results });
+  // Percentile among ALL takers of this category. The sample includes the row
+  // we just inserted, so a lone first taker lands at 100 — but the client
+  // suppresses the number until there are enough samples (hasEnoughSamples), so
+  // no misleading percentile is ever shown on thin data. Best-effort: any read
+  // failure just yields a null percentile with sampleSize 0.
+  let percentile: number | null = null;
+  let sampleSize = 0;
+  try {
+    const { data: allAttempts } = await admin
+      .from("iq_attempts")
+      .select("score_pct")
+      .eq("category", category);
+    const sample = (allAttempts ?? [])
+      .map((a) => Number(a.score_pct))
+      .filter((n) => Number.isFinite(n));
+    sampleSize = sample.length;
+    percentile = percentileOf(pct, sample);
+  } catch (e) {
+    console.error("iq percentile error:", e instanceof Error ? e.message : e);
+  }
+
+  // Per-domain breakdown. Questions without a domain (e.g. the general bank, or
+  // any bank seeded before migration 023 backfilled it) are skipped, so this is
+  // an empty array when no domain data exists — never NaN, never a crash.
+  const correctById = new Map(results.map((r) => [r.id, r.correct]));
+  const domainAgg = new Map<string, { correct: number; total: number }>();
+  for (const q of quiz.questions) {
+    if (!q.domain) continue;
+    const cur = domainAgg.get(q.domain) ?? { correct: 0, total: 0 };
+    cur.total += 1;
+    if (correctById.get(q.id)) cur.correct += 1;
+    domainAgg.set(q.domain, cur);
+  }
+  const domains = [...domainAgg.entries()]
+    .map(([domain, { correct, total }]) => ({
+      domain,
+      correct,
+      total,
+      pct: total > 0 ? Math.round((correct / total) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => a.domain.localeCompare(b.domain));
+
+  return NextResponse.json({ score_pct: pct, raw, max, results, percentile, sampleSize, domains });
 }

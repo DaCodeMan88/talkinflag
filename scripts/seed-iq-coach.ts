@@ -4,8 +4,9 @@
  * Mirrors scripts/seed-iq.ts but only ever touches the category='coach' quiz,
  * so re-running is safe and never disturbs the general quiz.
  * Idempotent: upserts the quiz on (category, version), then replaces its
- * questions. The `domain`/`tier` fields in the JSON are documentation only and
- * are NOT persisted (the iq_questions table has no column for them).
+ * questions. The `domain` field in the JSON IS persisted (iq_questions.domain,
+ * migration 023) so results can show a per-domain breakdown; `tier` remains
+ * documentation only (no column for it).
  * Usage: npx tsx scripts/seed-iq-coach.ts
  */
 import { createClient } from "@supabase/supabase-js";
@@ -23,7 +24,7 @@ const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 if (!url || !key) { console.error("Missing Supabase env"); process.exit(1); }
 const db = createClient(url, key);
 
-type Q = { ordinal: number; prompt: string; choices: string[]; correct_index: number; explanation?: string; points?: number; source_citation?: string };
+type Q = { ordinal: number; prompt: string; choices: string[]; correct_index: number; explanation?: string; points?: number; source_citation?: string; domain?: string };
 type Quiz = { category: string; version: number; title: string; description?: string; questions: Q[] };
 
 async function main() {
@@ -49,6 +50,7 @@ async function main() {
       explanation: q.explanation ?? null,
       points: q.points ?? 1,
       source_citation: q.source_citation ?? null,
+      domain: q.domain ?? null,
     }));
     const ins = await db.from("iq_questions").insert(rows);
     if (ins.error) throw ins.error;

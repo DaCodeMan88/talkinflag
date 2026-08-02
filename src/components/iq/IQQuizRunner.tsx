@@ -8,9 +8,11 @@ import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 import CheckpointScreen from "@/components/eval/CheckpointScreen";
 import { fixedChunks, roundProgress } from "@/lib/assessments/rounds";
 import { nextStreak } from "@/lib/iq/streak";
+import { hasEnoughSamples } from "@/lib/assessments/percentile";
 
 export type IQItem = { id: string; ordinal: number; prompt: string; choices: string[] };
 type Result = { id: string; ordinal: number; correct_index: number; chosen: number | null; correct: boolean; explanation: string | null };
+type DomainStat = { domain: string; correct: number; total: number; pct: number };
 // Saved answers are keyed by the chosen choice's LABEL, not its displayed index.
 // Each page load re-shuffles a question's choices under a fresh nonce, so a
 // stored index would point at the wrong option on resume; the label is stable,
@@ -41,7 +43,7 @@ export default function IQQuizRunner({
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [scored, setScored] = useState<{ pct: number; raw: number; max: number; results: Result[] } | null>(null);
+  const [scored, setScored] = useState<{ pct: number; raw: number; max: number; results: Result[]; percentile: number | null; sampleSize: number; domains: DomainStat[] } | null>(null);
   const [shared, setShared] = useState(false);
   const [checkpoint, setCheckpoint] = useState<{ roundNumber: number } | null>(null);
 
@@ -106,7 +108,15 @@ export default function IQQuizRunner({
       });
       if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Submission failed");
       const data = await res.json();
-      setScored({ pct: data.score_pct, raw: data.raw, max: data.max, results: data.results });
+      setScored({
+        pct: data.score_pct,
+        raw: data.raw,
+        max: data.max,
+        results: data.results,
+        percentile: data.percentile ?? null,
+        sampleSize: data.sampleSize ?? 0,
+        domains: Array.isArray(data.domains) ? data.domains : [],
+      });
       draft.clear();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
@@ -308,6 +318,60 @@ export default function IQQuizRunner({
           <p className="mt-1 text-sm text-white/70">Best streak this run: <span className="text-brand-yellow">🔥 {best}</span></p>
         )}
 
+        {/* Percentile among all takers — honest: suppressed until enough data. */}
+        {(() => {
+          const takers = isCoach ? "coaches" : "players";
+          if (scored.percentile !== null && hasEnoughSamples(scored.sampleSize)) {
+            return (
+              <p className="mt-3 text-sm text-white/80">
+                You&apos;re in the <span className="text-brand-yellow font-semibold">{Math.round(scored.percentile)}th percentile</span>{" "}
+                of {scored.sampleSize.toLocaleString()} {takers} who&apos;ve taken this.
+              </p>
+            );
+          }
+          return (
+            <p className="mt-3 text-sm text-white/60">
+              You&apos;re one of the first {scored.sampleSize.toLocaleString()} to take this — a percentile shows up once more {takers} have played.
+            </p>
+          );
+        })()}
+
+        {/* Per-domain breakdown — only when the bank carries domains. */}
+        {scored.domains.length > 0 && (() => {
+          const weakest = new Set(
+            [...scored.domains].sort((a, b) => a.pct - b.pct).slice(0, 2).map((d) => d.domain)
+          );
+          const prettify = (s: string) =>
+            s.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+          return (
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+              <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">By area</p>
+              <div className="mt-3 space-y-3">
+                {scored.domains.map((d) => {
+                  const weak = weakest.has(d.domain);
+                  return (
+                    <div key={d.domain}>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-white/80">{prettify(d.domain)}</span>
+                        <span className={weak ? "text-white/60" : "text-brand-yellow"}>{d.correct}/{d.total} · {Math.round(d.pct)}%</span>
+                      </div>
+                      <div className="mt-1 h-1.5 rounded bg-white/10 overflow-hidden">
+                        <div className={`h-full ${weak ? "bg-white/40" : "bg-brand-yellow"}`} style={{ width: `${d.pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {weakest.size > 0 && (
+                <p className="mt-4 text-xs text-white/60">
+                  Weakest area{weakest.size > 1 ? "s" : ""}: <span className="text-white/80">{[...weakest].map(prettify).join(" & ")}</span>. Brush up on{" "}
+                  <Link href="/how-rankings-work" className="text-brand-yellow underline">how rankings work</Link>, then retake.
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
         {isCoach && (
           <div className="mt-6 rounded-xl border border-brand-yellow/30 bg-brand-yellow/10 p-5 animate-[fadeIn_300ms_ease]">
             <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">What this unlocks</p>
@@ -358,7 +422,7 @@ export default function IQQuizRunner({
         </div>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link href={`/iq/${category}`} className="rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-brand-yellow/90 transition">Retake</Link>
+          <Link href={`/iq/${category}`} className="rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-3 hover:bg-brand-yellow/90 transition">Retake — beat {scored.pct.toFixed(0)}</Link>
           <button type="button" onClick={share} className="rounded-full border border-white/20 font-display uppercase tracking-widest text-sm px-6 py-3 hover:border-brand-yellow/70 transition">
             {shared ? "Copied ✓" : "Share"}
           </button>

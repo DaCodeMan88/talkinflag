@@ -12,12 +12,17 @@ import {
   DimensionKey,
 } from "@/lib/eval/dimensions";
 
+export type CrowdDeviation = { dimension: string; delta: number };
+
 export type EvalResult = {
   fingerprint: Record<string, number>;
   scienceRollup: Record<string, number>;
   archetype: { name: string; blurb: string };
   reference: Record<string, number>;
   role: string;
+  /** Top over/under dimensions vs the role's crowd aggregate. Optional: absent
+   * on saved-results reloads and null when there's no crowd data to compare. */
+  crowdDeviation?: CrowdDeviation[] | null;
 };
 
 function topN(fp: Record<string, number>, n: number, asc = false) {
@@ -131,6 +136,32 @@ export default function PerspectiveSummary({ result }: { result: EvalResult }) {
           highest level, coping and game intelligence separate champions more than physical tools.
         </p>
       </div>
+
+      {/* Where you part ways with the crowd — skips cleanly when no crowd data. */}
+      {(() => {
+        const crowd = (result.crowdDeviation ?? []).filter((d) => Math.abs(d.delta) >= 0.1);
+        if (crowd.length === 0) return null;
+        const crowdLabel = result.role === "player" ? "typical voter" : `${result.role}`;
+        return (
+          <div className="mt-6 rounded-xl bg-brand-gray border border-white/10 p-4">
+            <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">Where you part ways with the crowd</p>
+            <ul className="mt-3 space-y-2">
+              {crowd.map((d) => {
+                const label = DIMENSION_LABELS[d.dimension as DimensionKey] ?? d.dimension;
+                const more = d.delta > 0;
+                return (
+                  <li key={d.dimension} className="text-sm text-white/80">
+                    You weight <span className="text-brand-yellow">{label}</span>{" "}
+                    <span className={more ? "text-green-400" : "text-white/60"}>{more ? "more" : "less"}</span>{" "}
+                    than the {crowdLabel} crowd
+                    <span className="text-white/40"> ({more ? "+" : ""}{d.delta.toFixed(1)})</span>.
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })()}
 
       {/* Share your archetype (Instagram-ready image) */}
       <div className="mt-6 rounded-2xl bg-brand-gray border border-white/10 p-5">

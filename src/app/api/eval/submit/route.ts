@@ -84,13 +84,63 @@ export async function POST(req: NextRequest) {
   const reference: Record<string, number> = {};
   for (const r of refRows ?? []) reference[r.key] = Number(r.value);
 
+  // "Where you part ways with the crowd": compare this user's fingerprint to the
+  // aggregate weighting of their constituency (dim.<role>.*). Players carry no
+  // poll aggregate of their own, so they're compared to the host crowd as a
+  // neutral reference. Returns the single most-over and most-under dimension, or
+  // null when there's no crowd aggregate to compare against.
+  const crowdDeviation = await computeCrowdDeviation(role, fingerprint);
+
   return NextResponse.json({
     fingerprint,
     scienceRollup: sci,
     archetype: { name: archetype.name, blurb: archetype.blurb },
     reference,
     role,
+    crowdDeviation,
   });
+}
+
+export type CrowdDeviation = { dimension: string; delta: number };
+
+/**
+ * Top over- and under-weighted dimensions vs the role's crowd aggregate.
+ * `delta` is signed (fingerprint − crowd), rounded to 1dp. Returns null if the
+ * crowd aggregate is missing (e.g. no aggregate rows written yet). Players are
+ * compared to the host crowd since they have no aggregate of their own.
+ */
+async function computeCrowdDeviation(
+  role: Role,
+  fingerprint: Fingerprint
+): Promise<CrowdDeviation[] | null> {
+  const crowdRole: Role = role === "player" ? "host" : role;
+  const admin = createAdminClient();
+  const { data: rows } = await admin
+    .from("ranking_weights")
+    .select("key, value")
+    .like("key", `dim.${crowdRole}.%`);
+
+  const crowd: Partial<Record<string, number>> = {};
+  for (const r of rows ?? []) {
+    const dim = String(r.key).slice(`dim.${crowdRole}.`.length);
+    crowd[dim] = Number(r.value);
+  }
+  // Need at least one comparable dimension.
+  const comparable = DIMENSION_KEYS.filter((k) => crowd[k] !== undefined && Number.isFinite(crowd[k]));
+  if (comparable.length === 0) return null;
+
+  let over: CrowdDeviation | null = null;
+  let under: CrowdDeviation | null = null;
+  for (const k of comparable) {
+    const delta = Math.round((fingerprint[k] - (crowd[k] as number)) * 10) / 10;
+    if (over === null || delta > over.delta) over = { dimension: k, delta };
+    if (under === null || delta < under.delta) under = { dimension: k, delta };
+  }
+  const out: CrowdDeviation[] = [];
+  if (over) out.push(over);
+  // Only add the under if it's a different dimension than the over.
+  if (under && (!over || under.dimension !== over.dimension)) out.push(under);
+  return out.length > 0 ? out : null;
 }
 
 async function recomputeRoleWeights(role: Role) {

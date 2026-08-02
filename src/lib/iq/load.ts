@@ -9,6 +9,8 @@ export type RawQuestion = {
   explanation: string | null;
   points: number;
   source_citation: string | null;
+  /** Knowledge-area tag (rules/scheme/…); null on banks without domains. */
+  domain: string | null;
 };
 
 export type PublicQuestion = {
@@ -38,7 +40,7 @@ export async function loadActiveQuiz(category: string): Promise<
   if (!quiz) return null;
   const { data: questions } = await db
     .from("iq_questions")
-    .select("id, ordinal, prompt, choices, correct_index, explanation, points, source_citation")
+    .select("id, ordinal, prompt, choices, correct_index, explanation, points, source_citation, domain")
     .eq("quiz_id", quiz.id)
     .order("ordinal", { ascending: true });
   return { quizId: quiz.id, title: quiz.title, description: quiz.description, questions: (questions ?? []) as RawQuestion[] };
