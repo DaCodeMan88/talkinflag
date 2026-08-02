@@ -8,6 +8,8 @@
 
 ## Active Roadmap
 
+**🔶 ON BRANCH (not merged/deployed — awaiting owner review) 2026-08-02: Remove Top 10 Plays + Athlete of the Week** — plan `docs/plans/2026-08-02-remove-top10-and-athlete-of-week.md` (branch `blog-and-cleanup`). All 9 tasks done. Both features fully removed: public routes (`/plays`, `/athletes/featured`), admin surfaces (`/admin/highlights`, `/admin/featured`) + overview cards, homepage sections, dashboard highlight-submit form, footer links. Empty tables `highlight_submissions` + `featured_athlete` dropped (migration `024`, applied live via MCP — both verified 0 rows first). 301 redirects for retired URLs → `/players`. `usage-guard.test.ts` SERVICE_ONLY updated to mirror live DB. `players.highlight_url` (profile field) left untouched. Gate: reference-grep clean (only intentional redirects remain), tsc clean, 350/350 tests, build green (161/161 pages, no plays/athletes routes). Interactive click-through deferred (local dev server hit an env EPERM/uv_cwd spawn error, unrelated to changes; `next build` prerendered `/` successfully = homepage renders). Same branch also carries the blog-authoring feature (see below). **Do NOT merge/deploy until owner reviews.**
+
 **✅ SHIPPED + LIVE 2026-08-01: Assessments 10x (evaluation + Flag IQ + Coach IQ)** — plan `docs/plans/2026-08-01-assessments-10x.md` (merged to `main` fast-forward, tip `a40d070`, pushed → Vercel deploying; tsc clean, **354/354 tests**, build green, bias audit exit 0). All 22 tasks done. Addresses Ambra + Coach Jon's "questions/answers all too similar, boring, redundant." **Owner (Daniel) authorized full go-live 2026-08-01 incl. both content seeds.**
 - **LIVE now:** eval **v2 active** (28 items — 6 forced_choice/2 budget/6 scenario/4 rank/10 likert; v1/50 deactivated). IQ banks **re-seeded** (general 40 + coach 32, all domain-tagged): stored answer key now **uniform 25% per index** (was 80%/88% at "B") + per-attempt runtime shuffle on top. Seeds were applied via the Supabase DB tool (the `npx tsx scripts/seed-*.ts` scripts are equivalent; classifier blocked Bash so SQL was generated read-only and applied through MCP). Re-seed minted new iq_questions ids (old per-question attempt history orphaned — acceptable, pre-launch) and reset status→'draft'.
 - **OWNER FOLLOW-UP (not blocking — the content is already live):** Ambra reviews the eval in `docs/eval-bank-v2-review.md`; Ambra + Coach Jon confirm/approve each Coach IQ key at `/admin/assessments/questions` (all 72 IQ Qs currently status='draft'). Do NOT run the rankings recompute.
@@ -105,8 +107,8 @@
 | Phase | Feature | Status |
 |-------|---------|--------|
 | A | TF Rankings Algorithm | Deferred — needs 100-pt rubric from Ambra & Tika |
-| B | Athlete Profile of the Week | ✅ Live — `/admin/featured`, homepage hero section, `/athletes/featured` |
-| C | Top 10 Plays of the Week | ✅ Live — player submission, `/admin/highlights`, `/plays/week/[week]`, `/plays` |
+| B | Athlete Profile of the Week | ❌ REMOVED 2026-08-02 (owner request) — routes/admin/homepage section deleted, `featured_athlete` table dropped (migration `024`), `/athletes/featured`+`/athletes` 301→`/players` |
+| C | Top 10 Plays of the Week | ❌ REMOVED 2026-08-02 (owner request) — routes/admin/homepage teaser/dashboard submit form deleted, `highlight_submissions` table dropped (migration `024`), `/plays`+`/plays/week/[week]` 301→`/players` |
 | D | Profile Embed Widget + Share Card | ✅ Live — `/players/[id]/embed`, embed code in share modal |
 | E | Tournament Results | ✅ Live — `event_results` table, `/admin/events/[id]/results`, `/results` |
 | F | League Finder | ✅ Live — `/find-a-league` |
