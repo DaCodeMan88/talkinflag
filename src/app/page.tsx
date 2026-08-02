@@ -14,9 +14,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Suspense } from "react";
-import { FeaturedAthleteSection } from "@/components/home/FeaturedAthleteSection";
 import { JoinCTA } from "@/components/home/JoinCTA";
-import { Top10PlaysTeaser } from "@/components/home/Top10PlaysTeaser";
 import { LatestResultsTeaser } from "@/components/home/LatestResultsTeaser";
 
 export const revalidate = 3600;
@@ -93,14 +91,6 @@ export default async function HomePage() {
       </Suspense>
 
       <JoinCTA />
-
-      <Suspense fallback={null}>
-        <FeaturedAthleteSection />
-      </Suspense>
-
-      <Suspense fallback={null}>
-        <Top10PlaysTeaser />
-      </Suspense>
 
       <section className="bg-brand-black py-20 px-6" aria-label="Latest episodes">
         <div className="max-w-7xl mx-auto">
