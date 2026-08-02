@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useAutosaveDraft, type DraftKind } from "@/hooks/useAutosaveDraft";
 import { useAssessmentSession } from "@/hooks/useAssessmentSession";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
+import CheckpointScreen from "@/components/eval/CheckpointScreen";
+import { fixedChunks, roundProgress } from "@/lib/assessments/rounds";
 
 export type IQItem = { id: string; ordinal: number; prompt: string; choices: string[] };
 type Result = { id: string; ordinal: number; correct_index: number; chosen: number | null; correct: boolean; explanation: string | null };
@@ -29,6 +31,7 @@ export default function IQQuizRunner({
   const [error, setError] = useState<string | null>(null);
   const [scored, setScored] = useState<{ pct: number; raw: number; max: number; results: Result[] } | null>(null);
   const [shared, setShared] = useState(false);
+  const [checkpoint, setCheckpoint] = useState<{ roundNumber: number } | null>(null);
 
   const isCoach = category === "coach";
   const iqLabel = isCoach ? "Coach IQ" : "Flag Football IQ";
@@ -37,6 +40,11 @@ export default function IQQuizRunner({
   const q = questions[index];
   const answeredCount = Object.keys(answers).length;
   const byId = useMemo(() => Object.fromEntries(questions.map((x) => [x.id, x])), [questions]);
+
+  // Break the flat question list into fixed-size rounds (coach = 8, else 10).
+  const chunks = useMemo(() => fixedChunks(total, isCoach ? 8 : 10), [total, isCoach]);
+  const boundarySet = useMemo(() => new Set(chunks.slice(1).map((c) => c.start)), [chunks]);
+  const prog = roundProgress(index, chunks);
 
   // Save & resume — only the coach/general quizzes have a draft kind.
   const draftKind: DraftKind | null =
@@ -82,13 +90,23 @@ export default function IQQuizRunner({
     setAnswers(next);
     track("answer", { itemIndex: index, itemId: q.id, answeredCount: Object.keys(next).length });
     setTimeout(() => {
-      if (index + 1 >= total) submit(next);
-      else setIndex((i) => i + 1);
+      const nextIndex = index + 1;
+      if (nextIndex >= total) {
+        submit(next);
+        return;
+      }
+      // Crossing into a new round → show a breather.
+      if (boundarySet.has(nextIndex)) {
+        const done = roundProgress(index, chunks); // the round just completed
+        track("checkpoint", { itemIndex: nextIndex });
+        setCheckpoint({ roundNumber: done.current });
+      }
+      setIndex(nextIndex);
     }, 150);
-  }, [q, answers, index, total, submit, track]);
+  }, [q, answers, index, total, submit, track, boundarySet, chunks]);
 
   useEffect(() => {
-    if (scored) return;
+    if (scored || checkpoint) return;
     const onKey = (e: KeyboardEvent) => {
       if (q && e.key >= "1" && e.key <= String(Math.min(9, q.choices.length))) choose(Number(e.key) - 1);
       else if (e.key === "ArrowLeft" && index > 0) setIndex((i) => i - 1);
@@ -96,7 +114,21 @@ export default function IQQuizRunner({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [q, index, scored, choose]);
+  }, [q, index, scored, checkpoint, choose]);
+
+  // --- between-round breather ---
+  if (checkpoint) {
+    return (
+      <CheckpointScreen
+        roundName={`Round ${checkpoint.roundNumber} complete`}
+        roundNumber={checkpoint.roundNumber}
+        totalRounds={chunks.length}
+        earnedLine={`Round ${checkpoint.roundNumber} of ${chunks.length} done — keep going.`}
+        estSecondsLeft={null}
+        onContinue={() => setCheckpoint(null)}
+      />
+    );
+  }
 
   // --- results screen ---
   if (scored) {
@@ -173,7 +205,10 @@ export default function IQQuizRunner({
     <div className="mx-auto max-w-2xl px-4 py-8 text-brand-white min-h-[80vh] flex flex-col">
       <div className="sticky top-0 pt-2 pb-3 bg-brand-black/80 backdrop-blur z-10">
         <div className="flex justify-between text-[11px] uppercase tracking-widest text-white/60">
-          <span className="text-brand-yellow">{title}</span>
+          <span>
+            <span className="text-brand-yellow">{title}</span>
+            {chunks.length > 1 && <span className="text-white/50"> · Round {prog.current}/{chunks.length}</span>}
+          </span>
           <span className="flex items-center gap-3">
             <SaveIndicator status={draft.status} />
             <span>{answeredCount}/{total}</span>

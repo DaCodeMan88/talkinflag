@@ -2,11 +2,22 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PerspectiveSummary, { EvalResult } from "./PerspectiveSummary";
+import CheckpointScreen from "./CheckpointScreen";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
 import { useAssessmentSession } from "@/hooks/useAssessmentSession";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 import { AssessmentItem } from "@/components/eval/items";
+import { chunkByRound, roundProgress } from "@/lib/assessments/rounds";
 import type { ItemAnswer } from "@/lib/eval/item-types";
+
+/** Round number → display name for the 5-round evaluation. */
+const ROUND_NAMES: Record<number, string> = {
+  1: "Snap Judgments",
+  2: "Spend Your Points",
+  3: "You're on the Sideline",
+  4: "Rank Them",
+  5: "Where You Stand",
+};
 
 type EvalDraft = { role: string; started: boolean; index: number; answers: Record<string, ItemAnswer> };
 
@@ -30,13 +41,25 @@ const ROLE_LABELS: Record<string, string> = {
   player: "Just for me (Player)",
 };
 
+/**
+ * Honest-ish time estimate: median observed ms-per-item × remaining items,
+ * falling back to a flat 6s/item before we have data. Returns seconds.
+ */
+function estimateSecondsLeft(times: number[], remaining: number): number {
+  if (remaining <= 0) return 0;
+  if (times.length === 0) return remaining * 6;
+  const sorted = [...times].sort((a, b) => a - b);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  return Math.round((remaining * median) / 1000);
+}
+
 export default function EvaluationRunner({
   items,
-  sections,
   eligibleRoles,
 }: {
   items: RunnerItem[];
-  sections: Section[];
+  /** Retained for API compatibility; rounds now drive the progress header. */
+  sections?: Section[];
   eligibleRoles: string[];
 }) {
   const roleOptions = useMemo(() => [...eligibleRoles, "player"], [eligibleRoles]);
@@ -51,12 +74,34 @@ export default function EvaluationRunner({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EvalResult | null>(null);
+  // Between-round breather. When set, we show CheckpointScreen instead of the
+  // next question until the user taps Continue.
+  const [checkpoint, setCheckpoint] = useState<{
+    roundNumber: number;
+    roundName: string;
+    earnedLine: string;
+    estSecondsLeft: number | null;
+  } | null>(null);
 
   const total = items.length;
   const item = items[index];
-  const sectionLabel = sections.find((s) => s.key === item?.section_key)?.label ?? "";
-  const sectionIndex = sections.findIndex((s) => s.key === item?.section_key) + 1;
   const answeredCount = Object.keys(answers).length;
+
+  // Rounds come from the items' `round` values. If any item lacks a round,
+  // fall back to a single round so nothing breaks (no checkpoints then).
+  const chunks = useMemo(() => {
+    const rounds = items.map((it) => it.round);
+    if (rounds.some((r) => r == null)) return [{ round: 1, start: 0, end: total }];
+    return chunkByRound(rounds as number[]);
+  }, [items, total]);
+  // Indices at which a new round starts (i.e. chunk starts after the first).
+  const boundarySet = useMemo(() => new Set(chunks.slice(1).map((c) => c.start)), [chunks]);
+  const prog = roundProgress(index, chunks);
+  const roundName = ROUND_NAMES[chunks[prog.current - 1]?.round] ?? `Round ${prog.current}`;
+
+  // Rough per-item timing to estimate time remaining at a checkpoint.
+  const itemTimesRef = useRef<number[]>([]);
+  const itemStartRef = useRef<number>(Date.now());
 
   // Save & resume across the whole evaluation flow.
   const draft = useAutosaveDraft<EvalDraft>({
@@ -103,17 +148,39 @@ export default function EvaluationRunner({
     if (!item) return;
     setTimeout(() => {
       const snapshot = answersRef.current;
-      track("answer", { itemIndex: index, itemId: item.id, answeredCount: Object.keys(snapshot).length });
-      if (index + 1 >= total) submit(snapshot);
-      else setIndex((i) => i + 1);
+      const answered = Object.keys(snapshot).length;
+      // Record how long this item took (rough — feeds the time estimate).
+      const now = Date.now();
+      itemTimesRef.current.push(now - itemStartRef.current);
+      itemStartRef.current = now;
+      track("answer", { itemIndex: index, itemId: item.id, answeredCount: answered });
+      const nextIndex = index + 1;
+      if (nextIndex >= total) {
+        submit(snapshot);
+        return;
+      }
+      // Crossing into a new round (and not the final item) → show a breather.
+      if (boundarySet.has(nextIndex)) {
+        const done = roundProgress(index, chunks); // the round just completed
+        const remaining = total - nextIndex;
+        const est = estimateSecondsLeft(itemTimesRef.current, remaining);
+        track("checkpoint", { itemIndex: nextIndex });
+        setCheckpoint({
+          roundNumber: done.current,
+          roundName: ROUND_NAMES[chunks[done.current - 1]?.round] ?? `Round ${done.current}`,
+          earnedLine: `Through ${answered} questions — nice pace.`,
+          estSecondsLeft: est,
+        });
+      }
+      setIndex(nextIndex);
     }, 140);
-  }, [item, index, total, submit, track]);
+  }, [item, index, total, submit, track, boundarySet, chunks]);
 
   // Number-key shortcuts pick an option — only for single-choice types. Budget
   // and rank use inputs where digit presses would fight the controls.
   const choiceType = item ? ["likert", "forced_choice", "scenario"].includes(item.item_type) : false;
   useEffect(() => {
-    if (!started || result) return;
+    if (!started || result || checkpoint) return;
     const onKey = (e: KeyboardEvent) => {
       if (choiceType && item && e.key >= "1" && e.key <= String(Math.min(9, item.options.length))) {
         const idx = Number(e.key) - 1;
@@ -125,9 +192,26 @@ export default function EvaluationRunner({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [started, result, item, index, choiceType, commitCurrent]);
+  }, [started, result, checkpoint, item, index, choiceType, commitCurrent]);
 
   if (result) return <PerspectiveSummary result={result} />;
+
+  // --- between-round breather ---
+  if (checkpoint) {
+    return (
+      <CheckpointScreen
+        roundName={checkpoint.roundName}
+        roundNumber={checkpoint.roundNumber}
+        totalRounds={chunks.length}
+        earnedLine={checkpoint.earnedLine}
+        estSecondsLeft={checkpoint.estSecondsLeft}
+        onContinue={() => {
+          itemStartRef.current = Date.now();
+          setCheckpoint(null);
+        }}
+      />
+    );
+  }
 
   // --- intro / role selection ---
   if (!started) {
@@ -203,15 +287,23 @@ export default function EvaluationRunner({
       <div className="sticky top-0 pt-2 pb-3 bg-brand-black/80 backdrop-blur">
         <div className="flex justify-between text-[11px] uppercase tracking-widest text-white/60">
           <span>
-            Section {sectionIndex}/10 · <span className="text-brand-yellow">{sectionLabel}</span>
+            Round {prog.current} of {chunks.length} · <span className="text-brand-yellow">{roundName}</span>
           </span>
           <span className="flex items-center gap-3">
             <SaveIndicator status={draft.status} />
             <span>{answeredCount}/{total}</span>
           </span>
         </div>
+        {/* within-round progress */}
         <div className="mt-2 h-1.5 rounded bg-white/10 overflow-hidden">
-          <div className="h-full bg-brand-yellow transition-all duration-300" style={{ width: `${(answeredCount / total) * 100}%` }} />
+          <div
+            className="h-full bg-brand-yellow transition-all duration-300"
+            style={{ width: `${prog.withinTotal ? ((prog.withinIndex + 1) / prog.withinTotal) * 100 : 0}%` }}
+          />
+        </div>
+        {/* thin full-run bar beneath */}
+        <div className="mt-1 h-0.5 rounded bg-white/5 overflow-hidden">
+          <div className="h-full bg-white/30 transition-all duration-300" style={{ width: `${(answeredCount / total) * 100}%` }} />
         </div>
       </div>
 
