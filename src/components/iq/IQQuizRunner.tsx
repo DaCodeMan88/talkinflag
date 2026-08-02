@@ -14,10 +14,14 @@ export default function IQQuizRunner({
   category,
   title,
   questions,
+  sessionId: existingSessionId,
 }: {
   category: string;
   title: string;
   questions: IQItem[];
+  /** Session created server-side (carries the shuffle nonce). Optional so older
+   * callers still work — then the hook self-creates a session. */
+  sessionId?: string | null;
 }) {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -49,6 +53,7 @@ export default function IQQuizRunner({
     subjectKey: category,
     totalItems: total,
     enabled: true,
+    existingSessionId,
   });
 
   const submit = useCallback(async (finalAnswers: Record<string, number>) => {

@@ -21,21 +21,34 @@ export function useAssessmentSession(opts: {
   subjectKey: string;
   totalItems: number;
   enabled: boolean;
+  /**
+   * When a session was already created server-side, pass its id here. The hook
+   * then adopts it (so the SAME nonce is used for display and scoring) and does
+   * NOT create a second session — it just returns a working `track`.
+   */
+  existingSessionId?: string | null;
 }): {
   sessionId: string | null;
   track: (type: TrackType, payload?: TrackPayload) => void;
 } {
-  const { kind, subjectKey, totalItems, enabled } = opts;
+  const { kind, subjectKey, totalItems, enabled, existingSessionId } = opts;
 
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(existingSessionId ?? null);
   const startedRef = useRef(false);
-  const sessionIdRef = useRef<string | null>(null);
+  const sessionIdRef = useRef<string | null>(existingSessionId ?? null);
   const lastItemAtRef = useRef<number>(0);
 
   useEffect(() => {
     if (!enabled || startedRef.current) return;
     startedRef.current = true;
     lastItemAtRef.current = Date.now();
+    // A server-provided session id short-circuits creation: adopt it and skip
+    // the POST so we never spin up a duplicate session (or a mismatched nonce).
+    if (existingSessionId) {
+      sessionIdRef.current = existingSessionId;
+      setSessionId(existingSessionId);
+      return;
+    }
     (async () => {
       try {
         const res = await fetch("/api/assessments/session", {
