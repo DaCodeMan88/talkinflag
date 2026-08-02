@@ -6,6 +6,9 @@ export type RawItem = {
   ordinal: number;
   prompt: string;
   style: string;
+  item_type: string;
+  context: string | null;
+  round: number | null;
   options: { label: string; dimension: string; points: number }[];
   science_dimension: string | null;
   taxonomy_trait_id: number | null;
@@ -20,6 +23,9 @@ export type PublicItem = {
   ordinal: number;
   prompt: string;
   style: string;
+  item_type: string;
+  context: string | null;
+  round: number | null;
   options: { label: string }[];
 };
 
@@ -30,6 +36,9 @@ export function stripAnswers(item: RawItem): PublicItem {
     ordinal: item.ordinal,
     prompt: item.prompt,
     style: item.style,
+    item_type: item.item_type,
+    context: item.context,
+    round: item.round,
     options: item.options.map((o) => ({ label: o.label })),
   };
 }
@@ -47,7 +56,7 @@ export async function loadActiveItems(): Promise<{ questionnaireId: string; item
   if (!q) return null;
   const { data: items } = await db
     .from("eval_items")
-    .select("id, section_key, ordinal, prompt, style, options, science_dimension, taxonomy_trait_id, taxonomy_tier, source_citation")
+    .select("id, section_key, ordinal, prompt, style, item_type, context, round, options, science_dimension, taxonomy_trait_id, taxonomy_tier, source_citation")
     .eq("questionnaire_id", q.id)
     .order("ordinal", { ascending: true });
   return { questionnaireId: q.id, items: (items ?? []) as RawItem[] };

@@ -1,18 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PerspectiveSummary, { EvalResult } from "./PerspectiveSummary";
 import { useAutosaveDraft } from "@/hooks/useAutosaveDraft";
 import { useAssessmentSession } from "@/hooks/useAssessmentSession";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
+import { AssessmentItem } from "@/components/eval/items";
+import type { ItemAnswer } from "@/lib/eval/item-types";
 
-type EvalDraft = { role: string; started: boolean; index: number; answers: Record<string, number> };
+type EvalDraft = { role: string; started: boolean; index: number; answers: Record<string, ItemAnswer> };
 
 export type RunnerItem = {
   id: string;
   section_key: string;
   ordinal: number;
   prompt: string;
+  style: string;
+  item_type: string;
+  context: string | null;
+  round: number | null;
   options: { label: string }[];
 };
 export type Section = { key: string; label: string };
@@ -37,7 +43,11 @@ export default function EvaluationRunner({
   const [role, setRole] = useState(roleOptions[0]);
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [answers, setAnswers] = useState<Record<string, ItemAnswer>>({});
+  // Mirror of `answers` so the deferred (post-140ms) commit reads the latest
+  // value even when onChange fired in the same tick as onCommit.
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EvalResult | null>(null);
@@ -64,7 +74,7 @@ export default function EvaluationRunner({
   });
 
   const submit = useCallback(
-    async (finalAnswers: Record<string, number>) => {
+    async (finalAnswers: Record<string, ItemAnswer>) => {
       setSubmitting(true);
       setError(null);
       try {
@@ -85,32 +95,37 @@ export default function EvaluationRunner({
     [role, draft, sessionId]
   );
 
-  const choose = useCallback(
-    (choiceIdx: number) => {
-      if (!item) return;
-      const next = { ...answers, [item.id]: choiceIdx };
-      setAnswers(next);
-      track("answer", { itemIndex: index, itemId: item.id, answeredCount: Object.keys(next).length });
-      setTimeout(() => {
-        if (index + 1 >= total) submit(next);
-        else setIndex((i) => i + 1);
-      }, 140);
-    },
-    [item, answers, index, total, submit, track]
-  );
+  // Advance past the current item, submitting on the last one. The answer for
+  // `item.id` has already been written into `answers` via onChange by the time
+  // this runs (auto-advance types call onChange then onCommit synchronously;
+  // budget/rank call onChange during editing and onCommit on Continue).
+  const commitCurrent = useCallback(() => {
+    if (!item) return;
+    setTimeout(() => {
+      const snapshot = answersRef.current;
+      track("answer", { itemIndex: index, itemId: item.id, answeredCount: Object.keys(snapshot).length });
+      if (index + 1 >= total) submit(snapshot);
+      else setIndex((i) => i + 1);
+    }, 140);
+  }, [item, index, total, submit, track]);
 
+  // Number-key shortcuts pick an option — only for single-choice types. Budget
+  // and rank use inputs where digit presses would fight the controls.
+  const choiceType = item ? ["likert", "forced_choice", "scenario"].includes(item.item_type) : false;
   useEffect(() => {
     if (!started || result) return;
     const onKey = (e: KeyboardEvent) => {
-      if (item && e.key >= "1" && e.key <= String(Math.min(9, item.options.length))) {
-        choose(Number(e.key) - 1);
+      if (choiceType && item && e.key >= "1" && e.key <= String(Math.min(9, item.options.length))) {
+        const idx = Number(e.key) - 1;
+        setAnswers((prev) => ({ ...prev, [item.id]: idx }));
+        commitCurrent();
       } else if (e.key === "ArrowLeft" && index > 0) {
         setIndex((i) => i - 1);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [started, result, item, index, choose]);
+  }, [started, result, item, index, choiceType, commitCurrent]);
 
   if (result) return <PerspectiveSummary result={result} />;
 
@@ -203,24 +218,13 @@ export default function EvaluationRunner({
       <div key={item.id} className="flex-1 flex flex-col justify-center py-8 animate-[fadeIn_240ms_ease]">
         <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">Question {index + 1}</p>
         <h2 className="mt-2 text-2xl sm:text-3xl font-semibold leading-snug">{item.prompt}</h2>
-        <div className="mt-6 grid gap-3">
-          {item.options.map((o, i) => {
-            const selected = answers[item.id] === i;
-            return (
-              <button
-                key={i}
-                onClick={() => choose(i)}
-                disabled={submitting}
-                className={`flex items-center gap-3 text-left rounded-xl px-4 py-4 border transition ${
-                  selected ? "border-brand-yellow bg-brand-yellow/15" : "border-white/15 hover:border-brand-yellow/70 hover:bg-white/5"
-                }`}
-              >
-                <span className="shrink-0 w-7 h-7 rounded-full border border-white/30 grid place-items-center text-xs">{i + 1}</span>
-                <span className="text-base">{o.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <AssessmentItem
+          item={item}
+          value={answers[item.id]}
+          onChange={(v) => setAnswers((prev) => ({ ...prev, [item.id]: v }))}
+          onCommit={commitCurrent}
+          disabled={submitting}
+        />
       </div>
 
       <div className="flex justify-between items-center pb-4 text-xs uppercase tracking-widest text-white/50">
@@ -229,7 +233,7 @@ export default function EvaluationRunner({
         </button>
         {submitting && <span className="text-brand-yellow">Scoring…</span>}
         {error && <span className="text-red-400 normal-case tracking-normal">{error} — <button className="underline" onClick={() => submit(answers)}>retry</button></span>}
-        <span>Press 1–{Math.min(5, item.options.length)}</span>
+        {choiceType ? <span>Press 1–{Math.min(5, item.options.length)}</span> : <span />}
       </div>
     </div>
   );
