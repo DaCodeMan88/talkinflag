@@ -1,26 +1,30 @@
 import { DIMENSION_KEYS, DimensionKey, Fingerprint, emptyFingerprint } from "./dimensions";
+import { ItemAnswer } from "./item-types";
+import { scoreItem } from "./score-types";
 
 export type ScoringOption = { dimension: string; points: number };
-export type ScoringItem = { id?: string; ordinal?: number; options: ScoringOption[] };
+export type ScoringItem = { id?: string; ordinal?: number; item_type?: string; options: ScoringOption[] };
 
 /**
- * Sum each chosen option's points into its dimension.
- * `answers` maps an item key (id or ordinal) to the chosen option index.
- * Returns the raw 10-dimension vector (un-normalized).
+ * Accumulate each item's contribution into the raw 10-dimension vector, routing
+ * per item_type through `scoreItem`. Items with no `item_type` are scored as
+ * Likert (the v1 default), so existing single-dimension banks and the plain
+ * `Record<string, number>` answer shape keep working unchanged.
  */
 export function scoreFingerprint(
   items: ScoringItem[],
-  answers: Record<string, number>
+  answers: Record<string, ItemAnswer>
 ): Fingerprint {
   const fp = emptyFingerprint();
   for (const item of items) {
     const key = String(item.id ?? item.ordinal);
-    const chosen = answers[key];
-    if (chosen === undefined || chosen === null) continue;
-    const opt = item.options[chosen];
-    if (!opt) continue;
-    if ((DIMENSION_KEYS as readonly string[]).includes(opt.dimension)) {
-      fp[opt.dimension as DimensionKey] += opt.points;
+    const answer = answers[key];
+    if (answer === undefined || answer === null) continue;
+    const contrib = scoreItem({ item_type: item.item_type ?? "likert", options: item.options }, answer);
+    for (const [dim, pts] of Object.entries(contrib)) {
+      if ((DIMENSION_KEYS as readonly string[]).includes(dim)) {
+        fp[dim as DimensionKey] += pts;
+      }
     }
   }
   return fp;
