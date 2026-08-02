@@ -11,7 +11,11 @@ import { nextStreak } from "@/lib/iq/streak";
 
 export type IQItem = { id: string; ordinal: number; prompt: string; choices: string[] };
 type Result = { id: string; ordinal: number; correct_index: number; chosen: number | null; correct: boolean; explanation: string | null };
-type QuizDraft = { index: number; answers: Record<string, number> };
+// Saved answers are keyed by the chosen choice's LABEL, not its displayed index.
+// Each page load re-shuffles a question's choices under a fresh nonce, so a
+// stored index would point at the wrong option on resume; the label is stable,
+// so we translate it back to the current displayed index when resuming.
+type QuizDraft = { index: number; answerLabels: Record<string, string> };
 type QuizMode = "instant" | "test";
 type Feedback = { correct: boolean; correctIndexDisplayed: number; explanation: string | null };
 
@@ -57,6 +61,17 @@ export default function IQQuizRunner({
   const answeredCount = Object.keys(answers).length;
   const byId = useMemo(() => Object.fromEntries(questions.map((x) => [x.id, x])), [questions]);
 
+  // Persist answers by chosen LABEL (nonce-independent), so resume survives the
+  // per-page-load choice re-shuffle. Translated back to indices on resume.
+  const answerLabels = useMemo(() => {
+    const out: Record<string, string> = {};
+    for (const [qid, idx] of Object.entries(answers)) {
+      const label = byId[qid]?.choices[idx];
+      if (label != null) out[qid] = label;
+    }
+    return out;
+  }, [answers, byId]);
+
   // Break the flat question list into fixed-size rounds (coach = 8, else 10).
   const chunks = useMemo(() => fixedChunks(total, isCoach ? 8 : 10), [total, isCoach]);
   const boundarySet = useMemo(() => new Set(chunks.slice(1).map((c) => c.start)), [chunks]);
@@ -67,9 +82,9 @@ export default function IQQuizRunner({
     category === "coach" ? "quiz:coach" : category === "general" ? "quiz:general" : null;
   const draft = useAutosaveDraft<QuizDraft>({
     kind: (draftKind ?? "quiz:general"),
-    value: { index, answers },
+    value: { index, answerLabels },
     enabled: !!draftKind && !scored,
-    isEmpty: (v) => Object.keys(v.answers).length === 0,
+    isEmpty: (v) => Object.keys(v.answerLabels ?? {}).length === 0,
   });
 
   const { sessionId, track } = useAssessmentSession({
@@ -221,7 +236,17 @@ export default function IQQuizRunner({
               label="your quiz progress"
               onResume={() => {
                 const v = draft.resume();
-                if (v) { setAnswers(v.answers ?? {}); setIndex(Math.min(v.index ?? 0, total - 1)); track("resume", { itemIndex: v.index ?? 0 }); }
+                if (v) {
+                  // Translate saved labels back to THIS attempt's displayed indices.
+                  const restored: Record<string, number> = {};
+                  for (const [qid, label] of Object.entries(v.answerLabels ?? {})) {
+                    const di = byId[qid]?.choices.indexOf(label) ?? -1;
+                    if (di >= 0) restored[qid] = di;
+                  }
+                  setAnswers(restored);
+                  setIndex(Math.min(v.index ?? 0, total - 1));
+                  track("resume", { itemIndex: v.index ?? 0 });
+                }
                 setStarted(true);
               }}
               onDismiss={draft.dismissResume}
