@@ -7,6 +7,11 @@ const config: NextConfig = {
       { source: "/episodes/:id", destination: "/podcast/:id", permanent: true },
       // /community retired (Discord feature paused) — redirect indexed URL to podcast
       { source: "/community", destination: "/podcast", permanent: true },
+      // Top 10 Plays / Athlete of the Week retired — redirect indexed URLs to /players (closest live equivalent: athlete discovery)
+      { source: "/plays", destination: "/players", permanent: true },
+      { source: "/plays/week/:week", destination: "/players", permanent: true },
+      { source: "/athletes/featured", destination: "/players", permanent: true },
+      { source: "/athletes", destination: "/players", permanent: true },
     ];
   },
   experimental: {
