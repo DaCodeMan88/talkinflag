@@ -60,18 +60,22 @@ interface BlogPostRow {
   [key: string]: unknown;
 }
 
-/** Parse a JSONB column that may arrive as an array or a JSON string. */
-function parseJsonArray<T>(value: unknown): T[] | undefined {
-  if (value == null) return undefined;
+/**
+ * Parse a JSONB column that may arrive as a real array (supabase-js) or as a
+ * JSON string. Returns [] for null/undefined, unparseable strings, or any
+ * non-array value — so DB-sourced posts always carry arrays, never undefined.
+ */
+export function parseJsonArray<T>(value: unknown): T[] {
+  if (value == null) return [];
   let parsed: unknown = value;
   if (typeof value === "string") {
     try {
       parsed = JSON.parse(value);
     } catch {
-      return undefined;
+      return [];
     }
   }
-  return Array.isArray(parsed) ? (parsed as T[]) : undefined;
+  return Array.isArray(parsed) ? (parsed as T[]) : [];
 }
 
 export function toPostRecordFromStatic(p: StaticPost): PostRecord {
@@ -111,7 +115,17 @@ export function toPostRecordFromDb(row: BlogPostRow): PostRecord {
   };
 }
 
-/** Map a Sanity post (see `SanityPost` in `@/lib/sanity`) to a PostRecord. */
+/**
+ * Map a Sanity post (see `SanityPost` in `@/lib/sanity`) to a PostRecord.
+ *
+ * KNOWN LIMITATION: Sanity `body` is Portable Text (structured blocks), not a
+ * string, and both `getAllPostRecords` and `getPostRecordBySlug` resolve Sanity
+ * via `getAllPosts()` — the list shape, which does not include `body` at all.
+ * So Sanity-sourced posts contribute list metadata only, with an empty `body`.
+ * Sanity is currently unconfigured, so this is latent. If it is ever re-enabled,
+ * the single-slug path should instead call `getPostBySlug(slug)` (returns
+ * `SanityPostFull`) and map its Portable Text `body` to renderable content.
+ */
 function toPostRecordFromSanity(p: {
   title?: string;
   slug?: { current?: string } | string;
