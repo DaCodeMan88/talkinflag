@@ -7,16 +7,20 @@ import { useAssessmentSession } from "@/hooks/useAssessmentSession";
 import { ResumeBanner, SaveIndicator } from "@/components/ui/DraftControls";
 import CheckpointScreen from "@/components/eval/CheckpointScreen";
 import { fixedChunks, roundProgress } from "@/lib/assessments/rounds";
+import { nextStreak } from "@/lib/iq/streak";
 
 export type IQItem = { id: string; ordinal: number; prompt: string; choices: string[] };
 type Result = { id: string; ordinal: number; correct_index: number; chosen: number | null; correct: boolean; explanation: string | null };
 type QuizDraft = { index: number; answers: Record<string, number> };
+type QuizMode = "instant" | "test";
+type Feedback = { correct: boolean; correctIndexDisplayed: number; explanation: string | null };
 
 export default function IQQuizRunner({
   category,
   title,
   questions,
   sessionId: existingSessionId,
+  initialMode = "instant",
 }: {
   category: string;
   title: string;
@@ -24,7 +28,11 @@ export default function IQQuizRunner({
   /** Session created server-side (carries the shuffle nonce). Optional so older
    * callers still work — then the hook self-creates a session. */
   sessionId?: string | null;
+  /** Default answering mode; the user can flip it on the intro screen. */
+  initialMode?: QuizMode;
 }) {
+  const [mode, setMode] = useState<QuizMode>(initialMode);
+  const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -33,8 +41,16 @@ export default function IQQuizRunner({
   const [shared, setShared] = useState(false);
   const [checkpoint, setCheckpoint] = useState<{ roundNumber: number } | null>(null);
 
+  // Instant-feedback state.
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [best, setBest] = useState(0);
+  const [bump, setBump] = useState(false);
+
   const isCoach = category === "coach";
   const iqLabel = isCoach ? "Coach IQ" : "Flag Football IQ";
+  const isInstant = mode === "instant";
 
   const total = questions.length;
   const q = questions[index];
@@ -84,37 +100,147 @@ export default function IQQuizRunner({
     }
   }, [category, draft, sessionId]);
 
-  const choose = useCallback((choiceIdx: number) => {
+  // Advance to the next question (shared by both modes), honoring round checkpoints.
+  const advance = useCallback((committed: Record<string, number>) => {
+    const nextIndex = index + 1;
+    if (nextIndex >= total) {
+      submit(committed);
+      return;
+    }
+    if (boundarySet.has(nextIndex)) {
+      const done = roundProgress(index, chunks); // the round just completed
+      track("checkpoint", { itemIndex: nextIndex });
+      setCheckpoint({ roundNumber: done.current });
+    }
+    setIndex(nextIndex);
+  }, [index, total, submit, boundarySet, chunks, track]);
+
+  // TEST mode: record telemetry via /api/assessments/event, then auto-advance.
+  const chooseTest = useCallback((choiceIdx: number) => {
     if (!q) return;
     const next = { ...answers, [q.id]: choiceIdx };
     setAnswers(next);
     track("answer", { itemIndex: index, itemId: q.id, answeredCount: Object.keys(next).length });
-    setTimeout(() => {
-      const nextIndex = index + 1;
-      if (nextIndex >= total) {
-        submit(next);
-        return;
-      }
-      // Crossing into a new round → show a breather.
-      if (boundarySet.has(nextIndex)) {
-        const done = roundProgress(index, chunks); // the round just completed
-        track("checkpoint", { itemIndex: nextIndex });
-        setCheckpoint({ roundNumber: done.current });
-      }
-      setIndex(nextIndex);
-    }, 150);
-  }, [q, answers, index, total, submit, track, boundarySet, chunks]);
+    setTimeout(() => advance(next), 150);
+  }, [q, answers, index, track, advance]);
+
+  // INSTANT mode: check the single answer server-side (which ALSO records the
+  // answer event — so we do NOT also call track("answer") here, or we'd create a
+  // duplicate answer row and trip the one-check-per-question guard). Reveal the
+  // result and wait for an explicit Continue.
+  const chooseInstant = useCallback(async (choiceIdx: number) => {
+    if (!q || feedback || checking) return;
+    setChecking(true);
+    setError(null);
+    const next = { ...answers, [q.id]: choiceIdx };
+    setAnswers(next);
+    try {
+      const res = await fetch("/api/iq/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, category, questionId: q.id, choice: choiceIdx, itemIndex: index }),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Could not check answer");
+      const data: Feedback = await res.json();
+      setFeedback(data);
+      setStreak((cur) => {
+        const ns = nextStreak(cur, data.correct);
+        setBest((b) => {
+          if (ns > b && ns > 0) { setBump(true); setTimeout(() => setBump(false), 1200); return ns; }
+          return b;
+        });
+        return ns;
+      });
+    } catch (e) {
+      // Roll the selection back so the user can retry cleanly.
+      setAnswers((a) => { const c = { ...a }; delete c[q.id]; return c; });
+      setError(e instanceof Error ? e.message : "Could not check answer");
+    } finally {
+      setChecking(false);
+    }
+  }, [q, feedback, checking, answers, sessionId, category, index]);
+
+  const continueInstant = useCallback(() => {
+    if (!feedback) return;
+    setFeedback(null);
+    advance(answers);
+  }, [feedback, answers, advance]);
 
   useEffect(() => {
-    if (scored || checkpoint) return;
+    if (scored || checkpoint || !started) return;
     const onKey = (e: KeyboardEvent) => {
-      if (q && e.key >= "1" && e.key <= String(Math.min(9, q.choices.length))) choose(Number(e.key) - 1);
-      else if (e.key === "ArrowLeft" && index > 0) setIndex((i) => i - 1);
-      else if (e.key === "ArrowRight" && index < total - 1) setIndex((i) => i + 1);
+      if (isInstant && feedback) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); continueInstant(); }
+        return;
+      }
+      if (isInstant && checking) return;
+      if (q && e.key >= "1" && e.key <= String(Math.min(9, q.choices.length))) {
+        const pick = Number(e.key) - 1;
+        if (isInstant) chooseInstant(pick); else chooseTest(pick);
+      } else if (!isInstant && e.key === "ArrowLeft" && index > 0) setIndex((i) => i - 1);
+      else if (!isInstant && e.key === "ArrowRight" && index < total - 1) setIndex((i) => i + 1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [q, index, scored, checkpoint, choose]);
+  }, [q, index, total, scored, checkpoint, started, isInstant, feedback, checking, chooseInstant, chooseTest, continueInstant]);
+
+  // --- intro / mode picker (also the resume entry point) ---
+  if (!started && !scored) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12 text-brand-white min-h-[70vh] flex flex-col justify-center">
+        <p className="font-display uppercase tracking-widest text-brand-yellow text-sm">{title}</p>
+        <h1 className="font-display uppercase tracking-widest text-4xl sm:text-5xl mt-2">Ready?</h1>
+        <p className="mt-3 text-white/70">{total} questions. Pick how you want to take it.</p>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setMode("instant")}
+            aria-pressed={isInstant}
+            className={`text-left rounded-xl border p-4 transition ${isInstant ? "border-brand-yellow bg-brand-yellow/10" : "border-white/15 hover:border-brand-yellow/60"}`}
+          >
+            <span className="font-display uppercase tracking-widest text-sm">🔥 Instant feedback</span>
+            <span className="mt-1 block text-xs text-white/70">Learn as you go — see the answer and why, right after each question. Builds a streak.</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("test")}
+            aria-pressed={!isInstant}
+            className={`text-left rounded-xl border p-4 transition ${!isInstant ? "border-brand-yellow bg-brand-yellow/10" : "border-white/15 hover:border-brand-yellow/60"}`}
+          >
+            <span className="font-display uppercase tracking-widest text-sm">Test mode</span>
+            <span className="mt-1 block text-xs text-white/70">No hints. Full results and explanations at the end.</span>
+          </button>
+        </div>
+
+        {draft.resumable && (
+          <div className="mt-6">
+            <ResumeBanner
+              updatedAt={draft.resumable.updatedAt}
+              source={draft.resumable.source}
+              label="your quiz progress"
+              onResume={() => {
+                const v = draft.resume();
+                if (v) { setAnswers(v.answers ?? {}); setIndex(Math.min(v.index ?? 0, total - 1)); track("resume", { itemIndex: v.index ?? 0 }); }
+                setStarted(true);
+              }}
+              onDismiss={draft.dismissResume}
+            />
+          </div>
+        )}
+
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={() => setStarted(true)}
+            className="rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-8 py-3 hover:bg-brand-yellow/90 transition"
+          >
+            Start quiz
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // --- between-round breather ---
   if (checkpoint) {
@@ -153,6 +279,9 @@ export default function IQQuizRunner({
           {scored.pct.toFixed(0)}<span className="text-2xl text-white/50"> / 100</span>
         </h1>
         <p className="mt-1 text-white/80">{iqLabel}: <span className="text-brand-yellow">{grade}</span> · {scored.raw}/{scored.max} correct</p>
+        {isInstant && best > 0 && (
+          <p className="mt-1 text-sm text-white/70">Best streak this run: <span className="text-brand-yellow">🔥 {best}</span></p>
+        )}
 
         {isCoach && (
           <div className="mt-6 rounded-xl border border-brand-yellow/30 bg-brand-yellow/10 p-5 animate-[fadeIn_300ms_ease]">
@@ -174,16 +303,30 @@ export default function IQQuizRunner({
           {scored.results.map((r) => {
             const item = byId[r.id];
             if (!item) return null;
+            const correctnessLine = (
+              <p className="mt-1 text-xs">
+                <span className={r.correct ? "text-green-400" : "text-red-400"}>
+                  {r.correct ? "Correct" : `Your answer: ${r.chosen != null ? item.choices[r.chosen] : "—"}`}
+                </span>
+                {!r.correct && <span className="text-green-400"> · Answer: {item.choices[r.correct_index]}</span>}
+              </p>
+            );
             return (
               <div key={r.id} className={`rounded-xl border p-4 ${r.correct ? "border-green-500/40 bg-green-500/5" : "border-red-500/40 bg-red-500/5"}`}>
                 <p className="text-sm font-semibold">{r.ordinal}. {item.prompt}</p>
-                <p className="mt-1 text-xs">
-                  <span className={r.correct ? "text-green-400" : "text-red-400"}>
-                    {r.correct ? "Correct" : `Your answer: ${r.chosen != null ? item.choices[r.chosen] : "—"}`}
-                  </span>
-                  {!r.correct && <span className="text-green-400"> · Answer: {item.choices[r.correct_index]}</span>}
-                </p>
-                {r.explanation && <p className="mt-1 text-xs text-white/65">{r.explanation}</p>}
+                {correctnessLine}
+                {r.explanation && (
+                  // In instant mode the learner already saw each explanation, so
+                  // collapse them here; in test mode this is their first read.
+                  isInstant ? (
+                    <details className="mt-1 group">
+                      <summary className="text-xs text-white/50 cursor-pointer select-none hover:text-white/80">Explanation</summary>
+                      <p className="mt-1 text-xs text-white/65">{r.explanation}</p>
+                    </details>
+                  ) : (
+                    <p className="mt-1 text-xs text-white/65">{r.explanation}</p>
+                  )
+                )}
               </div>
             );
           })}
@@ -201,6 +344,7 @@ export default function IQQuizRunner({
   }
 
   // --- question ---
+  const chosen = answers[q.id];
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 text-brand-white min-h-[80vh] flex flex-col">
       <div className="sticky top-0 pt-2 pb-3 bg-brand-black/80 backdrop-blur z-10">
@@ -210,6 +354,17 @@ export default function IQQuizRunner({
             {chunks.length > 1 && <span className="text-white/50"> · Round {prog.current}/{chunks.length}</span>}
           </span>
           <span className="flex items-center gap-3">
+            {isInstant && (
+              <span className="relative flex items-center gap-1 text-brand-yellow" aria-label={`Current streak ${streak}`}>
+                <span aria-hidden>🔥</span>
+                <span className="tabular-nums">{streak}</span>
+                {bump && (
+                  <span className="absolute -top-3 -right-1 text-[10px] text-brand-yellow motion-safe:animate-[popIn_500ms_ease] motion-reduce:opacity-100" aria-hidden>
+                    +1
+                  </span>
+                )}
+              </span>
+            )}
             <SaveIndicator status={draft.status} />
             <span>{answeredCount}/{total}</span>
           </span>
@@ -226,43 +381,65 @@ export default function IQQuizRunner({
         </div>
       </div>
 
-      {draft.resumable && (
-        <div className="mt-4">
-          <ResumeBanner
-            updatedAt={draft.resumable.updatedAt}
-            source={draft.resumable.source}
-            label="your quiz progress"
-            onResume={() => {
-              const v = draft.resume();
-              if (v) { setAnswers(v.answers ?? {}); setIndex(Math.min(v.index ?? 0, total - 1)); track("resume", { itemIndex: v.index ?? 0 }); }
-            }}
-            onDismiss={draft.dismissResume}
-          />
-        </div>
-      )}
-
       <div key={q.id} className="flex-1 flex flex-col justify-center py-8 animate-[fadeIn_240ms_ease]">
         <p className="font-display uppercase tracking-widest text-brand-yellow text-xs">Question {index + 1} of {total}</p>
         <h2 className="mt-2 text-2xl sm:text-3xl font-semibold leading-snug">{q.prompt}</h2>
         <div className="mt-6 grid gap-3">
           {q.choices.map((c, i) => {
-            const selected = answers[q.id] === i;
+            const selected = chosen === i;
+            let cls: string;
+            if (isInstant && feedback) {
+              if (i === feedback.correctIndexDisplayed) cls = "border-green-500 bg-green-500/15";
+              else if (selected) cls = "border-red-500 bg-red-500/15";
+              else cls = "border-white/10 opacity-60";
+            } else {
+              cls = selected ? "border-brand-yellow bg-brand-yellow/15" : "border-white/15 hover:border-brand-yellow/70 hover:bg-white/5";
+            }
+            const locked = isInstant ? (!!feedback || checking) : submitting;
             return (
-              <button key={i} onClick={() => choose(i)} disabled={submitting}
-                className={`flex items-center gap-3 text-left rounded-xl px-4 py-4 border transition ${selected ? "border-brand-yellow bg-brand-yellow/15" : "border-white/15 hover:border-brand-yellow/70 hover:bg-white/5"}`}>
+              <button
+                key={i}
+                onClick={() => (isInstant ? chooseInstant(i) : chooseTest(i))}
+                disabled={locked}
+                className={`flex items-center gap-3 text-left rounded-xl px-4 py-4 border transition ${cls} ${locked ? "cursor-default" : ""}`}
+              >
                 <span className="shrink-0 w-7 h-7 rounded-full border border-white/30 grid place-items-center text-xs">{i + 1}</span>
                 <span className="text-base">{c}</span>
               </button>
             );
           })}
         </div>
+
+        {isInstant && checking && <p className="mt-4 text-sm text-brand-yellow">Checking…</p>}
+
+        {isInstant && feedback && (
+          <div className={`mt-5 rounded-xl border p-4 animate-[fadeIn_240ms_ease] ${feedback.correct ? "border-green-500/40 bg-green-500/5" : "border-red-500/40 bg-red-500/5"}`}>
+            <p className={`text-sm font-semibold ${feedback.correct ? "text-green-400" : "text-red-400"}`}>
+              {feedback.correct ? `Correct${streak > 1 ? ` · 🔥 ${streak} in a row` : ""}` : "Not quite"}
+            </p>
+            {feedback.explanation && <p className="mt-1 text-sm text-white/75 leading-relaxed">{feedback.explanation}</p>}
+            <button
+              type="button"
+              onClick={continueInstant}
+              className="mt-4 rounded-full bg-brand-yellow text-brand-black font-display uppercase tracking-widest text-sm px-6 py-2.5 hover:bg-brand-yellow/90 transition"
+            >
+              {index + 1 >= total ? "See results" : "Continue"}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-between items-center pb-4 text-xs uppercase tracking-widest text-white/50">
-        <button onClick={() => { track("back", { itemIndex: index }); setIndex((i) => Math.max(0, i - 1)); }} disabled={index === 0} className="disabled:opacity-30">← Back</button>
+        {isInstant ? (
+          <span />
+        ) : (
+          <button onClick={() => { track("back", { itemIndex: index }); setIndex((i) => Math.max(0, i - 1)); }} disabled={index === 0} className="disabled:opacity-30">← Back</button>
+        )}
         {submitting && <span className="text-brand-yellow">Scoring…</span>}
-        {error && <span className="text-red-400 normal-case tracking-normal">{error} — <button className="underline" onClick={() => submit(answers)}>retry</button></span>}
-        <span className="hidden sm:inline">Press 1–{Math.min(9, q.choices.length)} · ← → to move</span>
+        {error && <span className="text-red-400 normal-case tracking-normal">{error}{!isInstant && <> — <button className="underline" onClick={() => submit(answers)}>retry</button></>}</span>}
+        <span className="hidden sm:inline">
+          {isInstant ? (feedback ? "Enter to continue" : `Press 1–${Math.min(9, q.choices.length)}`) : `Press 1–${Math.min(9, q.choices.length)} · ← → to move`}
+        </span>
       </div>
     </div>
   );
