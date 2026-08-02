@@ -2,9 +2,10 @@
 /**
  * Seed the Athlete Evaluation Philosophy questionnaire:
  *   - 10 eval_dimensions (+ science map)
- *   - active eval_questionnaires v1
- *   - 50 eval_items (from scripts/data/eval-items.json — 5 per dimension)
+ *   - active eval_questionnaires v2 (and deactivates v1)
+ *   - 28 typed eval_items (from scripts/data/eval-items-v2.json — 5 answer formats)
  *   - eval_reference: taxonomy tier-derived "elite ideal" vector (dim.* + sci.*)
+ *     recomputed from the v2 bank
  *
  * Usage: npx tsx --env-file=.env.local scripts/seed-eval.ts
  *   (or it will read .env.local itself if --env-file is unsupported)
@@ -41,16 +42,17 @@ const DIMENSIONS = [
 type Item = {
   ordinal: number; section_key: string; prompt: string;
   options: { label: string; dimension: string; points: number }[];
-  style: string; science_dimension: string; taxonomy_trait_id: number;
+  style: string; science_dimension: string | null; taxonomy_trait_id: number;
   taxonomy_tier: number; source_citation: string;
+  item_type: string; context?: string | null; round: number;
 };
 
 function round3(n: number) { return Math.round(n * 1000) / 1000; }
 
 async function main() {
-  const data = JSON.parse(readFileSync(join("scripts", "data", "eval-items.json"), "utf8"));
+  const data = JSON.parse(readFileSync(join("scripts", "data", "eval-items-v2.json"), "utf8"));
   const items: Item[] = data.items;
-  if (items.length !== 50) throw new Error(`expected 50 items, got ${items.length}`);
+  if (items.length !== 28) throw new Error(`expected 28 items, got ${items.length}`);
 
   // --- compute taxonomy tier-derived elite-ideal reference vector ---
   // tier weight: Tier 1 (most important) -> 6 ... Tier 6 -> 1
@@ -76,13 +78,19 @@ async function main() {
   if (r.error) throw r.error;
   console.log("✓ dimensions:", DIMENSIONS.length);
 
-  // --- questionnaire (active v1) ---
+  // --- deactivate v1 (leave its items intact) so only v2 is live ---
+  const v1Off = await db.from("eval_questionnaires")
+    .update({ is_active: false }).eq("version", 1);
+  if (v1Off.error) throw v1Off.error;
+  console.log("✓ questionnaire v1 deactivated");
+
+  // --- questionnaire (active v2) ---
   const qUp = await db.from("eval_questionnaires")
-    .upsert({ version: 1, title: data._meta.title, is_active: true }, { onConflict: "version" })
+    .upsert({ version: 2, title: data._meta.title, is_active: true }, { onConflict: "version" })
     .select("id").single();
   if (qUp.error) throw qUp.error;
   const questionnaire_id = qUp.data.id as string;
-  console.log("✓ questionnaire v1:", questionnaire_id);
+  console.log("✓ questionnaire v2:", questionnaire_id);
 
   // --- reference vector ---
   r = await db.from("eval_reference").upsert(reference, { onConflict: "key" });
@@ -102,6 +110,9 @@ async function main() {
     taxonomy_trait_id: it.taxonomy_trait_id,
     taxonomy_tier: it.taxonomy_tier,
     source_citation: it.source_citation,
+    item_type: it.item_type,
+    context: it.context ?? null,
+    round: it.round,
   }));
   r = await db.from("eval_items").insert(rows);
   if (r.error) throw r.error;

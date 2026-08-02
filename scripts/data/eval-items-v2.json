@@ -1,0 +1,536 @@
+{
+  "_meta": {
+    "questionnaire_version": 2,
+    "title": "How Do You Judge a Player? — Talkin Flag Evaluation Philosophy (v2)",
+    "source_notebook": "Talkin Flag: Global Insights from the Gridiron (e70d736e-e7f2-4360-97b6-0948f10e16c9)",
+    "grounding": "28 items across 5 answer formats (forced_choice, budget, scenario, rank, likert). Each item still maps to a trait from the Biopsychosocial Architecture of Elite Athletic Performance and carries a taxonomy tier so the seed can derive the elite-ideal reference vector.",
+    "why_v2": "v1 was 50 identical 5-point importance items ('how much does it matter that a player…'). In production 54% of answers picked the top option and option 0 was never chosen — everyone maxed everything, so results were meaningless. v2 forces real tradeoffs across five formats so the questionnaire actually discriminates how a person evaluates a player.",
+    "scoring": "forced_choice/budget/rank: distinct dimensions, equal 4pts. scenario: pick one, options carry UNEQUAL points (better reads score more). likert: one dimension, 5 behavioural anchors scoring 0..4. See src/lib/eval/score-types.ts.",
+    "rounds": "1=forced_choice(6), 2=budget(2), 3=scenario(6), 4=rank(4), 5=likert(10).",
+    "status": "DRAFT v2 — pending owner sign-off (Ambra + Coach Jon). See docs/eval-bank-v2-review.md."
+  },
+  "items": [
+    {
+      "ordinal": 1,
+      "round": 1,
+      "item_type": "forced_choice",
+      "section_key": "athleticism",
+      "style": "tradeoff",
+      "prompt": "You get to build a roster around exactly one of these. Which do you take?",
+      "options": [
+        { "label": "The freak athlete who outruns and out-jumps everyone", "dimension": "athleticism", "points": 4 },
+        { "label": "The player who always knows where to be and reads the play early", "dimension": "football_iq", "points": 4 },
+        { "label": "The one with the surest hands you've ever seen", "dimension": "ball_skills", "points": 4 },
+        { "label": "The leader who makes the nine players around him better", "dimension": "intangibles", "points": 4 }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 71,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — build-around forced choice across four pillars"
+    },
+    {
+      "ordinal": 2,
+      "round": 1,
+      "item_type": "forced_choice",
+      "section_key": "production",
+      "style": "tradeoff",
+      "prompt": "Two players grade out dead even on tape. What breaks the tie for you?",
+      "options": [
+        { "label": "The one who simply produced more — touchdowns, deflags, wins", "dimension": "production", "points": 4 },
+        { "label": "The one who did it against tougher opponents", "dimension": "competition", "points": 4 },
+        { "label": "The one who looked the same every single week", "dimension": "consistency", "points": 4 },
+        { "label": "The one who showed up biggest when the game was on the line", "dimension": "clutch", "points": 4 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 12,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — tiebreaker forced choice, output vs context"
+    },
+    {
+      "ordinal": 3,
+      "round": 1,
+      "item_type": "forced_choice",
+      "section_key": "defense",
+      "style": "tradeoff",
+      "prompt": "A scout has one twenty-minute clip and no stats. What should they lock in on first?",
+      "options": [
+        { "label": "Pursuit angles and how clean the flag pulls are", "dimension": "defense", "points": 4 },
+        { "label": "How many different jobs the player can do well", "dimension": "versatility", "points": 4 },
+        { "label": "How fast the player diagnoses the play after the snap", "dimension": "football_iq", "points": 4 },
+        { "label": "Top-end speed and how explosive the first step is", "dimension": "athleticism", "points": 4 }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 33,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — film-first forced choice"
+    },
+    {
+      "ordinal": 4,
+      "round": 1,
+      "item_type": "forced_choice",
+      "section_key": "clutch",
+      "style": "tradeoff",
+      "prompt": "Your team is one piece away from a championship. What piece do you go get?",
+      "options": [
+        { "label": "A closer who wants the ball in the final minute", "dimension": "clutch", "points": 4 },
+        { "label": "A pass-catcher who never drops the big one", "dimension": "ball_skills", "points": 4 },
+        { "label": "A lockdown defender who erases the other team's best player", "dimension": "defense", "points": 4 },
+        { "label": "A glue guy who keeps the locker room together", "dimension": "intangibles", "points": 4 }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 51,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — final-piece forced choice"
+    },
+    {
+      "ordinal": 5,
+      "round": 1,
+      "item_type": "forced_choice",
+      "section_key": "competition",
+      "style": "tradeoff",
+      "prompt": "Which single trait would make you look past a thin stat line?",
+      "options": [
+        { "label": "He was doing it in the toughest league around", "dimension": "competition", "points": 4 },
+        { "label": "He can line up and win at three different positions", "dimension": "versatility", "points": 4 },
+        { "label": "The physical tools are rare and can't be taught", "dimension": "athleticism", "points": 4 },
+        { "label": "You can set your watch by him — no bad weeks", "dimension": "consistency", "points": 4 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 8,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — look-past-the-box-score forced choice"
+    },
+    {
+      "ordinal": 6,
+      "round": 1,
+      "item_type": "forced_choice",
+      "section_key": "football_iq",
+      "style": "tradeoff",
+      "prompt": "You're picking first in a pickup game with strangers. What do you prioritize?",
+      "options": [
+        { "label": "Whoever clearly puts up points and makes plays", "dimension": "production", "points": 4 },
+        { "label": "Whoever catches everything thrown near them", "dimension": "ball_skills", "points": 4 },
+        { "label": "Whoever seems to understand the game the best", "dimension": "football_iq", "points": 4 },
+        { "label": "Whoever the others already look to as the leader", "dimension": "intangibles", "points": 4 }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 4,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — pickup-draft forced choice"
+    },
+    {
+      "ordinal": 7,
+      "round": 2,
+      "item_type": "budget",
+      "section_key": "athleticism",
+      "style": "tradeoff",
+      "prompt": "Spend 100 points to build your ideal offensive weapon. Where does it go?",
+      "options": [
+        { "label": "Speed & explosiveness", "dimension": "athleticism", "points": 4 },
+        { "label": "Hands & ball tracking", "dimension": "ball_skills", "points": 4 },
+        { "label": "Reads & anticipation", "dimension": "football_iq", "points": 4 },
+        { "label": "Raw production", "dimension": "production", "points": 4 },
+        { "label": "Ability to play multiple spots", "dimension": "versatility", "points": 4 }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 70,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — ipsative budget, offensive weapon"
+    },
+    {
+      "ordinal": 8,
+      "round": 2,
+      "item_type": "budget",
+      "section_key": "clutch",
+      "style": "tradeoff",
+      "prompt": "Spend 100 points on what actually wins in the playoffs. Where does it go?",
+      "options": [
+        { "label": "Shutdown defense", "dimension": "defense", "points": 4 },
+        { "label": "Battle-tested against elite teams", "dimension": "competition", "points": 4 },
+        { "label": "Comes up big in the biggest moments", "dimension": "clutch", "points": 4 },
+        { "label": "Leadership & toughness", "dimension": "intangibles", "points": 4 },
+        { "label": "Never has an off night", "dimension": "consistency", "points": 4 }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 52,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — ipsative budget, postseason winners"
+    },
+    {
+      "ordinal": 9,
+      "round": 3,
+      "item_type": "scenario",
+      "section_key": "football_iq",
+      "style": "tradeoff",
+      "context": "Down 4 with 20 seconds left, no timeouts, ball at midfield. Your quarterback has one snap and one read.",
+      "prompt": "Which decision tells you the most about your quarterback?",
+      "options": [
+        { "label": "Takes the open checkdown to stop the clock and set up one clean final shot", "dimension": "football_iq", "points": 4 },
+        { "label": "Scrambles for what's there and gets out of bounds to save a second", "dimension": "athleticism", "points": 3 },
+        { "label": "Calmly resets, throws it away, and trusts the next snap", "dimension": "intangibles", "points": 3 },
+        { "label": "Rips it deep into double coverage for the win-or-lose shot", "dimension": "clutch", "points": 2 }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 6,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — two-minute decision scenario"
+    },
+    {
+      "ordinal": 10,
+      "round": 3,
+      "item_type": "scenario",
+      "section_key": "defense",
+      "style": "tradeoff",
+      "context": "You're the last line of defense. A faster receiver has caught it with two steps on you and open field ahead.",
+      "prompt": "What do you most want to see from your defender here?",
+      "options": [
+        { "label": "Takes a sharp pursuit angle to cut off the corner instead of chasing the hips", "dimension": "defense", "points": 4 },
+        { "label": "Funnels him toward the sideline where the boundary becomes a defender", "dimension": "football_iq", "points": 3 },
+        { "label": "Trusts pure speed to run him down from behind", "dimension": "athleticism", "points": 2 },
+        { "label": "Gambles on an early flag pull and lives with the whiff risk", "dimension": "clutch", "points": 1 }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 31,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — last-defender pursuit scenario"
+    },
+    {
+      "ordinal": 11,
+      "round": 3,
+      "item_type": "scenario",
+      "section_key": "competition",
+      "style": "tradeoff",
+      "context": "A kid who dominated his local league all season is at his first national tournament — bright lights, better teams. Two games in, he's been quiet.",
+      "prompt": "What's the most likely read on him?",
+      "options": [
+        { "label": "The jump in competition exposed that his local numbers were padded", "dimension": "competition", "points": 4 },
+        { "label": "It's a two-game sample; his season-long body of work is what counts", "dimension": "consistency", "points": 3 },
+        { "label": "He settles in by the knockout rounds — big stages don't shrink him", "dimension": "clutch", "points": 3 },
+        { "label": "He's pressing, and whether he adjusts comes down to his makeup", "dimension": "intangibles", "points": 2 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 9,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — level-up sample scenario"
+    },
+    {
+      "ordinal": 12,
+      "round": 3,
+      "item_type": "scenario",
+      "section_key": "versatility",
+      "style": "tradeoff",
+      "context": "Your best athlete is a receiver, but heading into the weekend you're suddenly thin at rusher and at safety.",
+      "prompt": "What's the smartest way to use him?",
+      "options": [
+        { "label": "Move him wherever the game script needs — his flexibility multiplies the roster", "dimension": "versatility", "points": 4 },
+        { "label": "Slide him to safety so his range erases the other team's big plays", "dimension": "defense", "points": 3 },
+        { "label": "Leave him at receiver where his hands keep putting points on the board", "dimension": "ball_skills", "points": 2 },
+        { "label": "Keep his role fixed so his production stays clean and easy to read", "dimension": "production", "points": 2 }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 5,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — deployment/versatility scenario"
+    },
+    {
+      "ordinal": 13,
+      "round": 3,
+      "item_type": "scenario",
+      "section_key": "ball_skills",
+      "style": "tradeoff",
+      "context": "Jump ball in the back corner of the endzone, defender draped all over your receiver.",
+      "prompt": "Which trait shows up on the winning play?",
+      "options": [
+        { "label": "High-points it and tracks the ball over his shoulder through contact", "dimension": "ball_skills", "points": 4 },
+        { "label": "Out-leaps and boxes out the defender with pure size and spring", "dimension": "athleticism", "points": 3 },
+        { "label": "Simply wanted it more in a one-on-one, will-imposing moment", "dimension": "intangibles", "points": 2 },
+        { "label": "Secures it clean and protects it from the strip on the way down", "dimension": "consistency", "points": 2 }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 22,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — contested-catch scenario"
+    },
+    {
+      "ordinal": 14,
+      "round": 3,
+      "item_type": "scenario",
+      "section_key": "consistency",
+      "style": "tradeoff",
+      "context": "Ugly, physical game in bad weather. Points are hard to come by and everyone's frustrated.",
+      "prompt": "Which player do you most trust to still show up?",
+      "options": [
+        { "label": "The one whose tape looks the same in slop as it does in the sun", "dimension": "consistency", "points": 4 },
+        { "label": "The one who out-competes tougher opponents when it gets tight", "dimension": "competition", "points": 3 },
+        { "label": "The one who feeds off the chippy, big-moment energy", "dimension": "clutch", "points": 3 },
+        { "label": "The one whose motor and toughness set the tone for everyone", "dimension": "intangibles", "points": 2 }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 88,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — grind-game reliability scenario"
+    },
+    {
+      "ordinal": 15,
+      "round": 4,
+      "item_type": "rank",
+      "section_key": "football_iq",
+      "style": "tradeoff",
+      "prompt": "Order these by what you'd scout first in a player you know nothing about.",
+      "options": [
+        { "label": "How fast he processes the game", "dimension": "football_iq", "points": 4 },
+        { "label": "His athletic ceiling", "dimension": "athleticism", "points": 4 },
+        { "label": "His hands", "dimension": "ball_skills", "points": 4 },
+        { "label": "What he actually produced", "dimension": "production", "points": 4 }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 3,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — unknown-player scouting order"
+    },
+    {
+      "ordinal": 16,
+      "round": 4,
+      "item_type": "rank",
+      "section_key": "competition",
+      "style": "tradeoff",
+      "prompt": "When the competition is truly elite, rank what matters most.",
+      "options": [
+        { "label": "Proven against elite teams", "dimension": "competition", "points": 4 },
+        { "label": "Rises in the biggest moments", "dimension": "clutch", "points": 4 },
+        { "label": "Never has an off night", "dimension": "consistency", "points": 4 },
+        { "label": "Can lock down the other team's star", "dimension": "defense", "points": 4 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 10,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — elite-competition priority ranking"
+    },
+    {
+      "ordinal": 17,
+      "round": 4,
+      "item_type": "rank",
+      "section_key": "intangibles",
+      "style": "tradeoff",
+      "prompt": "Order what makes a player worth building around for years, not weeks.",
+      "options": [
+        { "label": "Leadership and makeup", "dimension": "intangibles", "points": 4 },
+        { "label": "Reliability week to week", "dimension": "consistency", "points": 4 },
+        { "label": "Can grow into new roles", "dimension": "versatility", "points": 4 },
+        { "label": "Understands the game deeply", "dimension": "football_iq", "points": 4 }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 60,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — build-around longevity ranking"
+    },
+    {
+      "ordinal": 18,
+      "round": 4,
+      "item_type": "rank",
+      "section_key": "production",
+      "style": "tradeoff",
+      "prompt": "Two similar prospects, and you can only take one. Rank your tiebreakers.",
+      "options": [
+        { "label": "Who produced more", "dimension": "production", "points": 4 },
+        { "label": "Who faced tougher opponents", "dimension": "competition", "points": 4 },
+        { "label": "Who can do more different things", "dimension": "versatility", "points": 4 },
+        { "label": "Who defends better", "dimension": "defense", "points": 4 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 11,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — prospect tiebreaker ranking"
+    },
+    {
+      "ordinal": 19,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "athleticism",
+      "style": "importance",
+      "prompt": "How do you feel about a player who wins with speed but doesn't have the polish yet?",
+      "options": [
+        { "label": "The raw speed doesn't move me on its own", "dimension": "athleticism", "points": 0 },
+        { "label": "I'd take him as a project and hope it clicks", "dimension": "athleticism", "points": 1 },
+        { "label": "That kind of speed earns him real reps", "dimension": "athleticism", "points": 2 },
+        { "label": "I'd game-plan to get the ball in his hands", "dimension": "athleticism", "points": 3 },
+        { "label": "Speed like that changes how the other team defends us", "dimension": "athleticism", "points": 4 }
+      ],
+      "science_dimension": "S5",
+      "taxonomy_trait_id": 72,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — athleticism behavioural likert"
+    },
+    {
+      "ordinal": 20,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "football_iq",
+      "style": "importance",
+      "prompt": "A player is a step slow but is always in the right place. Where does that land with you?",
+      "options": [
+        { "label": "If he can't run, the smarts won't save him", "dimension": "football_iq", "points": 0 },
+        { "label": "It buys him a look, nothing more", "dimension": "football_iq", "points": 1 },
+        { "label": "Being right that often keeps him on the field", "dimension": "football_iq", "points": 2 },
+        { "label": "I'd trust him with the calls and the tough assignments", "dimension": "football_iq", "points": 3 },
+        { "label": "That head for the game is exactly what I build around", "dimension": "football_iq", "points": 4 }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 2,
+      "taxonomy_tier": 1,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — football IQ behavioural likert"
+    },
+    {
+      "ordinal": 21,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "ball_skills",
+      "style": "importance",
+      "prompt": "How much does a player's catch radius and hands weigh in your evaluation?",
+      "options": [
+        { "label": "I won't put him on the field for hands alone", "dimension": "ball_skills", "points": 0 },
+        { "label": "Nice, but I need more before he plays", "dimension": "ball_skills", "points": 1 },
+        { "label": "Reliable hands earn him a role", "dimension": "ball_skills", "points": 2 },
+        { "label": "I'd design touches specifically for him", "dimension": "ball_skills", "points": 3 },
+        { "label": "Hands like that win us games by themselves", "dimension": "ball_skills", "points": 4 }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 21,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — ball skills behavioural likert"
+    },
+    {
+      "ordinal": 22,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "defense",
+      "style": "importance",
+      "prompt": "A player gives you almost nothing on offense but travels with the other team's best. Your take?",
+      "options": [
+        { "label": "If he can't score, I can't use him", "dimension": "defense", "points": 0 },
+        { "label": "He's a situational piece at best", "dimension": "defense", "points": 1 },
+        { "label": "A stopper like that earns a steady role", "dimension": "defense", "points": 2 },
+        { "label": "I'd put him on their star every single down", "dimension": "defense", "points": 3 },
+        { "label": "Erasing their best player wins us the game", "dimension": "defense", "points": 4 }
+      ],
+      "science_dimension": "S2",
+      "taxonomy_trait_id": 32,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — defense behavioural likert"
+    },
+    {
+      "ordinal": 23,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "production",
+      "style": "importance",
+      "prompt": "The tape is only okay, but the numbers are gaudy. How much do the numbers move you?",
+      "options": [
+        { "label": "Empty stats — I trust my eyes, not the box score", "dimension": "production", "points": 0 },
+        { "label": "I note them, but the tape leads", "dimension": "production", "points": 1 },
+        { "label": "Production that heavy demands a real look", "dimension": "production", "points": 2 },
+        { "label": "He clearly gets it done, and that counts a lot", "dimension": "production", "points": 3 },
+        { "label": "At the end of the day, output is the whole point", "dimension": "production", "points": 4 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 13,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — production behavioural likert"
+    },
+    {
+      "ordinal": 24,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "competition",
+      "style": "importance",
+      "prompt": "Same great numbers — one player in a weak league, one in a loaded one. How much does that gap matter?",
+      "options": [
+        { "label": "Numbers are numbers; I don't discount them", "dimension": "competition", "points": 0 },
+        { "label": "I'd shade it slightly, not much", "dimension": "competition", "points": 1 },
+        { "label": "The tougher league gets the clear edge", "dimension": "competition", "points": 2 },
+        { "label": "I'd move the elite-league kid well up my board", "dimension": "competition", "points": 3 },
+        { "label": "Who you did it against is most of the story", "dimension": "competition", "points": 4 }
+      ],
+      "science_dimension": null,
+      "taxonomy_trait_id": 7,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — competition behavioural likert"
+    },
+    {
+      "ordinal": 25,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "clutch",
+      "style": "importance",
+      "prompt": "Regular season is nothing special, but he's a different player in the postseason. Your read?",
+      "options": [
+        { "label": "Small-sample noise — I go by the full body of work", "dimension": "clutch", "points": 0 },
+        { "label": "A nice bonus, not a deciding factor", "dimension": "clutch", "points": 1 },
+        { "label": "Showing up in big games earns real trust", "dimension": "clutch", "points": 2 },
+        { "label": "I want the ball in his hands when it's tight", "dimension": "clutch", "points": 3 },
+        { "label": "Give me the guy who rises when it matters most", "dimension": "clutch", "points": 4 }
+      ],
+      "science_dimension": "S3",
+      "taxonomy_trait_id": 53,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — clutch behavioural likert"
+    },
+    {
+      "ordinal": 26,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "versatility",
+      "style": "importance",
+      "prompt": "A player is good — not great — at four positions instead of great at one. How do you value that?",
+      "options": [
+        { "label": "Jack of all trades, master of none — I'll pass", "dimension": "versatility", "points": 0 },
+        { "label": "Useful depth, nothing I'd chase", "dimension": "versatility", "points": 1 },
+        { "label": "That flexibility earns him a roster spot", "dimension": "versatility", "points": 2 },
+        { "label": "I'd move him around to exploit matchups", "dimension": "versatility", "points": 3 },
+        { "label": "A player who does everything is a coach's dream", "dimension": "versatility", "points": 4 }
+      ],
+      "science_dimension": "S1",
+      "taxonomy_trait_id": 14,
+      "taxonomy_tier": 4,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — versatility behavioural likert"
+    },
+    {
+      "ordinal": 27,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "intangibles",
+      "style": "importance",
+      "prompt": "Teammates clearly play harder when he's on the field, even on his quieter days. How much is that worth?",
+      "options": [
+        { "label": "That's not something I put on a scouting report", "dimension": "intangibles", "points": 0 },
+        { "label": "A small plus if everything else checks out", "dimension": "intangibles", "points": 1 },
+        { "label": "Lifting the group keeps him in my plans", "dimension": "intangibles", "points": 2 },
+        { "label": "I'd hand him the huddle and the tough talks", "dimension": "intangibles", "points": 3 },
+        { "label": "A player who raises everyone else is worth his weight in gold", "dimension": "intangibles", "points": 4 }
+      ],
+      "science_dimension": "S4",
+      "taxonomy_trait_id": 61,
+      "taxonomy_tier": 2,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — intangibles behavioural likert"
+    },
+    {
+      "ordinal": 28,
+      "round": 5,
+      "item_type": "likert",
+      "section_key": "consistency",
+      "style": "importance",
+      "prompt": "One player gives you a steady B every week; another swings between an A and a D. Who do you want?",
+      "options": [
+        { "label": "Give me the ceiling — I'll live with the bad nights", "dimension": "consistency", "points": 0 },
+        { "label": "I lean boom-or-bust if the peak is high enough", "dimension": "consistency", "points": 1 },
+        { "label": "Knowing what I'll get has real value", "dimension": "consistency", "points": 2 },
+        { "label": "I'd build the game plan around the steady one", "dimension": "consistency", "points": 3 },
+        { "label": "The guy I can count on every week wins out, every time", "dimension": "consistency", "points": 4 }
+      ],
+      "science_dimension": "S6",
+      "taxonomy_trait_id": 89,
+      "taxonomy_tier": 3,
+      "source_citation": "NotebookLM Biopsychosocial Architecture (efef5d55) — consistency behavioural likert"
+    }
+  ]
+}
