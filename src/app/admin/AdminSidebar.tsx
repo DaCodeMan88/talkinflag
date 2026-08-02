@@ -21,7 +21,6 @@ const NAV: { group: string; items: { label: string; href: string }[] }[] = [
       { label: "Coaches", href: "/admin/coaches" },
       { label: "Scouts", href: "/admin/scouts" },
       { label: "TF Rankings", href: "/admin/rankings" },
-      { label: "Featured Athlete", href: "/admin/featured" },
     ],
   },
   {
@@ -30,7 +29,6 @@ const NAV: { group: string; items: { label: string; href: string }[] }[] = [
       { label: "Claims", href: "/admin/claims" },
       { label: "Change Requests", href: "/admin/change-requests" },
       { label: "Verifications", href: "/admin/verifications" },
-      { label: "Highlights", href: "/admin/highlights" },
       { label: "Events", href: "/admin/events" },
       { label: "Career Updates", href: "/admin/credentials" },
       { label: "Reports", href: "/admin/reports" },

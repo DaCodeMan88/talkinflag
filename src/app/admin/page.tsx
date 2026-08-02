@@ -24,7 +24,6 @@ export default async function AdminHomePage({
     { count: pendingVerifications },
     { count: pendingCoaches },
     { count: pendingScouts },
-    { count: pendingHighlights },
     { count: pendingEvents },
     { count: unreadMessages },
     { count: pendingCareer },
@@ -43,10 +42,6 @@ export default async function AdminHomePage({
       .eq("status", "pending"),
     adminDb
       .from("scout_applications")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "pending"),
-    adminDb
-      .from("highlight_submissions")
       .select("id", { count: "exact", head: true })
       .eq("status", "pending"),
     adminDb
@@ -125,22 +120,10 @@ export default async function AdminHomePage({
       count: pendingScouts ?? 0,
     },
     {
-      label: "Highlights",
-      description: "Top 10 Plays — review & publish",
-      href: "/admin/highlights",
-      count: pendingHighlights ?? 0,
-    },
-    {
       label: "Event Submissions",
       description: "Submitted events — review & publish",
       href: "/admin/events",
       count: pendingEvents ?? 0,
-    },
-    {
-      label: "Featured Athlete",
-      description: "Athlete Profile of the Week",
-      href: "/admin/featured",
-      count: 0,
     },
     {
       label: "Career Updates",
@@ -175,7 +158,7 @@ export default async function AdminHomePage({
     },
   ];
 
-  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingHighlights ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0) + (pendingPlayers ?? 0) + (pendingClaims ?? 0) + (pendingChangeRequests ?? 0);
+  const totalPending = (pendingVerifications ?? 0) + (pendingCoaches ?? 0) + (pendingScouts ?? 0) + (pendingEvents ?? 0) + (unreadMessages ?? 0) + (pendingCareer ?? 0) + (openReports ?? 0) + (pendingPlayers ?? 0) + (pendingClaims ?? 0) + (pendingChangeRequests ?? 0);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
