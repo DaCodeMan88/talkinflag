@@ -4,7 +4,6 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { buildMetadata } from "@/lib/seo";
 import SignOutButton from "./SignOutButton";
-import { HighlightSubmitForm } from "./HighlightSubmitForm";
 import MemberInsightsCard from "@/components/dashboard/MemberInsightsCard";
 import GuidedTour from "@/components/onboarding/GuidedTour";
 import OnboardingChecklist, { type ChecklistItem } from "@/components/onboarding/OnboardingChecklist";
@@ -344,9 +343,6 @@ export default async function DashboardPage({
                 View →
               </Link>
             </div>
-
-            {/* Highlight submission */}
-            <HighlightSubmitForm playerId={player.id} />
 
             {/* Coach status */}
             {coachApp ? (
