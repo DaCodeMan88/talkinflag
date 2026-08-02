@@ -21,8 +21,8 @@ import { join } from "node:path";
  */
 const SERVICE_ONLY = new Set([
   "career_updates", "claim_events", "contact_submissions", "eval_items",
-  "event_results", "events", "featured_athlete", "form_drafts", "guests",
-  "highlight_submissions", "iq_questions", "newsletter_subscribers",
+  "event_results", "events", "form_drafts", "guests",
+  "iq_questions", "newsletter_subscribers",
   "players", "profile_reports", "recruiters",
 ]);
 
