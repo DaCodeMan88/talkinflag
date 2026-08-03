@@ -32,6 +32,19 @@ function slugifyHeading(text: string): string {
     .replace(/\s+/g, "-");
 }
 
+/**
+ * Allow only safe URL schemes for rendered links/images. Bodies are now
+ * admin-authored via the DB editor (not just trusted code), so a `javascript:`
+ * or other active-scheme URL must never reach an href/src. Permits http(s),
+ * mailto, and site-relative (`/…`, `#…`, `?…`) URLs; anything else → "#".
+ */
+export function safeUrl(url: string): string {
+  const u = url.trim();
+  if (/^(https?:|mailto:)/i.test(u)) return u;
+  if (/^[/#?]/.test(u)) return u;
+  return "#";
+}
+
 /** Split a string on **bold** and [link](url) markers. */
 function renderInline(text: string): ReactNode {
   // Split on **bold** or [text](url) tokens
@@ -51,7 +64,7 @@ function renderInline(text: string): ReactNode {
       return (
         <a
           key={i}
-          href={linkMatch[2]}
+          href={safeUrl(linkMatch[2])}
           className="text-brand-yellow underline underline-offset-2 hover:text-yellow-300 transition-colors"
           {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
         >
@@ -87,7 +100,7 @@ export function RichText({ body, className = "" }: RichTextProps) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={i}
-              src={imageMatch.url}
+              src={safeUrl(imageMatch.url)}
               alt={imageMatch.alt}
               className="w-full h-auto rounded border border-brand-white/10 my-2"
               loading="lazy"

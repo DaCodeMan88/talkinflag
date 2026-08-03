@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { matchImageBlock } from "./RichText";
+import { matchImageBlock, safeUrl } from "./RichText";
 
 describe("matchImageBlock", () => {
   it("parses a standalone image token into { alt, url }", () => {
@@ -33,5 +33,22 @@ describe("matchImageBlock", () => {
 
   it("does not match a bold heading", () => {
     expect(matchImageBlock("**Some Heading**")).toBeNull();
+  });
+});
+
+describe("safeUrl", () => {
+  it("allows http(s), mailto, and site-relative URLs unchanged", () => {
+    expect(safeUrl("https://talkinflag.com")).toBe("https://talkinflag.com");
+    expect(safeUrl("http://x.com/y")).toBe("http://x.com/y");
+    expect(safeUrl("mailto:hi@talkinflag.com")).toBe("mailto:hi@talkinflag.com");
+    expect(safeUrl("/players")).toBe("/players");
+    expect(safeUrl("#section")).toBe("#section");
+  });
+
+  it("neutralizes active/unknown schemes to '#'", () => {
+    expect(safeUrl("javascript:alert(1)")).toBe("#");
+    expect(safeUrl("  javascript:alert(1)")).toBe("#");
+    expect(safeUrl("data:text/html,<script>1</script>")).toBe("#");
+    expect(safeUrl("vbscript:msgbox(1)")).toBe("#");
   });
 });

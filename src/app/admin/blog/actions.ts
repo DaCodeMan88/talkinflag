@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { slugify, autoMetaDescription, autoSeoTitle } from "@/lib/blog/seo";
+import { staticPosts } from "@/lib/static-posts";
 import {
   BLOG_CATEGORIES,
   type BlogEditorInput,
@@ -50,11 +51,14 @@ async function uniqueSlug(
     .select("id, slug")
     .or(`slug.eq.${safeBase},slug.like.${safeBase}-%`);
 
-  const taken = new Set(
+  const taken = new Set<string>(
     (data ?? [])
       .filter((r: { id: string; slug: string }) => r.id !== ignoreId)
       .map((r: { slug: string }) => r.slug)
   );
+  // Also avoid colliding with a code-authored static post — a DB row sharing a
+  // static slug would silently shadow it everywhere (mergePostsBySlug: DB wins).
+  for (const p of staticPosts) taken.add(p.slug);
 
   if (!taken.has(safeBase)) return safeBase;
   for (let n = 2; ; n++) {

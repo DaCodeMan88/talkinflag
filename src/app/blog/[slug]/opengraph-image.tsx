@@ -1,6 +1,4 @@
 import { ImageResponse } from "next/og";
-import { getStaticPostBySlug } from "@/lib/static-posts";
-import { getPostBySlug, sanityConfigured } from "@/lib/sanity";
 import { getPostRecordBySlug } from "@/lib/blog/posts";
 
 export const runtime = "edge";
@@ -16,42 +14,20 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   let author = "Talkin Flag";
   let excerpt = "";
 
-  // Try static posts first
-  const staticPost = getStaticPostBySlug(slug);
-  if (staticPost) {
-    title = staticPost.title;
-    category = staticPost.category;
-    author = staticPost.author;
-    excerpt = staticPost.excerpt;
-  } else {
-    // DB-authored posts (published) — best-effort, so the card is post-specific
-    // rather than the generic fallback. (When a DB post sets coverImageUrl/
-    // ogImageUrl, generateMetadata points OG straight at that image instead.)
-    try {
-      const dbPost = await getPostRecordBySlug(slug);
-      if (dbPost) {
-        title = dbPost.title;
-        category = dbPost.category;
-        author = dbPost.author;
-        excerpt = dbPost.excerpt;
-      }
-    } catch {
-      // Fall back to generic
+  // Resolve via the unified loader (DB-published → static → Sanity, DB wins) so
+  // the OG card matches exactly what the detail page renders for this slug.
+  // (When a DB post sets coverImageUrl/ogImageUrl, generateMetadata points OG
+  // straight at that image instead of this generated card.)
+  try {
+    const post = await getPostRecordBySlug(slug);
+    if (post) {
+      title = post.title;
+      category = post.category;
+      author = post.author;
+      excerpt = post.excerpt;
     }
-
-    if (title === "Talkin Flag Blog" && sanityConfigured) {
-      try {
-        const post = await getPostBySlug(slug);
-        if (post) {
-          title = post.title;
-          category = post.category ?? "";
-          author = post.author ?? "Talkin Flag";
-          excerpt = post.excerpt ?? "";
-        }
-      } catch {
-        // Fall back to generic
-      }
-    }
+  } catch {
+    // Fall back to the generic card.
   }
 
   // Responsive title font size

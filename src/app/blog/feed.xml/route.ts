@@ -16,7 +16,7 @@ function escapeXml(str: string): string {
 }
 
 export async function GET() {
-  // Combine static + Sanity posts, sorted newest first
+  // Combine static + published DB posts, deduped by slug (DB wins), newest first
   interface FeedPost {
     title: string;
     slug: string;
