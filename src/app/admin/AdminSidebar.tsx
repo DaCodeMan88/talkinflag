@@ -35,6 +35,10 @@ const NAV: { group: string; items: { label: string; href: string }[] }[] = [
     ],
   },
   {
+    group: "Content",
+    items: [{ label: "Blog", href: "/admin/blog" }],
+  },
+  {
     group: "Inbox",
     items: [{ label: "Messages", href: "/admin/messages" }],
   },
