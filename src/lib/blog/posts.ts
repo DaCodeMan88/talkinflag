@@ -56,6 +56,9 @@ interface BlogPostRow {
   og_image_url: string | null;
   key_takeaways: unknown;
   faq_items: unknown;
+  youtube_video_id: string | null;
+  guest_name: string | null;
+  guest_role: string | null;
   published_at: string | null;
   [key: string]: unknown;
 }
@@ -111,6 +114,9 @@ export function toPostRecordFromDb(row: BlogPostRow): PostRecord {
     ogImageUrl: row.og_image_url ?? undefined,
     keyTakeaways: parseJsonArray<string>(row.key_takeaways),
     faqItems: parseJsonArray<FaqItem>(row.faq_items),
+    youtubeVideoId: row.youtube_video_id ?? undefined,
+    guestName: row.guest_name ?? undefined,
+    guestRole: row.guest_role ?? undefined,
     source: "db",
   };
 }
