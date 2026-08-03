@@ -418,7 +418,7 @@ export default async function BlogPostPage({
           {morePosts.length > 0 && (
             <div className="mt-14 pt-10 border-t border-brand-white/10">
               <h2 className="font-display text-xs uppercase tracking-widest text-brand-yellow mb-6">
-                More from the Blog
+                Related Posts
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {morePosts.map((p) => (

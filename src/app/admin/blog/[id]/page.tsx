@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/eval/admin-client";
 import { parseJsonArray } from "@/lib/blog/posts";
 import type { FaqItem } from "@/lib/static-posts";
 import BlogEditor, { type BlogEditorPost } from "../BlogEditor";
+import { buildLinkTargets } from "../link-targets";
 
 export const dynamic = "force-dynamic";
 
@@ -47,5 +48,16 @@ export default async function EditBlogPostPage({
     guestRole: (data.guest_role as string) ?? "",
   };
 
-  return <BlogEditor mode="edit" post={post} />;
+  const { postTargets, playerTargets } = await buildLinkTargets(
+    (data.slug as string) ?? undefined
+  );
+
+  return (
+    <BlogEditor
+      mode="edit"
+      post={post}
+      postTargets={postTargets}
+      playerTargets={playerTargets}
+    />
+  );
 }

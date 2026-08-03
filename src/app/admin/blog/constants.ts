@@ -1,8 +1,9 @@
 /**
  * Shared blog-editor constants + input types.
  *
- * Kept OUT of `actions.ts` because a `"use server"` module may only export
- * async functions — value exports like `BLOG_CATEGORIES` must live here so both
+ * Kept OUT of `actions.ts` because a server-action module (one with the
+ * use-server directive) may only export async functions — value exports like
+ * `BLOG_CATEGORIES` must live here so both
  * the server actions and the client editor can import them.
  */
 

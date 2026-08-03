@@ -23,6 +23,7 @@ import {
   type FaqInput,
   type ActionResult,
 } from "./constants";
+import { suggestInternalLinks, type LinkTarget } from "@/lib/blog/links";
 
 type Status = "draft" | "published" | "archived";
 
@@ -34,6 +35,10 @@ export interface BlogEditorPost extends BlogEditorInput {
 interface BlogEditorProps {
   mode: "new" | "edit";
   post?: BlogEditorPost;
+  /** Other posts that body mentions could link to (self-slug already excluded upstream). */
+  postTargets?: LinkTarget[];
+  /** Approved players that body mentions could link to. */
+  playerTargets?: LinkTarget[];
 }
 
 const LABEL = "block text-[10px] font-display uppercase tracking-widest text-white/40 mb-1.5";
@@ -42,7 +47,12 @@ const INPUT =
 const SECTION = "border border-white/10 bg-[#0a0a0a] p-4 sm:p-5 space-y-4";
 const SECTION_TITLE = "font-display text-sm uppercase tracking-widest text-[#FDDD58]";
 
-export default function BlogEditor({ mode, post }: BlogEditorProps) {
+export default function BlogEditor({
+  mode,
+  post,
+  postTargets,
+  playerTargets,
+}: BlogEditorProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -255,6 +265,36 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
     if (suggested.length > 0) setKeyTakeaways(suggested);
   };
 
+  // Live internal-link suggestions (recompute as the body/targets change).
+  const linkSuggestions = suggestInternalLinks(body, {
+    posts: postTargets ?? [],
+    players: playerTargets ?? [],
+  });
+
+  /** Wrap the FIRST not-already-linked occurrence of `text` in the body with [text](href). */
+  const insertInternalLink = (text: string, href: string) => {
+    setBody((prev) => {
+      // Ranges already inside a markdown link — skip matches overlapping them.
+      const linked: Array<[number, number]> = [];
+      const linkRe = /\[[^\]]*\]\([^)]*\)/g;
+      let lm: RegExpExecArray | null;
+      while ((lm = linkRe.exec(prev)) !== null) {
+        linked.push([lm.index, lm.index + lm[0].length]);
+      }
+      const escaped = text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(escaped, "gi");
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(prev)) !== null) {
+        const start = m.index;
+        const end = start + m[0].length;
+        const overlaps = linked.some(([s, e]) => start < e && end > s);
+        if (overlaps) continue;
+        return prev.slice(0, start) + `[${m[0]}](${href})` + prev.slice(end);
+      }
+      return prev; // nothing to replace (already linked / gone)
+    });
+  };
+
   // Counter colour bands.
   const titleLen = seoTitle.length;
   const titleColor =
@@ -453,6 +493,43 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
               value={body}
               onChange={(e) => setBody(e.target.value)}
             />
+          </div>
+
+          {/* Suggested internal links */}
+          <div className={SECTION}>
+            <h2 className={SECTION_TITLE}>Suggested internal links</h2>
+            <p className="text-white/30 text-[11px]">
+              Unlinked mentions of other posts + players found in the body. Insert wraps
+              the first occurrence in a markdown link — great for SEO and reader flow.
+            </p>
+            {linkSuggestions.length > 0 ? (
+              <ul className="space-y-2">
+                {linkSuggestions.map((s) => (
+                  <li
+                    key={`${s.text}|${s.href}`}
+                    className="flex items-center justify-between gap-3 border border-white/10 px-3 py-2"
+                  >
+                    <span className="min-w-0">
+                      <span className="text-white text-sm break-words">“{s.text}”</span>
+                      <span className="block text-white/40 text-[11px]">
+                        {s.reason} · {s.href}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => insertInternalLink(s.text, s.href)}
+                      className="shrink-0 border border-[#FDDD58]/50 text-[#FDDD58] font-display uppercase tracking-widest text-[10px] py-1.5 px-3 hover:bg-[#FDDD58]/10 transition-colors"
+                    >
+                      Insert
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-white/25 text-[11px] italic">
+                No unlinked mentions found yet — write more body copy, or nothing left to link.
+              </p>
+            )}
           </div>
 
           {/* Interview / guest */}
