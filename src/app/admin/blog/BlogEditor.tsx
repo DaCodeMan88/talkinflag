@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RichText } from "@/components/blog/RichText";
 import { slugify } from "@/lib/blog/seo";
@@ -62,8 +62,74 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
 
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
+  // Image-upload state
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [bodyUploading, setBodyUploading] = useState(false);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+
   const status = post?.status;
   const slugPreview = slugify(title) || "post";
+
+  /** Upload a single image file to Supabase Storage; returns the public URL or throws. */
+  async function uploadImage(file: File): Promise<string> {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/blog/image", { method: "POST", body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.error || "Upload failed");
+    return data.url as string;
+  }
+
+  async function handleCoverUpload(file: File | null | undefined) {
+    if (!file) return;
+    setMessage(null);
+    setCoverUploading(true);
+    try {
+      const url = await uploadImage(file);
+      setCoverImageUrl(url);
+      setMessage({ ok: true, text: "Cover image uploaded." });
+    } catch (err) {
+      setMessage({ ok: false, text: err instanceof Error ? err.message : "Upload failed" });
+    } finally {
+      setCoverUploading(false);
+    }
+  }
+
+  /** Insert a markdown-lite image token into the body at the cursor (or append). */
+  function insertImageToken(url: string, alt: string) {
+    const token = `![${alt}](${url})`;
+    const el = bodyRef.current;
+    setBody((prev) => {
+      // If we can find the textarea + a selection, insert as its own block there.
+      if (el) {
+        const start = el.selectionStart ?? prev.length;
+        const end = el.selectionEnd ?? prev.length;
+        const before = prev.slice(0, start);
+        const after = prev.slice(end);
+        const sep = before && !before.endsWith("\n\n") ? "\n\n" : "";
+        const trailing = after && !after.startsWith("\n\n") ? "\n\n" : "";
+        return `${before}${sep}${token}${trailing}${after}`;
+      }
+      // Fallback: append as a new block.
+      return prev ? `${prev}\n\n${token}` : token;
+    });
+  }
+
+  async function handleBodyImageUpload(file: File | null | undefined) {
+    if (!file) return;
+    setMessage(null);
+    setBodyUploading(true);
+    try {
+      const url = await uploadImage(file);
+      const alt = window.prompt("Alt text for this image (for SEO + accessibility):", "") ?? "";
+      insertImageToken(url, alt.trim());
+      setMessage({ ok: true, text: "Image inserted into body." });
+    } catch (err) {
+      setMessage({ ok: false, text: err instanceof Error ? err.message : "Upload failed" });
+    } finally {
+      setBodyUploading(false);
+    }
+  }
 
   function collectInput(): BlogEditorInput {
     return {
@@ -257,14 +323,35 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
 
           {/* Body */}
           <div className={SECTION}>
-            <h2 className={SECTION_TITLE}>Body</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className={SECTION_TITLE}>Body</h2>
+              <label
+                className={`shrink-0 cursor-pointer border border-white/20 text-white/80 font-display uppercase tracking-widest text-[10px] py-1.5 px-3 hover:bg-white/5 transition-colors ${
+                  bodyUploading ? "opacity-50 pointer-events-none" : ""
+                }`}
+              >
+                {bodyUploading ? "Uploading…" : "+ Insert image"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  disabled={bodyUploading}
+                  onChange={(e) => {
+                    handleBodyImageUpload(e.target.files?.[0]);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            </div>
             <div className="text-white/40 text-[11px] leading-relaxed border border-white/10 bg-black/40 px-3 py-2">
               <span className="font-semibold text-white/60">Markdown-lite:</span>{" "}
               <code>**bold**</code> · <code>[text](url)</code> ·{" "}
+              <code>![alt](url)</code> on its own line → image ·{" "}
               <code>**Heading**</code> on its own line → heading ·{" "}
               <code>- item</code> lines → bullet list · blank line between paragraphs.
             </div>
             <textarea
+              ref={bodyRef}
               className={`${INPUT} min-h-[340px] font-mono text-[13px] leading-relaxed`}
               value={body}
               onChange={(e) => setBody(e.target.value)}
@@ -378,27 +465,75 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
             </button>
           </div>
 
-          {/* Cover image — Task 7 will enhance with upload */}
+          {/* Cover image */}
           <div className={SECTION}>
             <h2 className={SECTION_TITLE}>Cover image</h2>
             <p className="text-white/25 text-[11px]">
-              Image upload comes in a later step — paste a URL for now.
+              Upload an image (JPG/PNG/WebP, max 5MB) or paste a URL directly.
             </p>
+
+            {coverImageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={coverImageUrl}
+                alt={coverImageAlt || "Cover preview"}
+                className="w-full max-h-52 object-cover rounded border border-white/10"
+              />
+            )}
+
+            <div className="flex items-center gap-2">
+              <label
+                className={`shrink-0 cursor-pointer bg-white/5 border border-white/20 text-white/80 font-display uppercase tracking-widest text-[10px] py-2 px-4 hover:bg-white/10 transition-colors ${
+                  coverUploading ? "opacity-50 pointer-events-none" : ""
+                }`}
+              >
+                {coverUploading ? "Uploading…" : coverImageUrl ? "Replace image" : "Upload image"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  disabled={coverUploading}
+                  onChange={(e) => {
+                    handleCoverUpload(e.target.files?.[0]);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              {coverImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setCoverImageUrl("")}
+                  className="text-white/40 text-xs hover:text-white transition-colors"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+
             <div>
               <label className={LABEL}>Cover image URL</label>
               <input
                 className={INPUT}
                 value={coverImageUrl}
                 onChange={(e) => setCoverImageUrl(e.target.value)}
+                placeholder="Filled by upload, or paste a URL"
               />
             </div>
             <div>
-              <label className={LABEL}>Cover image alt text</label>
+              <label className={LABEL}>
+                Cover image alt text <span className="text-[#FDDD58]">*required</span>
+              </label>
               <input
                 className={INPUT}
                 value={coverImageAlt}
                 onChange={(e) => setCoverImageAlt(e.target.value)}
+                placeholder="Describe the image for SEO + accessibility"
               />
+              {coverImageUrl && !coverImageAlt.trim() && (
+                <p className="text-red-300/80 text-[11px] mt-1">
+                  Add alt text — required for SEO and accessibility.
+                </p>
+              )}
             </div>
           </div>
 

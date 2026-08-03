@@ -12,6 +12,17 @@
 
 import type { ReactNode } from "react";
 
+/**
+ * Match a standalone image block: a paragraph whose entire trimmed content is
+ * exactly `![alt](url)`. Returns the parsed alt/url, or null if it isn't one.
+ * Exported for unit testing.
+ */
+export function matchImageBlock(block: string): { alt: string; url: string } | null {
+  const m = block.trim().match(/^!\[(.*?)\]\((.+?)\)$/);
+  if (!m) return null;
+  return { alt: m[1], url: m[2] };
+}
+
 /** Slugify a heading string for use as an anchor ID. */
 function slugifyHeading(text: string): string {
   return text
@@ -66,6 +77,24 @@ export function RichText({ body, className = "" }: RichTextProps) {
   return (
     <div className={`space-y-5 ${className}`}>
       {blocks.map((block, i) => {
+        // Standalone image block: `![alt](url)` on its own → responsive <img>.
+        // Checked before heading/list/paragraph. Starts with "!" so it never
+        // collides with **heading**. Only the parsed url/alt are used (the body
+        // grammar has no raw HTML), so a plain <img> is safe here.
+        const imageMatch = matchImageBlock(block);
+        if (imageMatch) {
+          return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={i}
+              src={imageMatch.url}
+              alt={imageMatch.alt}
+              className="w-full h-auto rounded border border-brand-white/10 my-2"
+              loading="lazy"
+            />
+          );
+        }
+
         // Standalone **heading** paragraph → render as section heading with anchor
         const headingMatch = block.match(/^\*\*(.+?)\*\*$/);
         if (headingMatch) {
