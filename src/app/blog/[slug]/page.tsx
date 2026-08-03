@@ -270,10 +270,38 @@ export default async function BlogPostPage({
             </div>
           </div>
 
+          {/* Cover image (DB posts only — static posts have no cover) */}
+          {post.coverImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.coverImageUrl}
+              alt={post.coverImageAlt ?? post.title}
+              className="w-full h-auto mb-10 border border-brand-white/10"
+              loading="lazy"
+            />
+          )}
+
           {/* Excerpt / pull quote */}
           <p className="text-brand-white/80 text-lg leading-relaxed mb-10 border-l-2 border-brand-yellow pl-5">
             {post.excerpt}
           </p>
+
+          {/* Key takeaways (GEO-quotable summary — DB posts) */}
+          {post.keyTakeaways && post.keyTakeaways.length > 0 && (
+            <div className="mb-10 bg-[#111111] border border-brand-yellow/20 p-6">
+              <h2 className="font-display text-sm uppercase tracking-widest text-brand-yellow mb-4">
+                Key Takeaways
+              </h2>
+              <ul className="space-y-3">
+                {post.keyTakeaways.map((t, i) => (
+                  <li key={i} className="flex items-start gap-3 text-brand-white/80 text-sm leading-relaxed">
+                    <span className="shrink-0 text-brand-yellow" aria-hidden="true">▪</span>
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Table of Contents — shown for posts with 4+ sections */}
           {headings.length >= 4 && (

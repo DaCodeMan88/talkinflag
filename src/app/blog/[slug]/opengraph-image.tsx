@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getStaticPostBySlug } from "@/lib/static-posts";
 import { getPostBySlug, sanityConfigured } from "@/lib/sanity";
+import { getPostRecordBySlug } from "@/lib/blog/posts";
 
 export const runtime = "edge";
 export const alt = "Blog Post | Talkin Flag";
@@ -22,17 +23,34 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     category = staticPost.category;
     author = staticPost.author;
     excerpt = staticPost.excerpt;
-  } else if (sanityConfigured) {
+  } else {
+    // DB-authored posts (published) — best-effort, so the card is post-specific
+    // rather than the generic fallback. (When a DB post sets coverImageUrl/
+    // ogImageUrl, generateMetadata points OG straight at that image instead.)
     try {
-      const post = await getPostBySlug(slug);
-      if (post) {
-        title = post.title;
-        category = post.category ?? "";
-        author = post.author ?? "Talkin Flag";
-        excerpt = post.excerpt ?? "";
+      const dbPost = await getPostRecordBySlug(slug);
+      if (dbPost) {
+        title = dbPost.title;
+        category = dbPost.category;
+        author = dbPost.author;
+        excerpt = dbPost.excerpt;
       }
     } catch {
       // Fall back to generic
+    }
+
+    if (title === "Talkin Flag Blog" && sanityConfigured) {
+      try {
+        const post = await getPostBySlug(slug);
+        if (post) {
+          title = post.title;
+          category = post.category ?? "";
+          author = post.author ?? "Talkin Flag";
+          excerpt = post.excerpt ?? "";
+        }
+      } catch {
+        // Fall back to generic
+      }
     }
   }
 

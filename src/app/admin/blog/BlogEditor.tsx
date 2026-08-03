@@ -3,7 +3,13 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RichText } from "@/components/blog/RichText";
-import { slugify } from "@/lib/blog/seo";
+import {
+  slugify,
+  autoSeoTitle,
+  autoMetaDescription,
+  keyTakeawaysSuggestion,
+  seoChecklist,
+} from "@/lib/blog/seo";
 import {
   createPost,
   updatePost,
@@ -66,6 +72,9 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
   const [coverUploading, setCoverUploading] = useState(false);
   const [bodyUploading, setBodyUploading] = useState(false);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
+
+  // SEO & GEO panel collapse state (open by default so it's discoverable)
+  const [seoOpen, setSeoOpen] = useState(true);
 
   const status = post?.status;
   const slugPreview = slugify(title) || "post";
@@ -209,6 +218,94 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
     setFaqItems((prev) =>
       prev.length > 1 ? prev.filter((_, j) => j !== i) : [{ q: "", a: "" }]
     );
+
+  // Cleaned repeater values shared by the checklist + JSON-LD preview.
+  const cleanTakeaways = keyTakeaways.map((t) => t.trim()).filter(Boolean);
+  const cleanFaqItems = faqItems
+    .map((f) => ({ q: f.q.trim(), a: f.a.trim() }))
+    .filter((f) => f.q || f.a);
+
+  // Live SEO/GEO checklist — recomputes every render as fields change.
+  const checklist = seoChecklist({
+    title,
+    seoDescription,
+    body,
+    coverImageUrl,
+    coverImageAlt,
+    faqItems: cleanFaqItems,
+    keyTakeaways: cleanTakeaways,
+  });
+  const checklistPass = checklist.filter((c) => c.pass).length;
+
+  // Effective values shown in the previews (fall back to the content fields).
+  const previewTitle = seoTitle.trim() || title.trim() || "Untitled post";
+  const previewDescription =
+    seoDescription.trim() || excerpt.trim() || "Add a meta description…";
+  const previewOgImage = ogImageUrl.trim() || coverImageUrl.trim();
+
+  // Reset SEO helpers to their auto-derived values from the current content.
+  const resetSeoToAuto = () => {
+    setSeoTitle(autoSeoTitle(title));
+    setSeoDescription(autoMetaDescription(excerpt || body));
+  };
+
+  // Fill key takeaways from the body when the repeater is empty-ish.
+  const suggestTakeaways = () => {
+    const suggested = keyTakeawaysSuggestion(body);
+    if (suggested.length > 0) setKeyTakeaways(suggested);
+  };
+
+  // Counter colour bands.
+  const titleLen = seoTitle.length;
+  const titleColor =
+    titleLen >= 50 && titleLen <= 60
+      ? "text-green-400"
+      : titleLen > 60
+        ? "text-red-400"
+        : "text-white/40";
+  const descLen = seoDescription.length;
+  const descColor =
+    descLen > 160
+      ? "text-red-400"
+      : descLen >= 120 && descLen <= 160
+        ? "text-green-400"
+        : "text-white/40";
+
+  // Read-only JSON-LD preview mirroring what the public page emits.
+  const jsonLdPreview = (() => {
+    const url = `https://talkinflag.com/blog/${slugPreview}`;
+    const objects: Record<string, unknown>[] = [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: title || "Untitled post",
+        description: seoDescription.trim() || excerpt.trim(),
+        author: { "@type": "Person", name: author || "Talkin Flag", url: "https://talkinflag.com/about" },
+        publisher: {
+          "@type": "Organization",
+          name: "Talkin Flag",
+          url: "https://talkinflag.com",
+          logo: { "@type": "ImageObject", url: "https://talkinflag.com/og-image.png" },
+        },
+        url,
+        mainEntityOfPage: url,
+        articleSection: category,
+        ...(previewOgImage ? { image: { "@type": "ImageObject", url: previewOgImage } } : {}),
+      },
+    ];
+    if (cleanFaqItems.length > 0) {
+      objects.push({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: cleanFaqItems.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a },
+        })),
+      });
+    }
+    return JSON.stringify(objects.length === 1 ? objects[0] : objects, null, 2);
+  })();
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
@@ -390,7 +487,16 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
 
           {/* Key takeaways */}
           <div className={SECTION}>
-            <h2 className={SECTION_TITLE}>Key takeaways</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className={SECTION_TITLE}>Key takeaways</h2>
+              <button
+                type="button"
+                onClick={suggestTakeaways}
+                className="shrink-0 border border-white/20 text-white/80 font-display uppercase tracking-widest text-[10px] py-1.5 px-3 hover:bg-white/5 transition-colors"
+              >
+                Suggest from body
+              </button>
+            </div>
             <p className="text-white/30 text-[11px]">
               Quotable one-liners for readers and AI answer engines (aim for 3+).
             </p>
@@ -537,37 +643,180 @@ export default function BlogEditor({ mode, post }: BlogEditorProps) {
             </div>
           </div>
 
-          {/* SEO — Task 8 will enhance with previews + checklist */}
+          {/* SEO & GEO panel */}
           <div className={SECTION}>
-            <h2 className={SECTION_TITLE}>SEO / social</h2>
-            <p className="text-white/25 text-[11px]">
-              Leave blank to auto-derive from the title/excerpt. The full SEO panel
-              (previews + checklist) comes in a later step.
-            </p>
-            <div>
-              <label className={LABEL}>SEO title</label>
-              <input
-                className={INPUT}
-                value={seoTitle}
-                onChange={(e) => setSeoTitle(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={LABEL}>SEO description</label>
-              <textarea
-                className={`${INPUT} min-h-[60px]`}
-                value={seoDescription}
-                onChange={(e) => setSeoDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={LABEL}>OG image URL</label>
-              <input
-                className={INPUT}
-                value={ogImageUrl}
-                onChange={(e) => setOgImageUrl(e.target.value)}
-              />
-            </div>
+            <button
+              type="button"
+              onClick={() => setSeoOpen((v) => !v)}
+              className="flex w-full items-center justify-between gap-2"
+            >
+              <h2 className={SECTION_TITLE}>SEO &amp; GEO</h2>
+              <span className="flex items-center gap-3">
+                <span
+                  className={`font-display text-[10px] uppercase tracking-widest ${
+                    checklistPass === checklist.length ? "text-green-400" : "text-white/40"
+                  }`}
+                >
+                  {checklistPass}/{checklist.length} checks
+                </span>
+                <span className="text-white/40 text-xs" aria-hidden="true">
+                  {seoOpen ? "▾" : "▸"}
+                </span>
+              </span>
+            </button>
+
+            {seoOpen && (
+              <div className="space-y-5 pt-1">
+                <p className="text-white/25 text-[11px]">
+                  Leave the title/description blank to auto-derive, or edit them below.
+                </p>
+
+                {/* Reset to auto */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-white/40 text-[10px] font-display uppercase tracking-widest">
+                    Search fields
+                  </span>
+                  <button
+                    type="button"
+                    onClick={resetSeoToAuto}
+                    className="shrink-0 border border-white/20 text-white/80 font-display uppercase tracking-widest text-[10px] py-1.5 px-3 hover:bg-white/5 transition-colors"
+                  >
+                    Reset to auto
+                  </button>
+                </div>
+
+                {/* SEO title + counter */}
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className={LABEL}>SEO title</label>
+                    <span className={`text-[10px] font-mono ${titleColor}`}>
+                      {titleLen} / 50–60
+                    </span>
+                  </div>
+                  <input
+                    className={INPUT}
+                    value={seoTitle}
+                    onChange={(e) => setSeoTitle(e.target.value)}
+                    placeholder={autoSeoTitle(title) || "Auto from title"}
+                  />
+                </div>
+
+                {/* SEO description + counter */}
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className={LABEL}>SEO description</label>
+                    <span className={`text-[10px] font-mono ${descColor}`}>{descLen} / ≤160</span>
+                  </div>
+                  <textarea
+                    className={`${INPUT} min-h-[60px]`}
+                    value={seoDescription}
+                    onChange={(e) => setSeoDescription(e.target.value)}
+                    placeholder={autoMetaDescription(excerpt || body) || "Auto from excerpt/body"}
+                  />
+                </div>
+
+                {/* OG image URL */}
+                <div>
+                  <label className={LABEL}>OG image URL (defaults to cover image)</label>
+                  <input
+                    className={INPUT}
+                    value={ogImageUrl}
+                    onChange={(e) => setOgImageUrl(e.target.value)}
+                    placeholder="Paste a URL or leave blank to use the cover image"
+                  />
+                </div>
+
+                {/* Google result preview */}
+                <div>
+                  <p className="text-white/40 text-[10px] font-display uppercase tracking-widest mb-2">
+                    Google result preview
+                  </p>
+                  <div className="bg-white rounded px-4 py-3">
+                    <p className="text-[#1a0dab] text-[16px] leading-snug truncate">
+                      {previewTitle}
+                    </p>
+                    <p className="text-[#006621] text-[12px] leading-snug">
+                      talkinflag.com › blog › {slugPreview}
+                    </p>
+                    <p className="text-[#4d5156] text-[13px] leading-snug line-clamp-2 mt-0.5">
+                      {previewDescription}
+                    </p>
+                  </div>
+                </div>
+
+                {/* OG / social card preview */}
+                <div>
+                  <p className="text-white/40 text-[10px] font-display uppercase tracking-widest mb-2">
+                    Social / OG card preview
+                  </p>
+                  <div className="border border-white/10 rounded overflow-hidden bg-[#0d0d0d]">
+                    {previewOgImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={previewOgImage}
+                        alt="OG card preview"
+                        className="w-full h-40 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-40 flex items-center justify-center bg-white/5 text-white/25 text-xs">
+                        No cover / OG image set
+                      </div>
+                    )}
+                    <div className="px-3 py-2">
+                      <p className="text-white/30 text-[10px] uppercase tracking-widest">
+                        talkinflag.com
+                      </p>
+                      <p className="text-white text-sm font-semibold leading-snug line-clamp-2">
+                        {previewTitle}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live checklist */}
+                <div>
+                  <p className="text-white/40 text-[10px] font-display uppercase tracking-widest mb-2">
+                    Content checklist
+                  </p>
+                  <ul className="space-y-2">
+                    {checklist.map((c) => (
+                      <li key={c.id} className="flex items-start gap-2">
+                        <span
+                          className={`shrink-0 text-sm leading-5 ${
+                            c.pass ? "text-green-400" : "text-red-400"
+                          }`}
+                          aria-hidden="true"
+                        >
+                          {c.pass ? "✓" : "✗"}
+                        </span>
+                        <span>
+                          <span
+                            className={`text-xs ${c.pass ? "text-white/70" : "text-white/90"}`}
+                          >
+                            {c.label}
+                          </span>
+                          {!c.pass && (
+                            <span className="block text-white/40 text-[11px] leading-snug">
+                              {c.hint}
+                            </span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* JSON-LD preview (read-only) */}
+                <div>
+                  <p className="text-white/40 text-[10px] font-display uppercase tracking-widest mb-2">
+                    Structured data (JSON-LD) — read only
+                  </p>
+                  <pre className="bg-black border border-white/10 text-white/50 text-[11px] leading-relaxed p-3 overflow-x-auto max-h-72">
+                    {jsonLdPreview}
+                  </pre>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
