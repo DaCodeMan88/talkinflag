@@ -16,6 +16,7 @@ import {
   publishPost,
   unpublishPost,
   archivePost,
+  deletePost,
 } from "./actions";
 import {
   BLOG_CATEGORIES,
@@ -77,6 +78,8 @@ export default function BlogEditor({
   );
 
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  // Delete is irreversible, so it takes two clicks: the button arms, then confirms.
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Image-upload state
   const [coverUploading, setCoverUploading] = useState(false);
@@ -210,6 +213,26 @@ export default function BlogEditor({
         return;
       }
       handleResult(await fn(post.id), successText);
+    });
+  }
+
+  /**
+   * Permanently delete, then go back to the list. Unlike `runLifecycle` this
+   * does NOT save first — persisting edits to a row we're about to drop is
+   * pointless, and a validation error there would block the delete.
+   */
+  function handleDelete() {
+    if (!post) return;
+    setMessage(null);
+    startTransition(async () => {
+      const res = await deletePost(post.id);
+      if (!res.ok) {
+        setConfirmDelete(false);
+        setMessage({ ok: false, text: res.error });
+        return;
+      }
+      router.push("/admin/blog");
+      router.refresh();
     });
   }
 
@@ -403,9 +426,46 @@ export default function BlogEditor({
             >
               Archive
             </button>
+            {confirmDelete ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={pending}
+                  className="border border-red-500/60 bg-red-500/10 text-red-300 font-display uppercase tracking-widest text-xs py-2.5 px-5 hover:bg-red-500/20 disabled:opacity-50 transition-colors"
+                >
+                  {pending ? "Deleting…" : "Delete forever"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(false)}
+                  disabled={pending}
+                  className="text-white/40 font-display uppercase tracking-widest text-xs py-2.5 px-3 hover:text-white disabled:opacity-50 transition-colors"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(true)}
+                disabled={pending}
+                className="border border-white/10 text-white/40 font-display uppercase tracking-widest text-xs py-2.5 px-5 hover:border-red-500/40 hover:text-red-300 disabled:opacity-50 transition-colors"
+              >
+                Delete
+              </button>
+            )}
           </>
         )}
       </div>
+
+      {confirmDelete && (
+        <p className="mb-6 text-red-300/80 text-xs">
+          This permanently removes “{title || "this post"}” and its URL
+          (/blog/{slugPreview}). It cannot be undone — use Archive instead if you
+          only want it off the site.
+        </p>
+      )}
 
       {message && (
         <div

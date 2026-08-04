@@ -68,7 +68,8 @@ export default async function AdminBlogPage() {
         <div className="border-l-4 border-[#FDDD58] pl-6">
           <h1 className="font-display text-4xl uppercase text-white leading-none mt-1">Blog</h1>
           <p className="text-white/40 mt-2 text-sm">
-            {rows.length} post{rows.length === 1 ? "" : "s"} in the database
+            {rows.length} post{rows.length === 1 ? "" : "s"} — click any one to
+            edit, publish, or delete it
           </p>
         </div>
         <Link
@@ -153,7 +154,11 @@ export default async function AdminBlogPage() {
         )}
       </div>
 
-      {/* Code posts — read-only */}
+      {/*
+        Any post still hard-coded in `staticPosts` (empty since the 2026-08-03
+        migration to this table) is listed read-only — it can't be edited or
+        deleted here, so saying so beats leaving it invisible.
+      */}
       {staticPosts.length > 0 && (
         <div className="mt-12">
           <p className="text-white/25 text-[10px] font-display uppercase tracking-widest mb-3">

@@ -1,14 +1,12 @@
 import Link from "next/link";
-import { staticPosts } from "@/lib/static-posts";
+import { getAllPostRecords } from "@/lib/blog/posts";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-// Shows the 3 most recent static blog posts on the homepage.
-// When Sanity CMS has content, this component can be updated to pull from there instead.
-export function BlogTeaser() {
-  // Sort by date descending, take top 3
-  const recent = [...staticPosts]
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
-    .slice(0, 3);
+// Shows the 3 most recent blog posts on the homepage, from the same unified
+// loader /blog uses — so a post published in /admin/blog appears here too.
+export async function BlogTeaser() {
+  // getAllPostRecords is already sorted newest-first.
+  const recent = (await getAllPostRecords()).slice(0, 3);
 
   if (recent.length === 0) return null;
 

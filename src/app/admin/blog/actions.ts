@@ -56,8 +56,9 @@ async function uniqueSlug(
       .filter((r: { id: string; slug: string }) => r.id !== ignoreId)
       .map((r: { slug: string }) => r.slug)
   );
-  // Also avoid colliding with a code-authored static post — a DB row sharing a
-  // static slug would silently shadow it everywhere (mergePostsBySlug: DB wins).
+  // Also avoid colliding with any code-authored post still in `staticPosts`
+  // (empty since the 2026-08-03 migration) — a DB row sharing a static slug
+  // would silently shadow it everywhere (mergePostsBySlug: DB wins).
   for (const p of staticPosts) taken.add(p.slug);
 
   if (!taken.has(safeBase)) return safeBase;
@@ -106,6 +107,8 @@ function revalidateAll(slug: string) {
   revalidatePath("/blog");
   revalidatePath("/admin/blog");
   revalidatePath(`/blog/${slug}`);
+  // The homepage "From the Blog" teaser reads the same loader.
+  revalidatePath("/");
 }
 
 /** Insert a new draft post. */
@@ -216,6 +219,34 @@ export async function unpublishPost(id: string): Promise<ActionResult> {
     .from("blog_posts")
     .update({ status: "draft" })
     .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidateAll((existing.slug as string) ?? "");
+  return { ok: true, id };
+}
+
+/**
+ * Delete a post permanently.
+ *
+ * Archive is the reversible option and stays the default in the UI; this is the
+ * escape hatch for a post that should never have existed. Irreversible — the
+ * row is gone and the public URL 404s (there is no code copy to fall back to
+ * since the launch posts were migrated into this table).
+ */
+export async function deletePost(id: string): Promise<ActionResult> {
+  const admin = await getAdminUser();
+  if (!admin) return { ok: false, error: "Not authorized." };
+
+  const db = createAdminClient();
+  const { data: existing, error: readErr } = await db
+    .from("blog_posts")
+    .select("slug")
+    .eq("id", id)
+    .maybeSingle();
+  if (readErr) return { ok: false, error: readErr.message };
+  if (!existing) return { ok: false, error: "Post not found." };
+
+  const { error } = await db.from("blog_posts").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
 
   revalidateAll((existing.slug as string) ?? "");

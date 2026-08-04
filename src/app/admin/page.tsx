@@ -72,6 +72,8 @@ export default async function AdminHomePage({
     { count: verifiedPlayers },
     { count: totalEvals },
     { count: evalsThisWeek },
+    { count: draftPosts },
+    { count: publishedPosts },
   ] = await Promise.all([
     adminDb.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     adminDb.from("players").select("id", { count: "exact", head: true }),
@@ -79,13 +81,17 @@ export default async function AdminHomePage({
     adminDb.from("players").select("id", { count: "exact", head: true }).eq("is_verified", true),
     adminDb.from("eval_responses").select("id", { count: "exact", head: true }),
     adminDb.from("eval_responses").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
+    adminDb.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "draft"),
+    adminDb.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "published"),
   ]);
   const users = usersPage?.users ?? [];
   const totalMembers = users.length;
   const newThisWeek = users.filter((u) => u.created_at >= weekAgo).length;
   const newThisMonth = users.filter((u) => u.created_at >= monthAgo).length;
 
-  const sections: { label: string; description: string; href: string; count: number; tour?: string }[] = [
+  // `badge` overrides the pending/clear chip for sections that aren't review
+  // queues (Blog is authoring, not a queue — "✓ Clear" would read as a bug).
+  const sections: { label: string; description: string; href: string; count: number; tour?: string; badge?: string }[] = [
     {
       label: "Players",
       description: "Add, edit, verify, or remove any athlete",
@@ -99,6 +105,16 @@ export default async function AdminHomePage({
       href: "/admin/messages",
       count: unreadMessages ?? 0,
       tour: "admin-messages",
+    },
+    {
+      label: "Blog",
+      description: "Write, edit & publish blog posts — no deploy needed",
+      href: "/admin/blog",
+      count: 0,
+      badge:
+        (draftPosts ?? 0) > 0
+          ? `${draftPosts} draft${draftPosts === 1 ? "" : "s"}`
+          : `${publishedPosts ?? 0} published`,
     },
     {
       label: "Verifications",
@@ -234,7 +250,9 @@ export default async function AdminHomePage({
               <p className="text-white/30 text-xs mt-0.5">{s.description}</p>
             </div>
             <div className="flex items-center gap-4 shrink-0 ml-4">
-              {s.count > 0 ? (
+              {s.badge ? (
+                <span className="text-white/30 font-display text-xs uppercase tracking-widest">{s.badge}</span>
+              ) : s.count > 0 ? (
                 <span className="bg-[#FDDD58] text-black font-display text-sm px-3 py-1 uppercase tracking-widest">
                   {s.count} pending
                 </span>
