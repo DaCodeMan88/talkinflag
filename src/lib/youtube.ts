@@ -43,22 +43,46 @@ export function isShort(v: { durationSec: number; title?: string }): boolean {
   return /#shorts?\b/i.test(v.title ?? "");
 }
 
+/**
+ * Strip hashtags from a social-style title and tidy what's left behind.
+ * Titles cross-posted from Reels/TikTok carry tag runs ("… #FLAGFOOTBALL
+ * #FLAGPODCAST") that read as noise in a heading. Always call `isShort` on the
+ * RAW title first — stripping would remove the "#shorts" marker it relies on.
+ */
+export function stripHashtags(title: string): string {
+  return (title ?? "")
+    .replace(/#[\p{L}\p{N}_]+/gu, "")
+    .replace(/\s{2,}/g, " ")
+    .trim()
+    .replace(/[\s\-–—|:,]+$/u, "")
+    .trim();
+}
+
+/** ALL-CAPS social titles → Title Case. Deliberate casing is left alone. */
+function titleCaseIfShouty(s: string): string {
+  if (/\p{Ll}/u.test(s)) return s;
+  return s.toLowerCase().replace(/(^|[\s'’\-–—])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase());
+}
+
 /** Pure: raw videos → episode list, Shorts removed, capped to `max`. */
 export function selectEpisodes(videos: RawVideo[], max: number): Episode[] {
   return videos
-    .filter((v) => !isShort(v))
+    .filter((v) => !isShort(v)) // raw title — must see "#shorts" before it's stripped
     .slice(0, max)
-    .map((v) => ({
-      id: v.id,
-      title: v.title,
-      description: v.description,
-      thumbnail: v.thumbnail,
-      publishedAt: v.publishedAt,
-      youtubeUrl: `https://www.youtube.com/watch?v=${v.id}`,
-      guestName: parseGuestName(v.title),
-      episodeNumber: parseEpisodeNumber(v.title),
-      tags: deriveTopicTags(v.title, v.description),
-    }));
+    .map((v) => {
+      const title = stripHashtags(v.title);
+      return {
+        id: v.id,
+        title,
+        description: v.description,
+        thumbnail: v.thumbnail,
+        publishedAt: v.publishedAt,
+        youtubeUrl: `https://www.youtube.com/watch?v=${v.id}`,
+        guestName: parseGuestName(v.title),
+        episodeNumber: parseEpisodeNumber(v.title),
+        tags: deriveTopicTags(title, v.description),
+      };
+    });
 }
 
 export async function getEpisodeById(id: string): Promise<Episode | null> {
@@ -107,6 +131,35 @@ type PlaylistSnippet = {
   thumbnails?: Record<string, { url: string }>;
 };
 
+/**
+ * Look up runtimes for up to 50 video ids. Returns an empty map on any failure,
+ * which callers must treat as "unknown" rather than "not a Short".
+ */
+async function fetchDurations(ids: string[]): Promise<Map<string, number>> {
+  if (ids.length === 0) return new Map();
+  try {
+    const vidUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
+    vidUrl.searchParams.set("key", API_KEY!);
+    vidUrl.searchParams.set("id", ids.slice(0, 50).join(","));
+    vidUrl.searchParams.set("part", "contentDetails");
+    const vres = await fetch(vidUrl.toString(), { next: { revalidate: 3600 } });
+    if (!vres.ok) {
+      console.error("YouTube videos API error:", vres.status);
+      return new Map();
+    }
+    const vdata = await vres.json();
+    return new Map<string, number>(
+      (vdata.items ?? []).map((it: { id: string; contentDetails: { duration: string } }) => [
+        it.id,
+        parseIsoDuration(it.contentDetails.duration),
+      ])
+    );
+  } catch (err) {
+    console.error("YouTube duration fetch error:", err);
+    return new Map();
+  }
+}
+
 /** Fetch a playlist's videos (with durations) as RawVideo[], in playlist order. Empty on any failure. */
 async function fetchPlaylistVideos(playlistId: string, maxResults: number): Promise<RawVideo[]> {
   if (!API_KEY || API_KEY === "PLACEHOLDER_YOUTUBE_API_KEY") return [];
@@ -132,22 +185,8 @@ async function fetchPlaylistVideos(playlistId: string, maxResults: number): Prom
     // One videos call gets durations so we can drop Shorts — snippet fields
     // (title/description/thumbnail/publishedAt) already came from playlistItems
     // above, so we only pull contentDetails.duration out of this response.
-    const vidUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
-    vidUrl.searchParams.set("key", API_KEY);
-    vidUrl.searchParams.set("id", ids.join(","));
-    vidUrl.searchParams.set("part", "contentDetails");
-    const vres = await fetch(vidUrl.toString(), { next: { revalidate: 3600 } });
-    if (!vres.ok) {
-      console.error("YouTube videos API error:", vres.status);
-      return [];
-    }
-    const vdata = await vres.json();
-    const durationById = new Map<string, number>(
-      (vdata.items ?? []).map((it: { id: string; contentDetails: { duration: string } }) => [
-        it.id,
-        parseIsoDuration(it.contentDetails.duration),
-      ])
-    );
+    const durationById = await fetchDurations(ids);
+    if (durationById.size === 0) return [];
 
     // Iterate the ORIGINAL playlistItems array (in playlist order) and
     // attach durations by id — this is what keeps ordering correct. Items
@@ -236,21 +275,49 @@ export async function getEpisodes(maxResults = 50): Promise<Episode[]> {
           item.snippet.thumbnails?.default?.url ||
           "",
         publishedAt: item.snippet.publishedAt,
-        durationSec: 0, // search API has no duration; isShort falls back to #shorts title check
+        durationSec: 0, // filled in below — search.list carries no contentDetails
       })
     );
 
     if (raw.length === 0) return getMockEpisodes(maxResults);
-    return selectEpisodes(raw, maxResults);
+
+    // search.list returns no duration, so without this second call every Short
+    // arrives as durationSec: 0 and isShort degrades to a "#shorts" text match —
+    // which is how cross-posted Reels leaked onto /podcast. Fetch the real
+    // runtimes; ids the API omits stay 0 and fall back to the title check.
+    const durationById = await fetchDurations(raw.map((v) => v.id));
+    const withDurations = raw.map((v) => ({
+      ...v,
+      durationSec: durationById.get(v.id) ?? 0,
+    }));
+
+    return selectEpisodes(withDurations, maxResults);
   } catch (err) {
     console.error("YouTube fetch error:", err);
     return getMockEpisodes(maxResults);
   }
 }
 
-function parseGuestName(title: string): string | undefined {
-  const match = title.match(/\|\s*([^|:]+?)(?:\s*[:–]|$)/);
-  return match?.[1]?.trim();
+/**
+ * Pull the guest's name out of an episode title. Two house formats:
+ *   "Ep 39 | Phil Cutler: …"                        → pipe form
+ *   "Talkin Flag with Laura Hernandez Sanchez - …"  → social form
+ * The social form trails a role ("- Spanish National Team Player"), cut at the
+ * first SPACED dash/colon so hyphenated names (Anne-Marie) survive intact.
+ */
+export function parseGuestName(title: string): string | undefined {
+  const clean = stripHashtags(title);
+
+  const piped = clean.match(/\|\s*([^|:]+?)(?:\s*[:–]|$)/);
+  if (piped?.[1]?.trim()) return titleCaseIfShouty(piped[1].trim());
+
+  const withGuest = clean.match(/(?:^|\s)(?:with|w\/|feat\.?|featuring)\s+(.+)$/iu);
+  if (withGuest?.[1]) {
+    const name = withGuest[1].split(/\s+[-–—|:]\s+/)[0].trim();
+    if (name) return titleCaseIfShouty(name);
+  }
+
+  return undefined;
 }
 
 function parseEpisodeNumber(title: string): number | undefined {
