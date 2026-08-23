@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { deleteMember, sendNudge } from "./actions";
+import type { AccountSignalResult } from "@/lib/admin/account-signal";
 
 export interface MemberRow {
   id: string;
@@ -21,9 +22,10 @@ export interface MemberRow {
   evalCount: number;
   lastEvalAt: string | null;
   iqBest: number | null;
+  signal: AccountSignalResult;
 }
 
-const FILTERS = ["Players", "Coaches", "Verified", "New this week", "No profile"] as const;
+const FILTERS = ["Players", "Coaches", "Verified", "New this week", "No profile", "Quiet accounts"] as const;
 type Filter = (typeof FILTERS)[number];
 type Sort = "newest" | "lastActive" | "mostEvals";
 
@@ -53,8 +55,34 @@ function matches(m: MemberRow, filters: Set<Filter>, weekAgo: number): boolean {
     if (f === "Verified" && !(m.isVerifiedPlayer || m.coachVerified)) return false;
     if (f === "New this week" && new Date(m.createdAt).getTime() < weekAgo) return false;
     if (f === "No profile" && (m.playerId || m.coachName)) return false;
+    if (f === "Quiet accounts" && m.signal.level !== "empty") return false;
   }
   return true;
+}
+
+const SIGNAL_LABEL: Record<AccountSignalResult["level"], string> = {
+  active: "Active",
+  new: "New",
+  empty: "Quiet",
+  spam: "Suspect",
+};
+
+const SIGNAL_STYLE: Record<AccountSignalResult["level"], string> = {
+  active: "border-[#FDDD58]/40 text-[#FDDD58]",
+  new: "border-white/40 text-white/60",
+  empty: "border-white/15 text-white/30",
+  spam: "border-red-500/40 text-red-400",
+};
+
+function SignalPill({ signal }: { signal: AccountSignalResult }) {
+  return (
+    <span
+      title={signal.reason}
+      className={`border text-[10px] uppercase tracking-widest px-1.5 py-0.5 ${SIGNAL_STYLE[signal.level]}`}
+    >
+      {SIGNAL_LABEL[signal.level]}
+    </span>
+  );
 }
 
 function ProfileBar({ pct }: { pct: number }) {
@@ -284,6 +312,7 @@ export default function MembersTable({ members, currentUserId }: { members: Memb
           <thead>
             <tr className="text-left text-white/30 text-[10px] uppercase tracking-widest border-b border-white/10">
               <th className="px-4 py-3 font-normal">Member</th>
+              <th className="px-4 py-3 font-normal">Signal</th>
               <th className="px-4 py-3 font-normal">Profile</th>
               <th className="px-4 py-3 font-normal">Last sign-in</th>
               <th className="px-4 py-3 font-normal">Evals</th>
@@ -299,6 +328,7 @@ export default function MembersTable({ members, currentUserId }: { members: Memb
                   <p className="text-white/80 truncate max-w-[240px]">{m.email}</p>
                   <p className="text-white/25 text-xs mt-0.5">Joined {joinDate(m.createdAt)}</p>
                 </td>
+                <td className="px-4 py-3"><SignalPill signal={m.signal} /></td>
                 <td className="px-4 py-3"><ProfileCell m={m} /></td>
                 <td className="px-4 py-3 text-white/50">{timeAgo(m.lastSignInAt)}</td>
                 <td className="px-4 py-3 text-white/50">
@@ -326,7 +356,10 @@ export default function MembersTable({ members, currentUserId }: { members: Memb
       <div className="lg:hidden space-y-3">
         {rows.map((m) => (
           <div key={m.id} className="bg-[#0d0d0d] border border-white/10 p-4 space-y-2 min-w-0">
-            <p className="text-white/80 text-sm truncate">{m.email}</p>
+            <span className="flex items-center gap-2 min-w-0">
+              <p className="text-white/80 text-sm truncate">{m.email}</p>
+              <SignalPill signal={m.signal} />
+            </span>
             <p className="text-white/25 text-xs">
               Joined {joinDate(m.createdAt)} · Last sign-in {timeAgo(m.lastSignInAt)}
             </p>

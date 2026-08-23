@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { getAdminUser } from "@/lib/admin";
 import { completionScore } from "@/lib/profile/completion";
+import { accountSignal } from "@/lib/admin/account-signal";
 import MembersTable, { type MemberRow } from "./MembersTable";
 
 export const dynamic = "force-dynamic";
@@ -12,20 +13,30 @@ export default async function AdminMembersPage() {
 
   const db = createAdminClient();
 
-  const [{ data: usersPage }, { data: players }, { data: evals }, { data: iqRows }, { data: coaches }, { data: nudges }] =
-    await Promise.all([
-      db.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-      db
-        .from("players")
-        .select(
-          "id, first_name, last_name, claimed_by, claim_pending, is_verified, review_status, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats"
-        )
-        .not("claimed_by", "is", null),
-      db.from("eval_responses").select("user_id, created_at"),
-      db.from("iq_best").select("user_id, score_pct").eq("category", "general"),
-      db.from("coaches").select("user_id, first_name, last_name, is_verified"),
-      db.from("profile_nudges").select("user_id, sent_at"),
-    ]);
+  const [
+    { data: usersPage },
+    { data: players },
+    { data: evals },
+    { data: iqRows },
+    { data: coaches },
+    { data: nudges },
+    { data: sessions },
+    { data: drafts },
+  ] = await Promise.all([
+    db.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+    db
+      .from("players")
+      .select(
+        "id, first_name, last_name, claimed_by, claim_pending, is_verified, review_status, photo_url, bio, instagram, highlight_url, height_in, weight_lbs, stats"
+      )
+      .not("claimed_by", "is", null),
+    db.from("eval_responses").select("user_id, created_at"),
+    db.from("iq_best").select("user_id, score_pct").eq("category", "general"),
+    db.from("coaches").select("user_id, first_name, last_name, is_verified"),
+    db.from("profile_nudges").select("user_id, sent_at"),
+    db.from("assessment_sessions").select("user_id"),
+    db.from("form_drafts").select("user_id"),
+  ]);
 
   const playerByUser = new Map((players ?? []).map((p) => [p.claimed_by as string, p]));
   const coachByUser = new Map((coaches ?? []).map((c) => [c.user_id as string, c]));
@@ -38,11 +49,28 @@ export default async function AdminMembersPage() {
     evalsByUser.set(e.user_id, cur);
   }
 
-  const lastNudgeByUser = new Map<string, string>();
-  for (const n of nudges ?? []) {
-    const prev = lastNudgeByUser.get(n.user_id as string);
-    if (!prev || (n.sent_at as string) > prev) lastNudgeByUser.set(n.user_id as string, n.sent_at as string);
+  const sessionsByUser = new Map<string, number>();
+  for (const s of sessions ?? []) {
+    const uid = s.user_id as string | null;
+    if (uid) sessionsByUser.set(uid, (sessionsByUser.get(uid) ?? 0) + 1);
   }
+
+  const draftsByUser = new Map<string, number>();
+  for (const d of drafts ?? []) {
+    const uid = d.user_id as string | null;
+    if (uid) draftsByUser.set(uid, (draftsByUser.get(uid) ?? 0) + 1);
+  }
+
+  const lastNudgeByUser = new Map<string, string>();
+  const nudgeCountByUser = new Map<string, number>();
+  for (const n of nudges ?? []) {
+    const uid = n.user_id as string;
+    const prev = lastNudgeByUser.get(uid);
+    if (!prev || (n.sent_at as string) > prev) lastNudgeByUser.set(uid, n.sent_at as string);
+    nudgeCountByUser.set(uid, (nudgeCountByUser.get(uid) ?? 0) + 1);
+  }
+
+  const now = new Date();
 
   const members: MemberRow[] = (usersPage?.users ?? [])
     .map((u) => {
@@ -71,6 +99,18 @@ export default async function AdminMembersPage() {
         lastEvalAt: ev?.last || null,
         iqBest: iqByUser.get(u.id) ?? null,
         lastNudgeAt: lastNudgeByUser.get(u.id) ?? null,
+        signal: accountSignal({
+          provider: (u.app_metadata?.provider as string | undefined) ?? "email",
+          evals: ev?.count ?? 0,
+          sessions: sessionsByUser.get(u.id) ?? 0,
+          drafts: draftsByUser.get(u.id) ?? 0,
+          hasPlayer: !!player,
+          hasCoach: !!coach,
+          nudges: nudgeCountByUser.get(u.id) ?? 0,
+          emailConfirmed: !!u.email_confirmed_at,
+          createdAt: u.created_at,
+          now,
+        }),
       };
     })
     .sort((a, b) => (b.createdAt < a.createdAt ? -1 : 1));
