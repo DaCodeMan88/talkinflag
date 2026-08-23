@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { rateLimit, getClientIp, retryAfterSeconds } from "@/lib/rate-limit";
 import { hasClaimedProfile, logClaimEvent, notifyAdmins } from "@/lib/claims";
+import { sendEmail } from "@/lib/email";
+import { claimReceivedEmail } from "@/lib/emails/lifecycle";
 
 export async function POST(
   req: NextRequest,
@@ -72,6 +74,13 @@ export async function POST(
       </div>
     `
   );
+
+  // Claimant receipt — says a person reviews it and that editing is locked
+  // until then. Never blocks the claim; sendEmail returns a result, never throws.
+  if (user.email) {
+    const e = claimReceivedEmail(updated.first_name);
+    await sendEmail({ to: user.email, subject: e.subject, html: e.html });
+  }
 
   return NextResponse.json({ ok: true });
 }

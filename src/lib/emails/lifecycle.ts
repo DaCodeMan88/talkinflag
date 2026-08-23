@@ -25,6 +25,24 @@ export function approvedLiveEmail(firstName: string): LifecycleEmail {
   };
 }
 
+// Receipt at claim time. Without it a claimant hears nothing until an admin
+// acts — and every self-service route rejects while claim_pending is true, so
+// the site just looks broken. Say the lock out loud.
+export function claimReceivedEmail(firstName: string): LifecycleEmail {
+  const name = firstName?.trim() || "there";
+  return {
+    subject: "We got your profile claim",
+    html: confirmationEmailHtml({
+      heading: "Claim received",
+      body: `Hi ${name}, we've got your claim and a member of our team will review it. ` +
+        `Until it's approved, your profile can't be edited — that check is how we keep ` +
+        `profiles from being claimed by the wrong person.<br/><br/>` +
+        `We'll email you as soon as it's approved. If you need an update in the meantime, ` +
+        `reach us at <a href="https://talkinflag.com/contact" style="color:#FDDD58;font-weight:bold;">talkinflag.com/contact</a>.`,
+    }),
+  };
+}
+
 export function claimApprovedEmail(firstName: string): LifecycleEmail {
   return {
     subject: "Your profile claim is approved ✓",
