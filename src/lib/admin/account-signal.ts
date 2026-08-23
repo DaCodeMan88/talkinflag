@@ -22,6 +22,13 @@ export interface AccountSignalInput {
   hasCoach: boolean;
   nudges: number;
   emailConfirmed: boolean;
+  /**
+   * Whether this account administers the site. Checked FIRST, ahead of every
+   * other branch: an admin has no player profile, submits no evaluations and
+   * saves no drafts, so doing its job correctly makes it look abandoned. It
+   * must never surface in the "quiet accounts" filter as a deletion candidate.
+   */
+  isAdmin: boolean;
   createdAt: string;
   now: Date;
 }
@@ -41,8 +48,23 @@ function ageInDays(createdAt: string, now: Date): number {
   return (now.getTime() - new Date(createdAt).getTime()) / 864e5;
 }
 
+/** "google" -> "Google". These render to Ambra as tooltip prose, not slugs. */
+function providerLabel(provider: string): string {
+  return provider.charAt(0).toUpperCase() + provider.slice(1);
+}
+
 export function accountSignal(input: AccountSignalInput): AccountSignalResult {
   const { evals, sessions, drafts, hasPlayer, hasCoach, nudges, provider, emailConfirmed } = input;
+
+  // 0. An admin runs the site: no player profile, no evals, no drafts, by
+  //    design. Ahead of everything else, so no combination of age, provider or
+  //    inactivity can ever put the site's own admin on a deletion list.
+  if (input.isAdmin) {
+    return {
+      level: "active",
+      reason: "Admin account — runs the site, so it has no player activity by design.",
+    };
+  }
 
   // 1. Any evidence of work at all.
   if (drafts > 0) {
@@ -87,6 +109,6 @@ export function accountSignal(input: AccountSignalInput): AccountSignalResult {
     nudges > 0 ? ` nudged ${nudges === 1 ? "once" : plural(nudges, "time", "times")}.` : " never nudged.";
   return {
     level: "empty",
-    reason: `No activity since signing up${viaOAuth ? ` with ${provider}` : ""};${nudged}`,
+    reason: `No activity since signing up${viaOAuth ? ` with ${providerLabel(provider)}` : ""};${nudged}`,
   };
 }

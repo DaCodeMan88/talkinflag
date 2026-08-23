@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/eval/admin-client";
-import { getAdminUser } from "@/lib/admin";
+import { getAdminUser, isAdminEmail } from "@/lib/admin";
 import { completionScore } from "@/lib/profile/completion";
 import { accountSignal } from "@/lib/admin/account-signal";
 import MembersTable, { type MemberRow } from "./MembersTable";
@@ -108,6 +108,7 @@ export default async function AdminMembersPage() {
           hasCoach: !!coach,
           nudges: nudgeCountByUser.get(u.id) ?? 0,
           emailConfirmed: !!u.email_confirmed_at,
+          isAdmin: isAdminEmail(u.email),
           createdAt: u.created_at,
           now,
         }),

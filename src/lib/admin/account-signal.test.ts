@@ -4,7 +4,7 @@ import { accountSignal } from "./account-signal";
 const base = {
   provider: "google", evals: 0, sessions: 0, drafts: 0,
   hasPlayer: false, hasCoach: false, nudges: 0,
-  emailConfirmed: true,
+  emailConfirmed: true, isAdmin: false,
   createdAt: "2026-06-01T00:00:00Z", now: new Date("2026-08-23T00:00:00Z"),
 };
 
@@ -35,6 +35,18 @@ describe("accountSignal", () => {
   it("reaches 'spam' only for a non-OAuth account with an unconfirmed email", () => {
     expect(accountSignal({ ...base, provider: "email", emailConfirmed: false }).level).toBe("spam");
     expect(accountSignal({ ...base, provider: "email", emailConfirmed: true }).level).toBe("empty");
+  });
+
+  it("never calls an admin account 'empty' - running the site leaves no player activity", () => {
+    const admin = accountSignal({ ...base, isAdmin: true });
+    expect(admin.level).toBe("active");
+    expect(admin.reason).toBe("Admin account — runs the site, so it has no player activity by design.");
+  });
+
+  it("keeps an admin account 'active' even where it would otherwise read as spam", () => {
+    expect(
+      accountSignal({ ...base, isAdmin: true, provider: "email", emailConfirmed: false }).level
+    ).toBe("active");
   });
 
   it("gives a reason string for every level", () => {
