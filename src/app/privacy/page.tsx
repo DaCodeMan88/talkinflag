@@ -177,6 +177,24 @@ export default function PrivacyPage() {
               protection authority
             </li>
           </ul>
+          <p className="text-brand-white/70 text-sm leading-relaxed mt-6">
+            To make any of these requests of us — including a request that we erase your data —
+            use our{" "}
+            <Link href="/contact" className="text-brand-yellow underline hover:no-underline">
+              contact form
+            </Link>
+            , or email{" "}
+            <a
+              href="mailto:talkinflagshow@gmail.com"
+              className="text-brand-yellow underline hover:no-underline"
+            >
+              talkinflagshow@gmail.com
+            </a>
+            . Tell us which account or profile your request concerns so we can find it.
+            {/* TODO(Daniel): response window — a timeframe belongs in this sentence
+                ("We respond within X days."), but it is a public commitment and yours
+                to set. Left blank on purpose rather than guessed. */}
+          </p>
         </section>
 
         {/* Section: Correct or remove — the key section */}

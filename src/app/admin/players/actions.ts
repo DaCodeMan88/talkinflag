@@ -141,6 +141,11 @@ export async function denyPlayer(id: string, presetKey: string, note?: string) {
   revalidatePath("/admin/players"); revalidatePath("/players");
 }
 
+// Deliberately silent: no email is sent when a player row is deleted. Of 412
+// player rows only 3 are claimed — the rest are scraped records with no person
+// behind them, so notifying on delete would mean mailing people who never
+// signed up. See docs/runbook-account-deletion.md. Note this is a HARD delete
+// with no unlink: release the claim first if the row is claimed.
 export async function deletePlayer(id: string) {
   if (!(await getAdminUser())) throw new Error("Not authorized");
   const db = createServerClient();

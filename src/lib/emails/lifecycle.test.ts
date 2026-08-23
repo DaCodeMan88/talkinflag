@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
   pendingReceivedEmail, approvedLiveEmail, claimApprovedEmail, claimReceivedEmail, deniedEmail,
+  accountDeletedEmail,
 } from "./lifecycle";
+import type { LifecycleEmail } from "./lifecycle";
 
 describe("lifecycle emails", () => {
   it("pending-received names the athlete and sets expectation", () => {
@@ -35,4 +37,38 @@ describe("claimReceivedEmail", () => {
   it("greets without a name when none is known", () => {
     expect(claimReceivedEmail("").html).not.toContain("Hi ,");
   });
+});
+
+describe("accountDeletedEmail", () => {
+  it("states what was removed and gives a contact route", () => {
+    const e = accountDeletedEmail("Aleena");
+    expect(e.subject).toMatch(/account/i);
+    expect(e.html).toMatch(/removed|deleted/i);
+    expect(e.html).toContain("talkinflag.com/contact");
+  });
+
+  it("greets without a name when none is known", () => {
+    expect(accountDeletedEmail("").html).not.toContain("Hi ,");
+  });
+});
+
+// A missing first name used to render a literal "Hi , " in half these templates.
+// Written as a loop so a new template can't quietly reintroduce it.
+describe("every lifecycle template handles a missing first name", () => {
+  const templates: Record<string, (n: string) => LifecycleEmail> = {
+    pendingReceivedEmail,
+    approvedLiveEmail,
+    claimReceivedEmail,
+    claimApprovedEmail,
+    accountDeletedEmail,
+    deniedEmail: (n) => deniedEmail(n, "highlight_broken"),
+  };
+
+  for (const [name, build] of Object.entries(templates)) {
+    it(`${name} does not emit an empty greeting`, () => {
+      const { html } = build("");
+      expect(html).not.toContain("Hi ,");
+      expect(html).not.toMatch(/\b(Hi|Thanks)\s*[,—]/);
+    });
+  }
 });

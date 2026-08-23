@@ -4,21 +4,23 @@ import { DENIAL_PRESETS, isDenialPreset } from "@/lib/review/denial-presets";
 export interface LifecycleEmail { subject: string; html: string; }
 
 export function pendingReceivedEmail(firstName: string): LifecycleEmail {
+  const name = firstName?.trim() || "there";
   return {
     subject: "Your Talkin Flag profile is in review 🏈",
     html: confirmationEmailHtml({
       heading: "Profile received!",
-      body: `Thanks ${firstName} — you're in the queue. An admin reviews every profile so the ` +
+      body: `Thanks ${name} — you're in the queue. An admin reviews every profile so the ` +
         `TF community stays real. We'll email you the moment yours is live.`,
     }),
   };
 }
 
 export function approvedLiveEmail(firstName: string): LifecycleEmail {
+  const name = firstName?.trim() || "there";
   return {
     subject: "You're live on Talkin Flag ✅",
     html: confirmationEmailHtml({
-      heading: `You're live, ${firstName}!`,
+      heading: `You're live, ${name}!`,
       body: `Your profile is approved and visible to coaches, scouts, and national-team selectors.<br/><br/>` +
         `<a href="https://talkinflag.com/dashboard" style="color:#FDDD58;font-weight:bold;">Open your dashboard →</a>`,
     }),
@@ -44,11 +46,12 @@ export function claimReceivedEmail(firstName: string): LifecycleEmail {
 }
 
 export function claimApprovedEmail(firstName: string): LifecycleEmail {
+  const name = firstName?.trim() || "there";
   return {
     subject: "Your profile claim is approved ✓",
     html: confirmationEmailHtml({
       heading: "Claim approved ✓",
-      body: `Hi ${firstName}, your claim is verified. You can now edit your profile, add highlights, ` +
+      body: `Hi ${name}, your claim is verified. You can now edit your profile, add highlights, ` +
         `and submit stats for verification.<br/><br/>` +
         `<a href="https://talkinflag.com/dashboard" style="color:#FDDD58;font-weight:bold;">Go to dashboard →</a>`,
     }),
@@ -60,12 +63,13 @@ export function deniedEmail(firstName: string, presetKey: string, note?: string)
   const preset = isDenialPreset(presetKey) ? DENIAL_PRESETS[presetKey] : null;
   const reason = preset?.reason ?? "Your profile needs one small tweak before it goes live.";
   const fix = preset?.fix ?? "Update your details and resubmit.";
+  const name = firstName?.trim() || "there";
   const noteHtml = note?.trim()
     ? `<br/><br/><em style="color:#ffffff99;">A note from our team: ${note.trim()}</em>` : "";
   return {
     subject: "One quick step before your profile goes live",
     html: confirmationEmailHtml({
-      heading: `Almost there, ${firstName} 🏈`,
+      heading: `Almost there, ${name} 🏈`,
       body:
         `You're part of the Talkin Flag community — we just need one thing before your profile goes live.<br/><br/>` +
         `<strong>What happened:</strong> ${reason}<br/>` +
@@ -73,6 +77,26 @@ export function deniedEmail(firstName: string, presetKey: string, note?: string)
         `<a href="https://talkinflag.com/dashboard/edit" style="color:#FDDD58;font-weight:bold;">Update &amp; resubmit →</a>` +
         `<br/><br/>Meanwhile, catch the pod and the latest TF Rankings at ` +
         `<a href="https://talkinflag.com/podcast" style="color:#FDDD58;">talkinflag.com</a>. We're rooting for you.`,
+    }),
+  };
+}
+
+// Sent after an admin deletes an auth account in /admin/members. Deliberately
+// flat: the recipient may never have wanted the account, or may have been
+// removed for cause. Be exact about what survives — deleteMember unlinks a
+// claimed player profile but does NOT delete it, and saying otherwise would be
+// a false statement to someone about their own data.
+export function accountDeletedEmail(firstName: string): LifecycleEmail {
+  const name = firstName?.trim() || "there";
+  return {
+    subject: "Your Talkin Flag account has been removed",
+    html: confirmationEmailHtml({
+      heading: "Account removed",
+      body: `Hi ${name}, your Talkin Flag login has been removed and you can no longer sign in.<br/><br/>` +
+        `If a player profile was linked to this account, that profile has not been deleted. ` +
+        `It stays on the site as an unclaimed record and is no longer connected to you.<br/><br/>` +
+        `If you have a question about this, or you want a player profile removed as well, reach us at ` +
+        `<a href="https://talkinflag.com/contact" style="color:#FDDD58;font-weight:bold;">talkinflag.com/contact</a>.`,
     }),
   };
 }

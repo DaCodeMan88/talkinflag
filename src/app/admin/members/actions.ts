@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/eval/admin-client";
 import { getAdminUser } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
 import { nudgeEmailHtml, NUDGE_SUBJECT } from "@/lib/nudge";
+import { accountDeletedEmail } from "@/lib/emails/lifecycle";
 
 // Deletes the AUTH ACCOUNT only. Any claimed player profile is unlinked (reset to
 // unclaimed), never deleted — player rows are managed in /admin/players.
@@ -15,6 +16,12 @@ export async function deleteMember(userId: string) {
 
   const db = createAdminClient();
 
+  // Read the address BEFORE deleteUser — afterwards the auth row is gone and
+  // there is nothing left to notify.
+  const { data: userData } = await db.auth.admin.getUserById(userId);
+  const email = userData?.user?.email ?? null;
+  const firstName = (userData?.user?.user_metadata?.first_name as string | undefined) ?? "";
+
   const { error: unlinkErr } = await db
     .from("players")
     .update({ claimed_by: null, is_claimed: false, claim_pending: false, claimed_at: null })
@@ -23,6 +30,13 @@ export async function deleteMember(userId: string) {
 
   const { error } = await db.auth.admin.deleteUser(userId);
   if (error) throw new Error(`Failed to delete member: ${error.message}`);
+
+  // Tell them their login is gone. A mail failure must not fail the deletion —
+  // sendEmail returns a result and never throws. No address on record: skip.
+  if (email) {
+    const e = accountDeletedEmail(firstName);
+    await sendEmail({ to: email, subject: e.subject, html: e.html });
+  }
 
   revalidatePath("/admin/members");
 }
