@@ -12,9 +12,10 @@
  *   npx tsx scripts/audit-answer-key.ts
  *
  * Exit code: 1 if ANY quiz trips a threshold (maxShare > 0.4 or
- * longest-choice share > 0.4), else 0. On today's banks it is EXPECTED to
- * exit 1 — that failing baseline is what this audit documents. A later task
- * de-biases the banks so this passes.
+ * longest-choice share > 0.4), else 0. Both banks currently PASS and the
+ * script exits 0; the de-biasing work is done. This audit is now a
+ * regression guard — run it after any change to an answer key or a choice
+ * string, and treat a move in either percentage as a finding.
  */
 
 import { readFileSync } from "fs";
