@@ -8,7 +8,7 @@ import { logClaimEvent } from "@/lib/claims";
 import { sendEmail } from "@/lib/email";
 import { approveUpdate, denyUpdate } from "@/lib/review/transitions";
 import { isDenialPreset } from "@/lib/review/denial-presets";
-import { approvedLiveEmail, deniedEmail, claimApprovedEmail } from "@/lib/emails/lifecycle";
+import { approvedLiveEmail, deniedEmail, claimApprovedEmail, claimReleasedEmail } from "@/lib/emails/lifecycle";
 
 const POSITIONS = ["QB", "WR", "DB", "LB", "C", "Rusher", "Utility"];
 const LEVELS = ["high_school", "college", "national"];
@@ -162,10 +162,11 @@ export async function toggleClaim(id: string, claimed: boolean) {
   if (!admin) throw new Error("Not authorized");
   const db = createServerClient();
 
-  // Read the current claimant first so a release can be logged against them.
+  // Read the current claimant first so a release can be logged against them —
+  // and so they can be told. After the update, claimed_by is gone.
   const { data: before } = await db
     .from("players")
-    .select("claimed_by")
+    .select("claimed_by, first_name")
     .eq("id", id)
     .single();
 
@@ -183,6 +184,14 @@ export async function toggleClaim(id: string, claimed: boolean) {
 
   if (!claimed && before?.claimed_by) {
     await logClaimEvent(db, { playerId: id, userId: before.claimed_by, action: "release", actor: "admin" });
+
+    // Losing control of a profile without being told is the gap this closes.
+    // Covers releaseFromReport too — that action calls straight through here.
+    const { data: u } = await db.auth.admin.getUserById(before.claimed_by);
+    if (u?.user?.email) {
+      const e = claimReleasedEmail(before.first_name);
+      await sendEmail({ to: u.user.email, subject: e.subject, html: e.html });
+    }
   }
 
   revalidatePath(`/admin/players/${id}/edit`);

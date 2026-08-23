@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/eval/admin-client";
 import { isAdminEmail } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
 import { sanitizeChangeRequest, isStatsField } from "@/lib/profile/change-request";
+import { sendEmail } from "@/lib/email";
+import { changeRequestDecidedEmail } from "@/lib/emails/lifecycle";
 
 export async function PATCH(
   req: NextRequest,
@@ -87,6 +89,21 @@ export async function PATCH(
     // level/team/roster changes affect rankings — bust the profile + list caches.
     revalidatePath(`/players/${reqRow.player_id}`);
     revalidatePath("/players");
+  }
+
+  // The user asked for this change themselves — tell them either way. An
+  // unclaimed profile has nobody behind it, so there is no one to tell.
+  const { data: player } = await db
+    .from("players")
+    .select("first_name, claimed_by")
+    .eq("id", reqRow.player_id)
+    .single();
+  if (player?.claimed_by) {
+    const { data: u } = await db.auth.admin.getUserById(player.claimed_by);
+    if (u?.user?.email) {
+      const e = changeRequestDecidedEmail(player.first_name, reqRow.field, status === "approved");
+      await sendEmail({ to: u.user.email, subject: e.subject, html: e.html });
+    }
   }
 
   return NextResponse.json({ ok: true });

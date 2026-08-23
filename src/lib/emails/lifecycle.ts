@@ -100,3 +100,53 @@ export function accountDeletedEmail(firstName: string): LifecycleEmail {
     }),
   };
 }
+
+// A change request is the one profile event the user started themselves, so
+// silence reads as the site swallowing it. Names the field either way and
+// only mentions a note when an admin actually wrote one.
+export function changeRequestDecidedEmail(
+  firstName: string,
+  field: string,
+  approved: boolean,
+  note?: string,
+): LifecycleEmail {
+  const name = firstName?.trim() || "there";
+  const noteHtml = note?.trim()
+    ? `<br/><br/><em style="color:#ffffff99;">From our team: ${note.trim()}</em>` : "";
+  const body = approved
+    ? `Hi ${name}, the change you asked for to <strong>${field}</strong> has been approved ` +
+      `and applied to your profile.`
+    : `Hi ${name}, the change you asked for to <strong>${field}</strong> was reviewed and ` +
+      `not applied. That field is unchanged on your profile.`;
+  return {
+    subject: approved
+      ? "Your profile change request was approved"
+      : "Your profile change request was reviewed",
+    html: confirmationEmailHtml({
+      heading: approved ? "Change applied ✓" : "Change not applied",
+      body: `${body}${noteHtml}<br/><br/>` +
+        `Questions about this? Reach us at ` +
+        `<a href="https://talkinflag.com/contact" style="color:#FDDD58;font-weight:bold;">talkinflag.com/contact</a>.`,
+    }),
+  };
+}
+
+// Sent when a claim is released — by an admin toggle or as the outcome of a
+// report. The recipient may have done nothing wrong, or may have claimed a
+// profile that was not theirs, so this states the fact and nothing more: no
+// apology, no accusation, and a route to ask.
+export function claimReleasedEmail(firstName: string): LifecycleEmail {
+  const name = firstName?.trim() || "there";
+  return {
+    subject: "A profile claim on your Talkin Flag account has been released",
+    html: confirmationEmailHtml({
+      heading: "Profile claim released",
+      body: `Hi ${name}, a player profile that was linked to your Talkin Flag account is ` +
+        `no longer linked to it. You can no longer edit that profile, and it stays on the ` +
+        `site as an unclaimed record.<br/><br/>` +
+        `Your account itself is unchanged and you can still sign in.<br/><br/>` +
+        `If you have a question about this, reach us at ` +
+        `<a href="https://talkinflag.com/contact" style="color:#FDDD58;font-weight:bold;">talkinflag.com/contact</a>.`,
+    }),
+  };
+}
