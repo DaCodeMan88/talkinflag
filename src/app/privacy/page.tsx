@@ -191,9 +191,9 @@ export default function PrivacyPage() {
               talkinflagshow@gmail.com
             </a>
             . Tell us which account or profile your request concerns so we can find it.
-            {/* TODO(Daniel): response window — a timeframe belongs in this sentence
-                ("We respond within X days."), but it is a public commitment and yours
-                to set. Left blank on purpose rather than guessed. */}
+            We aim to respond within 30 days. If your request is complex, or we need to
+            confirm who you are before acting on it, we will tell you within that time and
+            explain what we still need from you.
           </p>
         </section>
 
