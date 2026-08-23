@@ -33,5 +33,22 @@ describe("No-Run Zone answer key", () => {
       const qs = noRunZoneQuestions(file);
       expect(qs[0].source_citation ?? "").toContain("AP03242025");
     });
+
+    it(`${file}: the prompt names the ruleset, because IFAF's answer differs`, () => {
+      // 2026-08-23: Ambra was quoting IFAF Flag Football Rules 2023 Art. 4
+      // verbatim — "the 5-yard areas at both ends of the field in front of the
+      // goal lines" — and was CORRECT for that code. IFAF has no midfield zone;
+      // NFL FLAG has both. An unqualified "in 5v5" prompt is therefore ambiguous
+      // for an audience on the Olympic (IFAF) pathway.
+      const qs = noRunZoneQuestions(file);
+      expect(qs[0].prompt).toContain("NFL FLAG");
+    });
+
+    it(`${file}: the real IFAF rule is a distractor, not a strawman`, () => {
+      const qs = noRunZoneQuestions(file);
+      const distractors = qs[0].choices.filter((_, i) => i !== qs[0].correct_index);
+      expect(distractors.some((c) => /both ends of the field in front of the goal lines/.test(c))).toBe(true);
+      expect(qs[0].explanation ?? "").toContain("IFAF");
+    });
   }
 });
