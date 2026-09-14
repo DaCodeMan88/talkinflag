@@ -9,22 +9,56 @@
 /** Result shape every media action returns instead of throwing. */
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
+/** Thousands grouped in threes: 1,234,567 / 1.234 / 8 500 (spaces stripped first). */
+const GROUPED_RE = /^\d{1,3}(?:[.,]\d{3})*$/;
+/** A decimal figure, as written in front of a K/M suffix. */
+const DECIMAL_RE = /^\d{1,3}(?:,\d{3})*(?:\.\d+)?$|^\d+(?:\.\d+)?$/;
+const MULTIPLIER = { k: 1_000, m: 1_000_000 } as const;
+
 /**
- * Read a hand-typed performance number.
+ * Read a performance count as a person writes it.
  *
- * Every non-digit is stripped, so "1,234" and "1.234" both read as 1234 —
- * separators vary by locale and Ambra copies these off Instagram Insights.
+ * Instagram Insights renders "20.4K", so that is the form Ambra is most likely
+ * to type or paste — it means 20,400, and storing 204 would quietly corrupt the
+ * only number the monthly keep-or-retire decision rests on. Handles:
  *
- * The cost of that bluntness: the abbreviations Insights actually shows read as
- * their digits only ("20.4K" → 204) and a leading minus is dropped ("-5" → 5).
- * The admin form must therefore ask for the full number. Returns null for
- * blank, missing, or digit-free input so the column stays NULL rather than 0 —
- * "not captured" and "zero plays" are different facts.
+ *   "20400" · "1,234" · "1.234" · "8 500"  → grouped thousands
+ *   "20.4K" · "2k" · "1.2M"                → shorthand, expanded and rounded
+ *   "20.4K likes"                          → a whole label pasted in
+ *
+ * Anything it cannot read confidently returns null rather than a guess: a bare
+ * decimal ("20.4"), mixed-up separators ("1,23"), a double decimal ("1.2.3"),
+ * a negative, or digits run together with letters. Null is also the answer for
+ * blank and missing input, so the column stays NULL — "not captured" and "zero
+ * plays" are different facts, and a wrong number is worse than no number.
  */
-export function toInt(v?: string): number | null {
-  const digits = (v ?? "").replace(/[^0-9]/g, "");
-  const n = Number.parseInt(digits, 10);
-  return Number.isFinite(n) ? n : null;
+export function parseCount(v?: string): number | null {
+  const raw = (v ?? "").trim().toLowerCase();
+  // Greedy run of digits/separators/spaces ending in a digit, an optional K/M,
+  // then whatever else was pasted along with it.
+  const m = raw.match(/^([\d.,\s]*\d)(\s*)([km])?([\s\S]*)$/);
+  if (!m) return null;
+
+  const [, token, gap, suffix, rest] = m;
+  // Trailing words are fine ("20.4K likes", "20400 plays"); letters or digits
+  // glued straight onto the number are not ("20.4KM", "20400plays") — those
+  // mean we misread where the number ended.
+  const separated = !!gap || /^[^a-z0-9]/.test(rest);
+  if (rest && !separated) return null;
+
+  const figure = token.replace(/\s/g, "");
+
+  if (suffix) {
+    if (!DECIMAL_RE.test(figure)) return null;
+    return Math.round(
+      Number.parseFloat(figure.replace(/,/g, "")) *
+        MULTIPLIER[suffix as keyof typeof MULTIPLIER]
+    );
+  }
+
+  if (/^\d+$/.test(figure)) return Number.parseInt(figure, 10);
+  if (!GROUPED_RE.test(figure)) return null;
+  return Number.parseInt(figure.replace(/[.,]/g, ""), 10);
 }
 
 /**

@@ -1,35 +1,57 @@
 import { describe, it, expect } from "vitest";
-import { toInt, describeUnparsableInstagramUrl } from "./parse";
+import { parseCount, describeUnparsableInstagramUrl } from "./parse";
 
-describe("toInt", () => {
+describe("parseCount", () => {
   it("reads a plain number", () => {
-    expect(toInt("20400")).toBe(20400);
+    expect(parseCount("20400")).toBe(20400);
   });
 
-  it("strips thousands separators", () => {
-    expect(toInt("1,234")).toBe(1234);
-    expect(toInt("1.234")).toBe(1234);
-    expect(toInt(" 8 500 ")).toBe(8500);
+  it("reads grouped thousands, with either separator or spaces", () => {
+    expect(parseCount("1,234")).toBe(1234);
+    expect(parseCount("1.234")).toBe(1234);
+    expect(parseCount(" 8 500 ")).toBe(8500);
+    expect(parseCount("1,234,567")).toBe(1234567);
   });
 
-  it("treats an abbreviated count as its digits only — 20.4K is NOT 20400", () => {
-    // Documented, deliberate limitation: every non-digit is stripped, so the
-    // shorthand Instagram Insights displays reads as 204, not 20,400. The admin
-    // form's helper text must ask for the full number.
-    expect(toInt("20.4K")).toBe(204);
-    expect(toInt("8.5k")).toBe(85);
+  it("expands the K/M shorthand Instagram Insights actually shows", () => {
+    expect(parseCount("20.4K")).toBe(20400);
+    expect(parseCount("20.4k")).toBe(20400);
+    expect(parseCount("8.5K")).toBe(8500);
+    expect(parseCount("2K")).toBe(2000);
+    expect(parseCount("1.2M")).toBe(1200000);
+    expect(parseCount("1.2m")).toBe(1200000);
+    expect(parseCount("1.5 K")).toBe(1500);
   });
 
-  it("loses the sign on a negative, rather than storing one", () => {
-    expect(toInt("-5")).toBe(5);
+  it("keeps two decimals of a shorthand rather than truncating", () => {
+    expect(parseCount("20.45K")).toBe(20450);
+    // Rounds to a whole count — a fraction of a play is not a thing.
+    expect(parseCount("1.2345K")).toBe(1235);
+  });
+
+  it("accepts a whole label pasted in, suffix or not", () => {
+    // She may well paste "20.4K likes" straight off the app.
+    expect(parseCount("20.4K likes")).toBe(20400);
+    expect(parseCount("20400 plays")).toBe(20400);
   });
 
   it("is null for blank, missing and non-numeric input", () => {
-    expect(toInt("")).toBeNull();
-    expect(toInt("   ")).toBeNull();
-    expect(toInt(undefined)).toBeNull();
-    expect(toInt("abc")).toBeNull();
-    expect(toInt("K")).toBeNull();
+    expect(parseCount("")).toBeNull();
+    expect(parseCount("   ")).toBeNull();
+    expect(parseCount(undefined)).toBeNull();
+    expect(parseCount("abc")).toBeNull();
+    expect(parseCount("K")).toBeNull();
+  });
+
+  it("refuses malformed numbers instead of inventing a value", () => {
+    expect(parseCount("1.2.3")).toBeNull();
+    // A bare decimal with no suffix is not a count: 20.4 plays means nothing,
+    // and guessing 204 or 20 would both be wrong.
+    expect(parseCount("20.4")).toBeNull();
+    expect(parseCount("1,23")).toBeNull();
+    // A leading minus is rejected rather than silently losing its sign.
+    expect(parseCount("-5")).toBeNull();
+    expect(parseCount("20.4KM")).toBeNull();
   });
 });
 

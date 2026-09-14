@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { parseInstagramShortcode, MAX_LIVE_POSTS } from "@/lib/media/instagram";
-import { toInt, describeUnparsableInstagramUrl, type ActionResult } from "./parse";
+import { parseCount, describeUnparsableInstagramUrl, type ActionResult } from "./parse";
 
 function revalidateMedia() {
   revalidatePath("/media");
@@ -26,8 +26,14 @@ async function liveCount(db: ReturnType<typeof createAdminClient>): Promise<numb
   return count ?? 0;
 }
 
-/** Today as a DATE literal, for `metrics_captured_on`. */
-function today(): string {
+/**
+ * The capture date for a pair of hand-read metrics: today when at least one
+ * number was actually entered, null when neither was. Stamping a date over two
+ * blanks would claim a reading that never happened, and the admin page's
+ * staleness indicator reads this column.
+ */
+function capturedOn(plays: number | null, likes: number | null): string | null {
+  if (plays === null && likes === null) return null;
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -77,14 +83,19 @@ export async function addPost(input: {
     };
   }
 
+  const plays = parseCount(input.plays);
+  const likes = parseCount(input.likes);
+
+  // Adding overwrites every field, including a revived row's old numbers, so
+  // the capture date is rewritten with them rather than left behind.
   const fields = {
     shortcode,
     label: (input.label ?? "").trim(),
     is_live: true,
     position: MAX_LIVE_POSTS - 1, // lands last; reorder from the list
-    plays: toInt(input.plays),
-    likes: toInt(input.likes),
-    metrics_captured_on: today(),
+    plays,
+    likes,
+    metrics_captured_on: capturedOn(plays, likes),
     updated_at: new Date().toISOString(),
   };
 
@@ -143,14 +154,20 @@ export async function updatePost(
   const denied = await requireAdmin();
   if (denied) return { ok: false, error: denied };
 
+  const plays = parseCount(input.plays);
+  const likes = parseCount(input.likes);
+  const captured = capturedOn(plays, likes);
+
   const db = createAdminClient();
   const { error } = await db
     .from("media_instagram_posts")
     .update({
       label: (input.label ?? "").trim(),
-      plays: toInt(input.plays),
-      likes: toInt(input.likes),
-      metrics_captured_on: today(),
+      plays,
+      likes,
+      // Clearing both numbers leaves the previous capture date alone rather
+      // than erasing it — an edit to the note is not a new reading.
+      ...(captured ? { metrics_captured_on: captured } : {}),
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);
