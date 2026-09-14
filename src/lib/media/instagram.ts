@@ -17,7 +17,12 @@ export interface InstagramPost {
 
 /** Instagram shortcodes are URL-safe base64-ish, typically 11 chars. */
 const SHORTCODE_RE = /^[A-Za-z0-9_-]{5,24}$/;
-const URL_RE = /instagram\.com\/(?:reels?|p|tv)\/([A-Za-z0-9_-]{5,24})/i;
+/**
+ * The host must be instagram.com itself — anchored at the start of the string,
+ * after a scheme's `//`, or after a subdomain dot. Without that anchor,
+ * `https://evil.example.com/instagram.com/p/X/` would parse as a real post.
+ */
+const URL_RE = /(?:^|\/\/|\.)instagram\.com\/(?:reels?|p|tv)\/([A-Za-z0-9_-]{5,24})/i;
 
 /**
  * Pull the shortcode out of anything Ambra is likely to paste: a reel URL, a
@@ -46,13 +51,25 @@ export function selectGridPosts<T extends Pick<InstagramPost, "shortcode" | "pos
 ): T[] {
   return rows
     .filter((r) => r.is_live)
-    .sort((a, b) => a.position - b.position || a.shortcode.localeCompare(b.shortcode))
+    // Plain ASCII comparison, not localeCompare: shortcodes are case-sensitive
+    // and localeCompare's collation varies with the Node build's ICU data.
+    .sort(
+      (a, b) =>
+        a.position - b.position ||
+        (a.shortcode < b.shortcode ? -1 : a.shortcode > b.shortcode ? 1 : 0)
+    )
     .slice(0, MAX_LIVE_POSTS);
 }
 
 /**
  * Hardcoded copy of the seed, used only when the table read fails or returns
  * nothing. The /media grid must never render empty.
+ *
+ * This is a snapshot of the seed as of launch (September 2026). It does NOT
+ * track Ambra's monthly swaps: once she starts curating, the DB and this array
+ * drift apart, and a Supabase outage a year from now would render a year-old
+ * grid with stale engagement labels. Refreshing it is a manual job — copy the
+ * live rows back in when the grid has meaningfully changed.
  */
 export const FALLBACK_POSTS: InstagramPost[] = [
   { shortcode: "DKULB7cNxpR", label: "Most popular · 20.4K likes", position: 0, is_live: true },
@@ -72,7 +89,7 @@ export async function getLiveInstagramPosts(): Promise<InstagramPost[]> {
     const db = createAdminClient();
     const { data, error } = await db
       .from("media_instagram_posts")
-      .select("*")
+      .select("id, shortcode, label, position, is_live, plays, likes, metrics_captured_on, updated_at")
       .eq("is_live", true)
       .order("position", { ascending: true });
     if (error) throw new Error(error.message);
@@ -84,17 +101,29 @@ export async function getLiveInstagramPosts(): Promise<InstagramPost[]> {
   }
 }
 
-/** Every row, live and retired, for the admin page. */
-export async function getAllInstagramPosts(): Promise<InstagramPost[]> {
-  const db = createAdminClient();
-  const { data, error } = await db
-    .from("media_instagram_posts")
-    .select("*")
-    .order("is_live", { ascending: false })
-    .order("position", { ascending: true });
-  if (error) {
-    console.error("getAllInstagramPosts:", error.message);
-    return [];
+/**
+ * Every row, live and retired, for the admin page.
+ *
+ * Returns a result rather than a bare array: an empty table and a failed read
+ * are different truths, and the admin page must not render "no reels yet" when
+ * the real answer is "the table does not exist" (migration 027 is deliberately
+ * unapplied in production).
+ */
+export async function getAllInstagramPosts(): Promise<
+  { ok: true; posts: InstagramPost[] } | { ok: false; error: string }
+> {
+  try {
+    const db = createAdminClient();
+    const { data, error } = await db
+      .from("media_instagram_posts")
+      .select("id, shortcode, label, position, is_live, plays, likes, metrics_captured_on, updated_at")
+      .order("is_live", { ascending: false })
+      .order("position", { ascending: true });
+    if (error) throw new Error(error.message);
+    return { ok: true, posts: (data ?? []) as InstagramPost[] };
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("getAllInstagramPosts:", message);
+    return { ok: false, error: message };
   }
-  return (data ?? []) as InstagramPost[];
 }

@@ -23,8 +23,11 @@ CREATE TABLE IF NOT EXISTS media_instagram_posts (
 CREATE INDEX IF NOT EXISTS idx_media_ig_live_pos ON media_instagram_posts(is_live, position);
 
 ALTER TABLE media_instagram_posts ENABLE ROW LEVEL SECURITY;
--- Public may read only live rows; every write goes through the service-role
--- client in admin code, never the cookie client.
+-- Defense in depth. The public /media read goes through the service-role client
+-- (see getLiveInstagramPosts) so the page can render statically with
+-- revalidate=300 — a cookie client would force dynamic rendering. This policy
+-- means that even if anon access is ever introduced, drafts/retired reels
+-- can't leak. Every write goes through service-role admin code.
 CREATE POLICY media_instagram_posts_public_read ON media_instagram_posts
   FOR SELECT USING (is_live = TRUE);
 
