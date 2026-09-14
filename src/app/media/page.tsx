@@ -16,7 +16,10 @@ const GALLERY_IMAGES: { src: string; alt: string; wide?: boolean; caption?: stri
   { src: "/hosts-hero.jpg", alt: "Ambra & Tika Marcucci — Talkin Flag hosts", wide: true, caption: "Ambra & Tika Marcucci · Talkin Flag" },
   { src: "/ambra.jpg", alt: "Ambra Marcucci", caption: "Ambra Marcucci" },
   { src: "/tika.jpg", alt: "Tika Marcucci", caption: "Tika Marcucci" },
-  { src: "/hosts-wide.jpg", alt: "Ambra & Tika wide shot", wide: true, caption: "Behind the mic" },
+  // Removed 2026-09-14 at Ambra's request: the "Behind the mic" wide shot
+  // (/hosts-wide.jpg) left a ragged bottom edge in the 3-column masonry.
+  // The file is still in /public — re-add this line to bring it back:
+  // { src: "/hosts-wide.jpg", alt: "Ambra & Tika wide shot", wide: true, caption: "Behind the mic" },
   // Add new images: { src: "/gallery/your-image.jpg", alt: "...", caption: "..." },
 ];
 
