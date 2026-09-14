@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { parseInstagramShortcode, MAX_LIVE_POSTS } from "@/lib/media/instagram";
-import { parseCount, describeUnparsableInstagramUrl, type ActionResult } from "./parse";
+import {
+  parseCount,
+  capturedOn,
+  describeUnparsableInstagramUrl,
+  type ActionResult,
+} from "./parse";
 
 function revalidateMedia() {
   revalidatePath("/media");
@@ -17,24 +22,23 @@ async function requireAdmin(): Promise<string | null> {
   return user ? null : "Not authorized.";
 }
 
-/** Count of currently-live rows, used to enforce the nine cap. */
-async function liveCount(db: ReturnType<typeof createAdminClient>): Promise<number> {
-  const { count } = await db
+/**
+ * Count of currently-live rows, used to enforce the nine cap.
+ *
+ * Surfaces its error rather than reading a failed count as zero: in
+ * `restorePost` this count is the whole guard, and treating a transient failure
+ * as "the grid is empty" would take it to ten live rows — the public page then
+ * slices to nine and a reel silently disappears.
+ */
+async function liveCount(
+  db: ReturnType<typeof createAdminClient>
+): Promise<{ count: number } | { error: string }> {
+  const { count, error } = await db
     .from("media_instagram_posts")
     .select("id", { count: "exact", head: true })
     .eq("is_live", true);
-  return count ?? 0;
-}
-
-/**
- * The capture date for a pair of hand-read metrics: today when at least one
- * number was actually entered, null when neither was. Stamping a date over two
- * blanks would claim a reading that never happened, and the admin page's
- * staleness indicator reads this column.
- */
-function capturedOn(plays: number | null, likes: number | null): string | null {
-  if (plays === null && likes === null) return null;
-  return new Date().toISOString().slice(0, 10);
+  if (error) return { error: error.message };
+  return { count: count ?? 0 };
 }
 
 /**
@@ -76,7 +80,9 @@ export async function addPost(input: {
     return { ok: false, error: "That reel is already on the page." };
   }
 
-  if ((await liveCount(db)) >= MAX_LIVE_POSTS) {
+  const live = await liveCount(db);
+  if ("error" in live) return { ok: false, error: live.error };
+  if (live.count >= MAX_LIVE_POSTS) {
     return {
       ok: false,
       error: `The grid holds ${MAX_LIVE_POSTS} reels. Retire one first, then add this.`,
@@ -130,7 +136,9 @@ export async function restorePost(id: string): Promise<ActionResult> {
   if (denied) return { ok: false, error: denied };
 
   const db = createAdminClient();
-  if ((await liveCount(db)) >= MAX_LIVE_POSTS) {
+  const live = await liveCount(db);
+  if ("error" in live) return { ok: false, error: live.error };
+  if (live.count >= MAX_LIVE_POSTS) {
     return {
       ok: false,
       error: `The grid holds ${MAX_LIVE_POSTS} reels. Retire one first.`,
@@ -201,8 +209,13 @@ export async function movePost(
   const j = direction === "up" ? i - 1 : i + 1;
   if (j < 0 || j >= list.length) return { ok: true }; // already at the end — no-op
 
-  // Rewrite every position from the swapped array. Cheap (nine rows) and it
-  // repairs any duplicate or gapped positions left by earlier edits.
+  // Rewrite every position from the swapped array. Cheap (nine rows), and a
+  // full rewrite also renumbers whatever gaps retiring a reel left behind.
+  // These are separate statements, not a transaction: if one fails partway,
+  // rows 0..k-1 hold their new positions and the rest hold their old ones, so
+  // two rows can share a position. The grid still renders in a stable order
+  // (selectGridPosts breaks ties on shortcode) and the next move settles it —
+  // nine rows do not justify an RPC to avoid that.
   [list[i], list[j]] = [list[j], list[i]];
   for (let k = 0; k < list.length; k++) {
     const { error } = await db

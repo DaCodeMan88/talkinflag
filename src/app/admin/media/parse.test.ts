@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseCount, describeUnparsableInstagramUrl } from "./parse";
+import { parseCount, capturedOn, describeUnparsableInstagramUrl } from "./parse";
 
 describe("parseCount", () => {
   it("reads a plain number", () => {
@@ -20,13 +20,35 @@ describe("parseCount", () => {
     expect(parseCount("2K")).toBe(2000);
     expect(parseCount("1.2M")).toBe(1200000);
     expect(parseCount("1.2m")).toBe(1200000);
-    expect(parseCount("1.5 K")).toBe(1500);
   });
 
   it("keeps two decimals of a shorthand rather than truncating", () => {
     expect(parseCount("20.45K")).toBe(20450);
     // Rounds to a whole count — a fraction of a play is not a thing.
     expect(parseCount("1.2345K")).toBe(1235);
+  });
+
+  it("reads the Italian-locale decimal comma when a suffix follows", () => {
+    // Ambra's phone renders Instagram counts as "20,4K". A comma before one or
+    // two digits is a decimal point; before exactly three it is a thousands
+    // separator, and that reading wins.
+    expect(parseCount("20,4K")).toBe(20400);
+    expect(parseCount("1,2M")).toBe(1200000);
+    expect(parseCount("1,234")).toBe(1234);
+    expect(parseCount("1,234K")).toBe(1234000);
+  });
+
+  it("refuses a detached k or m, which may be a word rather than a multiplier", () => {
+    // "20400 monthly plays" is a plausible paste, and eating the "m" as a
+    // multiplier would store 20,400,000,000. We cannot tell a multiplier from a
+    // word here, so we refuse instead of guessing 1000x in either direction.
+    expect(parseCount("20400 monthly plays")).toBeNull();
+    expect(parseCount("20400 mentions")).toBeNull();
+    expect(parseCount("12 min")).toBeNull();
+    expect(parseCount("8500 k")).toBeNull();
+    // Trailing words that cannot be a multiplier stay harmless.
+    expect(parseCount("20400 plays")).toBe(20400);
+    expect(parseCount("8 500 likes")).toBe(8500);
   });
 
   it("accepts a whole label pasted in, suffix or not", () => {
@@ -52,6 +74,21 @@ describe("parseCount", () => {
     // A leading minus is rejected rather than silently losing its sign.
     expect(parseCount("-5")).toBeNull();
     expect(parseCount("20.4KM")).toBeNull();
+  });
+});
+
+describe("capturedOn", () => {
+  it("dates a reading when either number was entered", () => {
+    const today = new Date().toISOString().slice(0, 10);
+    expect(capturedOn(20400, null)).toBe(today);
+    expect(capturedOn(null, 8500)).toBe(today);
+    expect(capturedOn(20400, 8500)).toBe(today);
+    // Zero is a reading, not an absence.
+    expect(capturedOn(0, null)).toBe(today);
+  });
+
+  it("is null when neither number was entered, rather than claiming a reading", () => {
+    expect(capturedOn(null, null)).toBeNull();
   });
 });
 

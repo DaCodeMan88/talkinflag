@@ -21,8 +21,17 @@ const SHORTCODE_RE = /^[A-Za-z0-9_-]{5,24}$/;
  * The host must be instagram.com itself — anchored at the start of the string,
  * after a scheme's `//`, or after a subdomain dot. Without that anchor,
  * `https://evil.example.com/instagram.com/p/X/` would parse as a real post.
+ *
+ * Exported so every Instagram URL matcher is anchored by this one fragment.
+ * A second hand-written copy of a security-relevant anchor is a copy that
+ * drifts.
  */
-const URL_RE = /(?:^|\/\/|\.)instagram\.com\/(?:reels?|p|tv)\/([A-Za-z0-9_-]{5,24})/i;
+export const INSTAGRAM_HOST_PREFIX = String.raw`(?:^|\/\/|\.)instagram\.com\/`;
+
+const URL_RE = new RegExp(
+  INSTAGRAM_HOST_PREFIX + String.raw`(?:reels?|p|tv)\/([A-Za-z0-9_-]{5,24})`,
+  "i"
+);
 
 /**
  * Pull the shortcode out of anything Ambra is likely to paste: a reel URL, a
