@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { getAdminUser } from "@/lib/admin";
+import { getAllInstagramPosts } from "@/lib/media/instagram";
 import GuidedTour from "@/components/onboarding/GuidedTour";
 import ShowAroundButton from "@/components/onboarding/ShowAroundButton";
 import { adminTourSteps } from "@/components/onboarding/steps";
@@ -74,6 +75,7 @@ export default async function AdminHomePage({
     { count: evalsThisWeek },
     { count: draftPosts },
     { count: publishedPosts },
+    instagramGrid,
   ] = await Promise.all([
     adminDb.auth.admin.listUsers({ page: 1, perPage: 1000 }),
     adminDb.from("players").select("id", { count: "exact", head: true }),
@@ -83,7 +85,12 @@ export default async function AdminHomePage({
     adminDb.from("eval_responses").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
     adminDb.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "draft"),
     adminDb.from("blog_posts").select("id", { count: "exact", head: true }).eq("status", "published"),
+    // Returns a result instead of throwing: migration 027 is deliberately
+    // unapplied in production, and a missing table must not take the whole
+    // dashboard down.
+    getAllInstagramPosts(),
   ]);
+  const liveReels = instagramGrid.ok ? instagramGrid.posts.filter((p) => p.is_live).length : null;
   const users = usersPage?.users ?? [];
   const totalMembers = users.length;
   const newThisWeek = users.filter((u) => u.created_at >= weekAgo).length;
@@ -115,6 +122,13 @@ export default async function AdminHomePage({
         (draftPosts ?? 0) > 0
           ? `${draftPosts} draft${draftPosts === 1 ? "" : "s"}`
           : `${publishedPosts ?? 0} published`,
+    },
+    {
+      label: "Media",
+      description: "The 9 Instagram reels on the Media page",
+      href: "/admin/media",
+      count: 0,
+      badge: liveReels === null ? "Not set up" : `${liveReels} live`,
     },
     {
       label: "Verifications",

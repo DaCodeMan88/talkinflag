@@ -158,7 +158,8 @@
 ### Media / Gallery
 - `/media` page with photo gallery (masonry grid) + 3×3 Instagram embed grid
 - To add photos: drop files in `public/gallery/` and add entry in `src/app/media/page.tsx`
-- To swap IG posts: edit the `INSTAGRAM_POSTS` array in that file
+- To swap IG posts: **no deploy needed** — an admin curates the nine reels at `/admin/media`, backed by the `media_instagram_posts` table (migration `027_media_instagram_posts.sql`). `/media` reads the live rows via `getLiveInstagramPosts()` in `src/lib/media/instagram.ts`.
+- `FALLBACK_POSTS` (same file) is the safety net: any failed or empty read renders the original nine reels instead of an empty grid. **Migration 027 is deliberately NOT applied to production** (the owner reviews the SQL first), so the fallback is what currently renders on the live site — and `/admin/media` shows a plain-English "not set up yet" panel rather than a form that cannot save. `FALLBACK_POSTS` does not track later swaps; refresh it by hand if the live grid drifts.
 
 ### Database — Current State
 - **374 total players** · 41 HS · 206 college · 127 national
