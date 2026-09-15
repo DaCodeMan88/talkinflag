@@ -1,4 +1,4 @@
-import { INSTAGRAM_HOST_PREFIX } from "@/lib/media/instagram";
+import { INSTAGRAM_HOST_PREFIX } from "@/lib/media/parse-shortcode";
 
 /**
  * Pure helpers for the /admin/media actions.
