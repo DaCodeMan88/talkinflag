@@ -12,6 +12,25 @@
 
 ---
 
+## EXECUTED 2026-09-14 — read this before trusting the code blocks below
+
+All 8 tasks are implemented on branch `ambra-round-2026-08-23` (`5d709d7`..`52e3ada`). Each task was spec- and quality-reviewed, and **the reviews changed the design in ways the code blocks below do NOT reflect.** Where this plan and the committed code disagree, the code is right. Deviations that matter:
+
+| Plan says | Reality |
+|---|---|
+| `getAllInstagramPosts()` returns `InstagramPost[]` | Returns `{ ok: true; posts } | { ok: false; error }`. The plan's Task 5 page code calls `.filter()` on it and would not compile. |
+| `toInt` helper, duplicated in two actions | Extracted to `parseCount` in `src/app/admin/media/parse.ts`, tested. Reads `"20.4K"` → 20400 and `"20,4K"` → 20400 (Italian locale). Refuses `"20.4"`, `"-5"`, `"20400 mentions"`, `"8500 k"` rather than guessing. |
+| Staleness reads `updated_at` | Reads `metrics_captured_on`. `movePost` stamps `updated_at` on every row, so the original would have let a reorder silence the nag without a number being read. |
+| A "Touch" button refreshing the date | Replaced with a real inline label/plays/likes editor. `updatePost` writes both metric fields unconditionally, so the editor must always send both or it blanks `likes`. |
+| `parseInstagramShortcode` lives in `instagram.ts` | Moved to `src/lib/media/parse-shortcode.ts` (zero Supabase imports) so the client bundle can't pull in the service-role client. `instagram.ts` re-exports it; no import site changed. |
+| Task 8 verifies in a browser | **Not done.** `npm run dev` fails in this environment with `EPERM: process.cwd failed … uv_cwd` (see CLAUDE.md). Verified instead against the production build's prerendered HTML. **375px layout and the authenticated admin walkthrough are owner-to-verify.** |
+
+Also added beyond the plan: `URL_RE` host anchoring (it matched `instagram.com` anywhere in a string, so `https://evil.example.com/instagram.com/p/X/` parsed as a real post); a `role="alert"` error panel with `aria-describedby`/`aria-invalid` on every input; a preview link showing the resolved reel URL verbatim before save.
+
+**Migration 027 is NOT applied to production** — owner decision, 2026-09-14. Until it is, `/media` renders `FALLBACK_POSTS`, `/admin/media` shows a "not set up yet" panel with no form, and the dashboard tile badge reads "Not set up".
+
+---
+
 ## PM Section — Read This Before Writing Code
 
 ### Request 1: the gallery image
