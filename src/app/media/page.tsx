@@ -2,6 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
 import { buildMetadata } from "@/lib/seo";
+import { getLiveInstagramPosts } from "@/lib/media/instagram";
+
+// The reel grid is curated at /admin/media and re-read at most every 5 minutes.
+export const revalidate = 300;
 
 export const metadata = buildMetadata({
   title: "Media & Gallery | Talkin Flag",
@@ -23,26 +27,12 @@ const GALLERY_IMAGES: { src: string; alt: string; wide?: boolean; caption?: stri
   // Add new images: { src: "/gallery/your-image.jpg", alt: "...", caption: "..." },
 ];
 
-// ─── Instagram posts — 3×3 grid ──────────────────────────────────────────────
-// Row layout: [popular, popular, recent] × 3
-const INSTAGRAM_POSTS = [
-  // 4 most popular (by engagement)
-  { shortcode: "DKULB7cNxpR", label: "Most popular · 20.4K likes" },
-  { shortcode: "DHHVMyKN9Qw", label: "Popular · 8.5K likes" },
-  { shortcode: "DZIWIHgt8bq", label: "Fiesta Bowl Flag Football Classic" },
-  { shortcode: "DY2T9iytnox", label: "Flag football is already here" },
-  // 5 most recent
-  { shortcode: "DZNRMgSDZOs", label: "S3 Episode 20 · EFAF" },
-  { shortcode: "DZFuHE0jdPw", label: "Brazil Nation Spotlight" },
-  { shortcode: "DZAmA5TDc5e", label: "Athletes & coaches" },
-  { shortcode: "DY7WHrhDdm5", label: "S3 Episode 19 · Fiesta Bowl" },
-  { shortcode: "DYztBlcDcBL", label: "Jamaica Nation Spotlight" },
-];
-
 const INSTAGRAM_HANDLE = "talkinflagshow";
 const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 
-export default function MediaPage() {
+export default async function MediaPage() {
+  const instagramPosts = await getLiveInstagramPosts();
+
   return (
     <>
       {/* Instagram embed script — loaded once, processes all blockquotes */}
@@ -124,7 +114,7 @@ export default function MediaPage() {
 
             {/* 3×3 grid of embedded posts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {INSTAGRAM_POSTS.map(({ shortcode }) => (
+              {instagramPosts.map(({ shortcode }) => (
                 <div
                   key={shortcode}
                   className="bg-[#0d0d0d] border border-white/10 overflow-hidden flex justify-center"
