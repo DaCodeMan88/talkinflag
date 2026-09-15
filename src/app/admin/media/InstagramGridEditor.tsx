@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 // Types are erased at compile time, so this import costs the browser nothing.
 import type { InstagramPost } from "@/lib/media/instagram";
@@ -12,13 +12,28 @@ import { parseCount, describeUnparsableInstagramUrl } from "./parse";
 import { addPost, retirePost, restorePost, movePost, updatePost } from "./actions";
 import type { ActionResult } from "./parse";
 
+// The 44px floor applies at phone widths only; at sm+ the row goes back to the
+// compact rail the rest of the admin uses.
 const BTN =
-  "border border-white/15 text-white/60 font-display uppercase tracking-widest px-3 py-1.5 text-[10px] hover:border-white/30 hover:text-white transition-colors disabled:opacity-40";
+  "inline-flex items-center justify-center min-h-[44px] sm:min-h-0 border border-white/15 text-white/60 font-display uppercase tracking-widest px-3 py-1.5 text-[10px] hover:border-white/30 hover:text-white transition-colors disabled:opacity-40";
 const INPUT =
   "bg-black border border-white/15 text-white text-sm px-3 py-2 placeholder:text-white/25 min-w-0 w-full";
 
 /** The one message for a number we can't read. Shown, never silently dropped. */
 const UNREADABLE_COUNT = "I can't read that as a number — try 20400 or 20.4K.";
+
+/**
+ * A validation message tied to its input by id. An orphan <p> is invisible to a
+ * screen reader, which — next to a disabled Add button — leaves a non-sighted
+ * admin with a dead control and no stated reason.
+ */
+function FieldError({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <p id={id} className="text-amber-400 text-xs mt-1.5">
+      {children}
+    </p>
+  );
+}
 
 /** A count field is fine when it's empty; anything else has to parse. */
 function countError(v: string): string | null {
@@ -41,6 +56,16 @@ export function InstagramGridEditor({
   const [plays, setPlays] = useState("");
   const [likes, setLikes] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
+  const errorRef = useRef<HTMLParagraphElement>(null);
+
+  /*
+    Row nine's Retire button sits about a screen below this panel at 375px, so a
+    failure that only renders at the top reads as "the button did nothing".
+    Focusing it both scrolls it into view and announces it.
+  */
+  useEffect(() => {
+    if (error) errorRef.current?.focus();
+  }, [error]);
 
   function run(fn: () => Promise<ActionResult>) {
     setError(null);
@@ -65,7 +90,14 @@ export function InstagramGridEditor({
   return (
     <div className="space-y-10">
       {error && (
-        <p className="border border-red-500/40 text-red-300 text-sm px-4 py-3">{error}</p>
+        <p
+          ref={errorRef}
+          role="alert"
+          tabIndex={-1}
+          className="border border-red-500/40 text-red-300 text-sm px-4 py-3 outline-none"
+        >
+          {error}
+        </p>
       )}
 
       {/* Add */}
@@ -80,9 +112,11 @@ export function InstagramGridEditor({
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Paste the Instagram link"
               aria-label="Instagram link"
+              aria-invalid={!!urlError}
+              aria-describedby={urlError ? "add-url-error" : undefined}
               className={INPUT}
             />
-            {urlError && <p className="text-amber-400 text-xs mt-1.5">{urlError}</p>}
+            {urlError && <FieldError id="add-url-error">{urlError}</FieldError>}
           </div>
           <input
             value={label}
@@ -98,9 +132,11 @@ export function InstagramGridEditor({
               placeholder="Plays"
               inputMode="numeric"
               aria-label="Plays"
+              aria-invalid={!!playsError}
+              aria-describedby={playsError ? "add-plays-error" : undefined}
               className={INPUT}
             />
-            {playsError && <p className="text-amber-400 text-xs mt-1.5">{playsError}</p>}
+            {playsError && <FieldError id="add-plays-error">{playsError}</FieldError>}
           </div>
           <div className="min-w-0">
             <input
@@ -109,9 +145,11 @@ export function InstagramGridEditor({
               placeholder="Likes"
               inputMode="numeric"
               aria-label="Likes"
+              aria-invalid={!!likesError}
+              aria-describedby={likesError ? "add-likes-error" : undefined}
               className={INPUT}
             />
-            {likesError && <p className="text-amber-400 text-xs mt-1.5">{likesError}</p>}
+            {likesError && <FieldError id="add-likes-error">{likesError}</FieldError>}
           </div>
         </div>
 
@@ -141,13 +179,20 @@ export function InstagramGridEditor({
             Add
           </button>
           {shortcode && (
+            /*
+              The URL is the check. `instagram.com/reel/talkinflagshow/` is
+              recognisably wrong at a glance, and generic link text would hide
+              exactly that — so the address is the link text, truncated by CSS
+              rather than by slicing the string.
+            */
             <a
               href={reelUrl(shortcode)}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#FDDD58] text-sm hover:underline break-all"
+              title={reelUrl(shortcode)}
+              className="text-[#FDDD58] text-sm hover:underline min-w-0 max-w-full truncate"
             >
-              Open this reel to check it →
+              {reelUrl(shortcode)} ↗
             </a>
           )}
         </div>
@@ -173,15 +218,22 @@ export function InstagramGridEditor({
                 >
                   {p.label || p.shortcode}
                 </a>
-                <span className="text-white/30 text-xs">
-                  {[
-                    p.plays != null ? `${p.plays.toLocaleString()} plays` : null,
-                    p.likes != null ? `${p.likes.toLocaleString()} likes` : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-                <span className="flex-1 min-w-0" />
+                {(p.plays != null || p.likes != null) && (
+                  <span className="text-white/30 text-xs">
+                    {[
+                      p.plays != null ? `${p.plays.toLocaleString()} plays` : null,
+                      p.likes != null ? `${p.likes.toLocaleString()} likes` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
+                )}
+                {/*
+                  A flex spacer is itself a wrappable item: at 375px it can land
+                  at the end of the first line and leave the buttons below it
+                  left-aligned. It only has a job once the row fits on one line.
+                */}
+                <span className="hidden sm:block flex-1 min-w-0" />
                 <button
                   type="button"
                   aria-label="Move up"
@@ -260,7 +312,7 @@ export function InstagramGridEditor({
                 >
                   {p.label || p.shortcode}
                 </a>
-                <span className="flex-1 min-w-0" />
+                <span className="hidden sm:block flex-1 min-w-0" />
                 <button
                   type="button"
                   disabled={pending}
@@ -300,6 +352,8 @@ function RowEditor({
 
   const playsError = countError(plays);
   const likesError = countError(likes);
+  const playsErrorId = `edit-${post.id}-plays-error`;
+  const likesErrorId = `edit-${post.id}-likes-error`;
 
   return (
     <div className="mt-3 pt-3 border-t border-white/10">
@@ -318,9 +372,11 @@ function RowEditor({
             placeholder="Plays"
             inputMode="numeric"
             aria-label="Plays"
+            aria-invalid={!!playsError}
+            aria-describedby={playsError ? playsErrorId : undefined}
             className={INPUT}
           />
-          {playsError && <p className="text-amber-400 text-xs mt-1.5">{playsError}</p>}
+          {playsError && <FieldError id={playsErrorId}>{playsError}</FieldError>}
         </div>
         <div className="min-w-0">
           <input
@@ -329,9 +385,11 @@ function RowEditor({
             placeholder="Likes"
             inputMode="numeric"
             aria-label="Likes"
+            aria-invalid={!!likesError}
+            aria-describedby={likesError ? likesErrorId : undefined}
             className={INPUT}
           />
-          {likesError && <p className="text-amber-400 text-xs mt-1.5">{likesError}</p>}
+          {likesError && <FieldError id={likesErrorId}>{likesError}</FieldError>}
         </div>
       </div>
       <button

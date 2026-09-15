@@ -36,19 +36,18 @@ export default async function AdminMediaPage() {
             Not set up yet
           </p>
           <p className="text-white/70 text-sm leading-relaxed">
-            The Instagram grid isn&rsquo;t set up yet. Migration 027 hasn&rsquo;t been applied to
-            the database, so there&rsquo;s nothing to edit here.
+            The Instagram grid isn&rsquo;t set up in the database yet, so there&rsquo;s nothing to
+            edit here. Ask Daniel to switch it on — then this page becomes editable.
           </p>
           <p className="text-white/70 text-sm leading-relaxed mt-3">
             Nothing is broken on the public side:{" "}
             <Link href="/media" className="text-[#FDDD58] hover:underline">
               talkinflag.com/media
             </Link>{" "}
-            is still showing the original nine reels. Ask Daniel to apply the migration, and this
-            page becomes editable.
+            is still showing the original nine reels.
           </p>
           <p className="text-white/25 text-xs mt-6 break-words">
-            For a developer — the database said: {result.error}
+            For a developer — migration 027 is unapplied. The database said: {result.error}
           </p>
         </div>
       </div>
@@ -84,7 +83,12 @@ export default async function AdminMediaPage() {
           <li>If a reel beat one on this page, copy its link.</li>
           <li>Retire the weakest one below, then paste the new link in.</li>
         </ol>
-        {staleDays !== null && (
+        {staleDays === null ? (
+          /* The seeded state: nine reels, no numbers read off Insights yet. */
+          <p className="text-white/30 text-xs mt-4">
+            No performance numbers recorded yet — add the plays when you next check Insights.
+          </p>
+        ) : (
           <p
             className={`text-xs mt-4 ${
               staleDays > STALE_AFTER_DAYS ? "text-amber-400" : "text-white/30"
