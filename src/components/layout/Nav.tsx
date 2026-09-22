@@ -47,12 +47,22 @@ export function Nav() {
     return () => { active = false; };
   }, [pathname]);
 
+  // NOTE: `progress` is a continuously-varying value, so it defeats the
+  // re-render bail-out `scrolled` gets for free (React only skips a re-render
+  // when state is unchanged) — Nav now reconciles on nearly every scroll tick
+  // instead of just at the `scrolled` threshold crossing. A ref + direct
+  // `style.width` write (bypassing React state) would avoid that, but is a
+  // bigger change than this task's scope.
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 50);
       const doc = document.documentElement;
+      // scrollHeight/clientHeight are read fresh on every scroll tick, so this
+      // self-corrects on the next scroll; content that resizes after mount
+      // without a scroll event (late images/embeds/font reflow) can leave the
+      // denominator stale until then — narrow window, not worth solving here.
       const max = doc.scrollHeight - doc.clientHeight;
-      setProgress(max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0);
+      setProgress(max > 0 ? Math.max(0, Math.min(100, (window.scrollY / max) * 100)) : 0);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -71,66 +81,79 @@ export function Nav() {
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
       scrolled ? "bg-brand-black/95 backdrop-blur-md border-b border-brand-yellow/20" : "bg-transparent"
     )}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          <Logo variant="horizontal" size="sm" />
+      {/* relative wrapper scopes the progress bar to just the top bar row, so
+          it stays pinned to that row's bottom edge instead of the bottom of
+          the whole <nav> (which grows to include the mobile menu when open) */}
+      <div className="relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <Logo variant="horizontal" size="sm" />
 
-          {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
-              return (
+            {/* Desktop links */}
+            <div className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "font-display text-sm tracking-widest uppercase transition-colors relative",
+                      isActive
+                        ? "text-brand-yellow after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-px after:bg-brand-yellow"
+                        : "text-brand-white/70 hover:text-brand-yellow"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="hidden md:flex items-center gap-5">
+              {isAdmin && (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "font-display text-sm tracking-widest uppercase transition-colors relative",
-                    isActive
-                      ? "text-brand-yellow after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-px after:bg-brand-yellow"
-                      : "text-brand-white/70 hover:text-brand-yellow"
-                  )}
+                  href="/admin"
+                  className="font-display text-sm tracking-widest uppercase text-brand-yellow/80 hover:text-brand-yellow transition-colors"
                 >
-                  {link.label}
+                  Admin
                 </Link>
-              );
-            })}
-          </div>
-
-          <div className="hidden md:flex items-center gap-5">
-            {isAdmin && (
+              )}
               <Link
-                href="/admin"
-                className="font-display text-sm tracking-widest uppercase text-brand-yellow/80 hover:text-brand-yellow transition-colors"
+                href={signedIn ? "/dashboard" : "/auth/login"}
+                className="font-display text-sm tracking-widest uppercase text-brand-white/70 hover:text-brand-yellow transition-colors"
               >
-                Admin
+                {signedIn ? "Dashboard" : "Sign In"}
               </Link>
-            )}
-            <Link
-              href={signedIn ? "/dashboard" : "/auth/login"}
-              className="font-display text-sm tracking-widest uppercase text-brand-white/70 hover:text-brand-yellow transition-colors"
-            >
-              {signedIn ? "Dashboard" : "Sign In"}
-            </Link>
-            <Link
-              href="/join"
-              className="inline-flex items-center justify-center font-display uppercase tracking-wider transition-all duration-200 px-4 py-2 text-sm border-2 border-brand-yellow text-brand-yellow hover:bg-brand-yellow hover:text-brand-black"
-            >
-              Join
-            </Link>
-          </div>
+              <Link
+                href="/join"
+                className="inline-flex items-center justify-center font-display uppercase tracking-wider transition-all duration-200 px-4 py-2 text-sm border-2 border-brand-yellow text-brand-yellow hover:bg-brand-yellow hover:text-brand-black"
+              >
+                Join
+              </Link>
+            </div>
 
-          {/* Mobile toggle */}
-          <button
-            className="md:hidden text-brand-white"
-            onClick={() => setOpen(!open)}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-          >
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            {/* Mobile toggle */}
+            <button
+              className="md:hidden text-brand-white"
+              onClick={() => setOpen(!open)}
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+            >
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
+
+        {/* No width transition: progress already updates on every scroll tick,
+            so easing would just make the bar visibly lag/chase on fast scrolls. */}
+        <div
+          className="absolute bottom-0 left-0 h-[2px] bg-brand-yellow"
+          style={{ width: `${progress}%` }}
+          aria-hidden="true"
+        />
       </div>
 
       {/* Mobile menu */}
@@ -174,12 +197,6 @@ export function Nav() {
           </Link>
         </div>
       )}
-
-      <div
-        className="absolute bottom-0 left-0 h-[2px] bg-brand-yellow transition-[width] duration-150 ease-out"
-        style={{ width: `${progress}%` }}
-        aria-hidden="true"
-      />
     </nav>
   );
 }
