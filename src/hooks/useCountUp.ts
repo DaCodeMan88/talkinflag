@@ -22,6 +22,8 @@ export function formatCount(current: number, target: CountTarget): string {
  * Animates from 0 to the numeric value embedded in `raw` (e.g. "75+", "#1")
  * once `start` becomes true, and freezes at the literal string for anything
  * non-numeric ("TBD"). Duration in ms.
+ * Note: `raw` is treated as immutable for the life of this hook; changing it
+ * after mount does not restart or update the animation.
  */
 export function useCountUp(raw: string, start: boolean, duration = 1200): string {
   const target = useRef(parseCountTarget(raw)).current;
