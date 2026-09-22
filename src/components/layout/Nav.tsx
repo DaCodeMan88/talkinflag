@@ -19,6 +19,7 @@ const navLinks = [
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const pathname = usePathname();
@@ -47,8 +48,14 @@ export function Nav() {
   }, [pathname]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 50);
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      setProgress(max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -167,6 +174,12 @@ export function Nav() {
           </Link>
         </div>
       )}
+
+      <div
+        className="absolute bottom-0 left-0 h-[2px] bg-brand-yellow transition-[width] duration-150 ease-out"
+        style={{ width: `${progress}%` }}
+        aria-hidden="true"
+      />
     </nav>
   );
 }
