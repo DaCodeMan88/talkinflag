@@ -31,7 +31,10 @@ html {
   }
 }
 
-/* Film-grain overlay: layered radial noise via CSS, no image asset. */
+/* Film-grain overlay: layered radial noise via CSS, no image asset.
+   Consumed by a later homepage task (not wired up yet — intentionally unused for now). */
+/* Assumes a `position: static` container: sets `position: relative` unconditionally, so
+   don't apply this class to an element that already needs its own `position` value. */
 .grain-overlay {
   position: relative;
   isolation: isolate;
@@ -40,6 +43,8 @@ html {
   content: "";
   position: absolute;
   inset: 0;
+  /* No positioned children are expected above the grain, so painting last (default
+     stacking order) is sufficient; add an explicit z-index if that assumption changes. */
   pointer-events: none;
   opacity: 0.05;
   background-image:
