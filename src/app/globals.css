@@ -30,3 +30,22 @@ html {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* Film-grain overlay: layered radial noise via CSS, no image asset. */
+.grain-overlay {
+  position: relative;
+  isolation: isolate;
+}
+.grain-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image:
+    radial-gradient(circle at 20% 30%, #fff 0.5px, transparent 0.5px),
+    radial-gradient(circle at 70% 60%, #fff 0.5px, transparent 0.5px),
+    radial-gradient(circle at 40% 80%, #fff 0.5px, transparent 0.5px);
+  background-size: 3px 3px, 4px 4px, 5px 5px;
+  mix-blend-mode: overlay;
+}
