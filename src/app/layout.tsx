@@ -4,6 +4,7 @@ import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { PlayerProvider } from "@/components/player/MiniPlayer";
+import { FloatingCTA } from "@/components/ui/FloatingCTA";
 
 const anton = Anton({
   weight: "400",
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main-content">{children}</main>
           <Footer />
         </PlayerProvider>
+        <FloatingCTA />
       </body>
     </html>
   );
