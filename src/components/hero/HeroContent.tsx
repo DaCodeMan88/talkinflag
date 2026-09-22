@@ -14,14 +14,18 @@ const fadeIn = (delay: number): React.CSSProperties => ({
 // fully transparent — matches the point past which the hero has largely
 // scrolled out of view anyway.
 const TWINS_FADE_DISTANCE_PX = 500;
-// Cap on the twins/headline block's own scroll-linked translateY. This drift
-// is scoped to the twins+headline row only (not the whole hero container —
-// see note below) and it has ample headroom underneath it (subtitle, tags,
-// CTAs, latest-episode strip, chevron), so even an uncapped drift would never
-// visibly collide with anything. It's capped anyway to keep the motion
-// "subtle" per the task, and so it can't keep growing indefinitely for a
-// user who scrolls the whole page.
-const MAX_TWINS_DRIFT_PX = 60;
+const TWINS_DRIFT_RATE = 0.25;
+// Cap on the twins/headline block's own scroll-linked translateY, DERIVED
+// from the fade distance/rate so drift and fade always complete together at
+// the same scroll depth (500 * 0.25 = 125px). A cap reached earlier than the
+// fade finishes looks broken — the block freezes in place (only opacity still
+// changing) for the back half of its fade. This block has generous headroom
+// below it (subtitle, tags, CTAs, latest-episode strip, chevron are all
+// unaffected by scroll — see note below), so even this larger, synced cap
+// never risks colliding with anything.
+const MAX_TWINS_DRIFT_PX = TWINS_FADE_DISTANCE_PX * TWINS_DRIFT_RATE;
+// How long the post-entrance "catch-up" transition runs — see handleEntranceEnd.
+const CATCH_UP_TRANSITION_MS = 200;
 
 interface HeroContentProps {
   latestEpisode?: Episode;
@@ -49,22 +53,20 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
     // before letting scroll-driven styles take over.
     let entranceSettled = false;
     const twinsEl = twinsRef.current;
+    let frame = 0;
+    let catchUpTimer = 0;
 
-    const handleEntranceEnd = () => {
-      if (entranceSettled) return;
-      entranceSettled = true;
-      if (twinsEl) twinsEl.style.animation = "";
-      applyParallax();
-    };
-    twinsEl?.addEventListener("animationend", handleEntranceEnd);
-    // Safety net: the entrance animation's delay+duration is fixed (0.4s + 0.9s),
-    // so a timer is a reliable fallback if `animationend` is ever missed (e.g. a
-    // backgrounded/throttled tab, or the element being detached mid-animation).
-    const fallbackTimer = window.setTimeout(handleEntranceEnd, 1400);
-
-    let frame: number;
     function applyParallax() {
       if (!twinsRef.current || !entranceSettled) return;
+      // Read window.scrollY live rather than caching it in a ref updated by
+      // the scroll listener: a ref only updated by a `scroll` event handler
+      // can be stale at exactly the moment this fires from handleEntranceEnd,
+      // because a programmatic scroll (or even a user scroll under load) can
+      // change window.scrollY before the browser gets around to dispatching
+      // the `scroll` event — confirmed empirically while testing this fix
+      // (window.scrollTo moved window.scrollY immediately, but a same-tick
+      // ref-cache stayed stale for several seconds until the event caught
+      // up). window.scrollY itself has no such lag; it's always accurate.
       const y = window.scrollY;
       // Deviation from the task's literal reference code: the reference put
       // the translateY drift on the OUTERMOST hero container (badge, headline,
@@ -81,10 +83,52 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
       // the task asks for, keeps the CTAs completely untouched by scroll (as
       // the task separately requires), and can't ever bleed into the next
       // section.
-      const drift = Math.min(y * 0.25, MAX_TWINS_DRIFT_PX);
+      const drift = Math.min(y * TWINS_DRIFT_RATE, MAX_TWINS_DRIFT_PX);
       twinsRef.current.style.transform = `translateY(${drift}px)`;
       twinsRef.current.style.opacity = `${Math.max(0, 1 - y / TWINS_FADE_DISTANCE_PX)}`;
     }
+
+    const handleEntranceEnd = (event?: Event) => {
+      // `animationend` bubbles — ignore one that didn't originate on this
+      // element itself (no child here has its own animation today, but this
+      // is cheap insurance against that changing later).
+      if (event && event.target !== twinsEl) return;
+      if (entranceSettled) return;
+      entranceSettled = true;
+      window.clearTimeout(fallbackTimer);
+      if (twinsEl) {
+        twinsEl.style.animation = "";
+        // Force a style flush so the browser commits the reverted
+        // (opacity:1/transform:none) state as a real "before" frame before
+        // we add a transition + new target values below — otherwise the
+        // two changes can get coalesced into a single un-transitioned jump.
+        void twinsEl.offsetHeight;
+        // applyParallax() (called below) reads window.scrollY live, so this
+        // first application already reflects wherever the user has actually
+        // scrolled to — even if that's mid-entrance — rather than "no scroll
+        // happened." That alone doesn't fully prevent a visible pop though:
+        // while the entrance animation was still in effect, applyParallax()
+        // was a no-op (see its guard clause), so the block was visually
+        // pinned at opacity:1/transform:none the whole time even as the user
+        // scrolled. The very first write below can therefore still be a
+        // large jump (e.g. straight to 40% opacity + full drift) in a single
+        // frame. A short transition turns that unavoidable first catch-up
+        // into a quick, deliberate-looking motion instead of a snap. It's
+        // cleared right after so it never interferes with normal rAF-driven
+        // scroll updates (which should track the pointer/scroll immediately,
+        // not lag behind a transition).
+        twinsEl.style.transition = `opacity ${CATCH_UP_TRANSITION_MS}ms ease-out, transform ${CATCH_UP_TRANSITION_MS}ms ease-out`;
+      }
+      applyParallax();
+      catchUpTimer = window.setTimeout(() => {
+        if (twinsEl) twinsEl.style.transition = "";
+      }, CATCH_UP_TRANSITION_MS + 20);
+    };
+    twinsEl?.addEventListener("animationend", handleEntranceEnd);
+    // Safety net: the entrance animation's delay+duration is fixed (0.4s + 0.9s),
+    // so a timer is a reliable fallback if `animationend` is ever missed (e.g. a
+    // backgrounded/throttled tab, or the element being detached mid-animation).
+    const fallbackTimer = window.setTimeout(() => handleEntranceEnd(), 1400);
 
     const onScroll = () => {
       cancelAnimationFrame(frame);
@@ -95,6 +139,7 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
       window.removeEventListener("scroll", onScroll);
       twinsEl?.removeEventListener("animationend", handleEntranceEnd);
       window.clearTimeout(fallbackTimer);
+      window.clearTimeout(catchUpTimer);
       cancelAnimationFrame(frame);
     };
   }, []);
