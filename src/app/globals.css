@@ -20,6 +20,7 @@ html {
 @keyframes fadeIn      { from { opacity: 0; transform: translateY(8px);   } to { opacity: 1; transform: none; } }
 @keyframes popIn       { 0% { opacity: 0; transform: scale(0.8); } 60% { transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
 @keyframes barGrow     { from { width: 0; } }
+@keyframes marquee     { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* Respect users who prefer reduced motion (accessibility). */
 @media (prefers-reduced-motion: reduce) {
