@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Play, ChevronDown } from "lucide-react";
 import type { Episode } from "@/types/episode";
@@ -9,12 +10,95 @@ const fadeIn = (delay: number): React.CSSProperties => ({
   animation: `heroFadeUp 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s both`,
 });
 
+// Distance (px) over which the twins+headline block fades from opaque to
+// fully transparent — matches the point past which the hero has largely
+// scrolled out of view anyway.
+const TWINS_FADE_DISTANCE_PX = 500;
+// Cap on the twins/headline block's own scroll-linked translateY. This drift
+// is scoped to the twins+headline row only (not the whole hero container —
+// see note below) and it has ample headroom underneath it (subtitle, tags,
+// CTAs, latest-episode strip, chevron), so even an uncapped drift would never
+// visibly collide with anything. It's capped anyway to keep the motion
+// "subtle" per the task, and so it can't keep growing indefinitely for a
+// user who scrolls the whole page.
+const MAX_TWINS_DRIFT_PX = 60;
+
 interface HeroContentProps {
   latestEpisode?: Episode;
   episodeCount?: number;
 }
 
 export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
+  const twinsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // The twins/headline row renders with an inline `animation` (heroFadeUp,
+    // fill-mode "both") for its entrance. A CSS animation's keyframe values
+    // take precedence over any value written directly to the same style
+    // property via JS for as long as the animation is in effect — and
+    // "both" keeps it in effect indefinitely after it finishes, not just
+    // during the 0.9s it plays. Writing `style.opacity`/`style.transform`
+    // on that element before the animation ends (or without ever clearing
+    // it) would silently do nothing — the animation would keep pinning
+    // opacity/transform to their end-state values. So: wait for the
+    // entrance animation to finish, then drop the inline `animation`
+    // property (its held end state is opacity:1/transform:none, identical
+    // to the element's un-animated default, so this causes no visual jump)
+    // before letting scroll-driven styles take over.
+    let entranceSettled = false;
+    const twinsEl = twinsRef.current;
+
+    const handleEntranceEnd = () => {
+      if (entranceSettled) return;
+      entranceSettled = true;
+      if (twinsEl) twinsEl.style.animation = "";
+      applyParallax();
+    };
+    twinsEl?.addEventListener("animationend", handleEntranceEnd);
+    // Safety net: the entrance animation's delay+duration is fixed (0.4s + 0.9s),
+    // so a timer is a reliable fallback if `animationend` is ever missed (e.g. a
+    // backgrounded/throttled tab, or the element being detached mid-animation).
+    const fallbackTimer = window.setTimeout(handleEntranceEnd, 1400);
+
+    let frame: number;
+    function applyParallax() {
+      if (!twinsRef.current || !entranceSettled) return;
+      const y = window.scrollY;
+      // Deviation from the task's literal reference code: the reference put
+      // the translateY drift on the OUTERMOST hero container (badge, headline,
+      // subtitle, tags, CTAs, latest-episode strip, chevron — everything).
+      // Measured in-browser, that container is exactly as tall as its content
+      // (no bottom slack — the chevron sits at `bottom-8`) and renders in its
+      // own stacking context (`relative z-10`). Any positive translateY on it
+      // therefore paints its bottom edge (chevron + tail of the episode strip)
+      // on top of the next section's content for a real range of scroll
+      // positions — a visible overlap bug, not just a theoretical one. The
+      // twins+headline block has generous headroom below it, so scoping both
+      // the fade AND the drift to just this block (instead of the whole
+      // container) delivers the "twins/headline drift as you scroll" effect
+      // the task asks for, keeps the CTAs completely untouched by scroll (as
+      // the task separately requires), and can't ever bleed into the next
+      // section.
+      const drift = Math.min(y * 0.25, MAX_TWINS_DRIFT_PX);
+      twinsRef.current.style.transform = `translateY(${drift}px)`;
+      twinsRef.current.style.opacity = `${Math.max(0, 1 - y / TWINS_FADE_DISTANCE_PX)}`;
+    }
+
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(applyParallax);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      twinsEl?.removeEventListener("animationend", handleEntranceEnd);
+      window.clearTimeout(fallbackTimer);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
   const countLabel = episodeCount ? `${episodeCount}+` : "39+";
   const latestLabel = latestEpisode
     ? [
@@ -41,7 +125,7 @@ export function HeroContent({ latestEpisode, episodeCount }: HeroContentProps) {
       </div>
 
       {/* Title row — twins flank the headline inline */}
-      <div style={fadeIn(0.4)} className="flex items-center justify-center gap-0">
+      <div ref={twinsRef} style={fadeIn(0.4)} className="flex items-center justify-center gap-0">
         {/* Ambra (#16) — gazes right toward text */}
         <div
           className="block shrink-0 select-none pointer-events-none"
