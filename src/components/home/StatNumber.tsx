@@ -17,7 +17,10 @@ export function StatNumber({ value }: { value: string }) {
     return () => observer.disconnect();
   }, []);
 
-  const display = useCountUp(value, inView);
+  // Ranks like "#1" stay static — counting up from "#0" reads as a glitch.
+  const isRank = value.startsWith("#");
+  const counted = useCountUp(value, inView);
+  const display = isRank ? value : counted;
   return (
     <p ref={ref} className="font-display text-4xl md:text-5xl text-brand-black tabular-nums">
       {/* Screen readers get the final value, not every intermediate frame. */}
