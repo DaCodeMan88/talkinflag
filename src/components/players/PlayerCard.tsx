@@ -21,7 +21,7 @@ export function PlayerCard({ player }: { player: Player }) {
   const flag = countryFlag(player.country_code);
 
   return (
-    <article className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-colors p-5 group relative">
+    <article className="bg-[#222222] border border-brand-white/10 hover:border-brand-yellow/40 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 p-5 group relative">
       {/* Clickable overlay for the entire card */}
       <Link
         href={`/players/${player.id}`}
