@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { Marquee } from "@/components/ui/Marquee";
 
 // Confirmed partners (2026-07-07).
 const PARTNERS: { name: string; url: string }[] = [
@@ -16,19 +17,19 @@ export function PartnersStrip() {
           <p className="text-brand-yellow font-display text-[10px] uppercase tracking-[0.4em] mb-6">
             Our Partners
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+          <Marquee durationSeconds={24}>
             {PARTNERS.map((p) => (
               <a
                 key={p.name}
                 href={p.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-display uppercase tracking-[0.2em] text-lg text-brand-white/70 hover:text-brand-yellow transition-colors"
+                className="font-display uppercase tracking-[0.2em] text-lg text-brand-white/70 hover:text-brand-yellow transition-colors whitespace-nowrap"
               >
                 {p.name}
               </a>
             ))}
-          </div>
+          </Marquee>
           <p className="mt-6 text-brand-white/30 text-xs max-w-md mx-auto">
             Proud to partner with organizations growing flag football worldwide.
           </p>
