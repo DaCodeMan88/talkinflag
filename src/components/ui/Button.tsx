@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { ButtonHTMLAttributes, forwardRef, useCallback, useEffect, useRef } from "react";
 
