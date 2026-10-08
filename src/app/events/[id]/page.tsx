@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { eventPath, eventUrl, isPastEvent, isUuid } from "@/lib/events/path";
+import { formatDateRange } from "@/lib/events/dates";
 
 export const revalidate = 3600;
 
@@ -41,25 +42,6 @@ const LEVEL_LABELS: Record<string, string> = {
   international: "International",
   olympics: "Olympics / World Games",
 };
-
-function formatDateRange(start: string, end?: string | null): string {
-  const fmt = (d: string, opts: Intl.DateTimeFormatOptions) =>
-    new Date(d + "T12:00:00Z").toLocaleDateString("en-US", {
-      ...opts,
-      timeZone: "UTC",
-    });
-
-  if (!end || end === start) {
-    return fmt(start, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  }
-  // Same month → "June 14 – 16, 2026"
-  const s = new Date(start + "T12:00:00Z");
-  const e = new Date(end + "T12:00:00Z");
-  if (s.getUTCFullYear() === e.getUTCFullYear() && s.getUTCMonth() === e.getUTCMonth()) {
-    return `${fmt(start, { month: "long", day: "numeric" })} – ${fmt(end, { day: "numeric", year: "numeric" })}`;
-  }
-  return `${fmt(start, { month: "long", day: "numeric", year: "numeric" })} – ${fmt(end, { month: "long", day: "numeric", year: "numeric" })}`;
-}
 
 function isSafeUrl(url: string | null | undefined): boolean {
   return !!(url && (url.startsWith("https://") || url.startsWith("http://")));
