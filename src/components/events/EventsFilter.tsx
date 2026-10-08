@@ -3,9 +3,11 @@ import { useState, useMemo } from "react";
 import { EventCard } from "./EventCard";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
+import { eventPath } from "@/lib/events/path";
 
 interface Event {
   id: string;
+  slug?: string | null;
   title: string;
   start_date: string;
   end_date?: string | null;
@@ -126,7 +128,7 @@ export function EventsFilter({ events }: { events: Event[] }) {
                 >
                   {/* Full-card internal link */}
                   <Link
-                    href={`/events/${event.id}`}
+                    href={eventPath(event)}
                     className="absolute inset-0 z-0"
                     aria-label={`View details for ${event.title}`}
                   />

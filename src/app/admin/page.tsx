@@ -131,6 +131,13 @@ export default async function AdminHomePage({
       badge: liveReels === null ? "Not set up" : `${liveReels} live`,
     },
     {
+      label: "Partners",
+      description: "The partner strip on the homepage",
+      href: "/admin/partners",
+      count: 0,
+      badge: "Edit",
+    },
+    {
       label: "Verifications",
       description: "Player stat verification requests",
       href: "/admin/verifications",

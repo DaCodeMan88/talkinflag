@@ -6,6 +6,7 @@ import { GlobeSection } from "@/components/events/GlobeSection";
 import { buildMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Suspense } from "react";
+import { eventUrl } from "@/lib/events/path";
 
 export const revalidate = 3600;
 
@@ -29,7 +30,7 @@ export default async function EventsPage() {
       .limit(50),
     supabase
       .from("events")
-      .select("id, title, start_date, end_date, city, country, country_code, level, event_type, website_url, is_featured")
+      .select("id, slug, title, start_date, end_date, city, country, country_code, level, event_type, website_url, is_featured")
       .eq("is_approved", true)
       .lt("start_date", today)
       .order("start_date", { ascending: false })
@@ -58,7 +59,7 @@ export default async function EventsPage() {
           "@type": "ListItem",
           "position": i + 1,
           "name": e.title,
-          "url": `https://talkinflag.com/events/${e.id}`,
+          "url": eventUrl(e),
         })),
       }
     : null;

@@ -28,7 +28,7 @@ export async function addEventResult(eventId: string, formData: FormData) {
   if (error) throw new Error(error.message);
 
   revalidatePath(`/admin/events/${eventId}/results`);
-  revalidatePath(`/events/${eventId}`);
+  revalidatePath("/events/[id]", "page");
   revalidatePath("/results");
 }
 
@@ -40,6 +40,6 @@ export async function deleteEventResult(id: string, eventId: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath(`/admin/events/${eventId}/results`);
-  revalidatePath(`/events/${eventId}`);
+  revalidatePath("/events/[id]", "page");
   revalidatePath("/results");
 }

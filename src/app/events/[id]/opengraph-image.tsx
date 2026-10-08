@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@supabase/supabase-js";
+import { isUuid } from "@/lib/events/path";
 
 export const runtime = "edge";
 export const alt = "Flag Football Event | Talkin Flag";
@@ -41,7 +42,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
     const { data } = await supabase
       .from("events")
       .select("title, city, country, start_date, end_date, level")
-      .eq("id", id)
+      .eq(isUuid(id) ? "id" : "slug", id)
       .eq("is_approved", true)
       .single();
 

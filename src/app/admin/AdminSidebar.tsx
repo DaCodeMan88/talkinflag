@@ -39,6 +39,7 @@ const NAV: { group: string; items: { label: string; href: string }[] }[] = [
     items: [
       { label: "Blog", href: "/admin/blog" },
       { label: "Media", href: "/admin/media" },
+      { label: "Partners", href: "/admin/partners" },
     ],
   },
   {
