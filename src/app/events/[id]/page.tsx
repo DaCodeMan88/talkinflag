@@ -1,9 +1,10 @@
 import { safeJsonLd } from "@/lib/jsonld";
 import { createServerClient } from "@/lib/supabase";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import { eventPath, eventUrl, isPastEvent, isUuid } from "@/lib/events/path";
 
 export const revalidate = 3600;
 
@@ -13,6 +14,7 @@ export const revalidate = 3600;
 
 interface EventRow {
   id: string;
+  slug?: string | null;
   title: string;
   description?: string | null;
   start_date: string;
@@ -70,7 +72,10 @@ function countryFlag(code: string | null | undefined): string {
 }
 
 // ---------------------------------------------------------------------------
-// generateStaticParams — build all upcoming event pages at deploy time
+// generateStaticParams — build every approved event page at deploy time.
+// Past events are included on purpose: a finished event becomes its results
+// page, and the European Championship page was the site's top Google page the
+// month after it ended (Search Console, September 2026).
 // ---------------------------------------------------------------------------
 
 export async function generateStaticParams(): Promise<{ id: string }[]> {
@@ -78,13 +83,24 @@ export async function generateStaticParams(): Promise<{ id: string }[]> {
     const supabase = createServerClient();
     const { data } = await supabase
       .from("events")
-      .select("id")
-      .eq("is_approved", true)
-      .gte("start_date", new Date().toISOString().split("T")[0]);
-    return (data ?? []).map((row) => ({ id: row.id as string }));
+      .select("id, slug")
+      .eq("is_approved", true);
+    return (data ?? []).map((row) => ({ id: (row.slug as string | null) || (row.id as string) }));
   } catch {
     return [];
   }
+}
+
+/** The route param is a slug, or a legacy UUID from links shared before migration 028. */
+async function loadEvent<T>(param: string, columns: string): Promise<T | null> {
+  const supabase = createServerClient();
+  const { data } = await supabase
+    .from("events")
+    .select(columns)
+    .eq(isUuid(param) ? "id" : "slug", param)
+    .eq("is_approved", true)
+    .maybeSingle();
+  return (data as T | null) ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -97,13 +113,10 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const supabase = createServerClient();
-  const { data: event } = await supabase
-    .from("events")
-    .select("title, description, city, country, start_date, level")
-    .eq("id", id)
-    .eq("is_approved", true)
-    .single();
+  const event = await loadEvent<{
+    id: string; slug: string | null; title: string; description: string | null;
+    city: string | null; country: string | null; start_date: string; level: string | null;
+  }>(id, "id, slug, title, description, city, country, start_date, level");
 
   if (!event) return { title: "Event Not Found | Talkin Flag" };
 
@@ -124,7 +137,7 @@ export async function generateMetadata({
   const base = buildMetadata({
     title: event.title,
     description,
-    path: `/events/${id}`,
+    path: eventPath(event),
   });
   if (base.openGraph) delete (base.openGraph as Record<string, unknown>).images;
   if (base.twitter) delete (base.twitter as Record<string, unknown>).images;
@@ -140,23 +153,21 @@ export default async function EventDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: param } = await params;
   const supabase = createServerClient();
 
-  const { data: event } = await supabase
-    .from("events")
-    .select("*")
-    .eq("id", id)
-    .eq("is_approved", true)
-    .single() as { data: EventRow | null };
-
+  const event = await loadEvent<EventRow>(param, "*");
   if (!event) notFound();
+  // Old /events/<uuid> links (including the ones Google already has) move
+  // permanently to the readable address.
+  if (event.slug && param !== event.slug) permanentRedirect(eventPath(event));
+  const id = event.id;
 
   // Fetch upcoming events to show as "More Events" (same country or same level, excluding current)
   const today = new Date().toISOString().split("T")[0];
   let moreQuery = supabase
     .from("events")
-    .select("id, title, start_date, end_date, city, country, level, event_type, website_url, is_featured")
+    .select("id, slug, title, start_date, end_date, city, country, level, event_type, website_url, is_featured")
     .eq("is_approved", true)
     .gte("start_date", today)
     .neq("id", id)
@@ -191,8 +202,9 @@ export default async function EventDetailPage({
     notes: string | null;
   }[];
 
-  // Is this event in the past?
-  const isPast = event.start_date < today;
+  // Is this event over? (Uses the last day, so a multi-day event stays
+  // "upcoming" until it actually finishes.)
+  const isPast = isPastEvent(event, today);
 
   const location = [event.city, event.country].filter(Boolean).join(", ");
   const levelLabel = event.level ? (LEVEL_LABELS[event.level] ?? event.level.replaceAll("_", " ")) : null;
@@ -209,7 +221,7 @@ export default async function EventDetailPage({
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     "name": event.title,
-    "url": `https://talkinflag.com/events/${event.id}`,
+    "url": eventUrl(event),
     "startDate": startIso,
     "endDate": endIso,
     "eventStatus": "https://schema.org/EventScheduled",
@@ -239,7 +251,7 @@ export default async function EventDetailPage({
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talkinflag.com" },
       { "@type": "ListItem", "position": 2, "name": "Events", "item": "https://talkinflag.com/events" },
-      { "@type": "ListItem", "position": 3, "name": event.title, "item": `https://talkinflag.com/events/${event.id}` },
+      { "@type": "ListItem", "position": 3, "name": event.title, "item": eventUrl(event) },
     ],
   };
 
@@ -267,7 +279,12 @@ export default async function EventDetailPage({
 
         {/* Badges */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          {event.is_featured && (
+          {isPast && (
+            <span className="bg-brand-white/10 text-brand-white/70 font-display text-xs px-3 py-1 uppercase tracking-widest">
+              Completed
+            </span>
+          )}
+          {event.is_featured && !isPast && (
             <span className="bg-brand-yellow text-brand-black font-display text-xs px-3 py-1 uppercase tracking-widest">
               Featured
             </span>
@@ -330,7 +347,7 @@ export default async function EventDetailPage({
             <a
               href={`https://x.com/intent/tweet?text=${encodeURIComponent(
                 `${event.title} — flag football event via @TalkinFlagShow 🏈`
-              )}&url=${encodeURIComponent(`https://talkinflag.com/events/${event.id}`)}`}
+              )}&url=${encodeURIComponent(eventUrl(event))}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 flex items-center justify-center gap-2 w-full border border-brand-white/20 text-brand-white/60 font-display text-xs uppercase tracking-widest px-6 py-3 hover:border-brand-white/40 hover:text-brand-white transition-colors"
@@ -398,7 +415,7 @@ export default async function EventDetailPage({
                 return (
                   <Link
                     key={e.id}
-                    href={`/events/${e.id}`}
+                    href={eventPath(e)}
                     className="flex items-center gap-4 py-4 border-b border-brand-white/5 group hover:bg-brand-white/2 -mx-2 px-2 transition-colors"
                     aria-label={`View details for ${e.title}`}
                   >

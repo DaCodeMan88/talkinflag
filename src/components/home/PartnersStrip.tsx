@@ -1,15 +1,12 @@
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Marquee } from "@/components/ui/Marquee";
+import { getLivePartners } from "@/lib/partners";
 
-// Confirmed partners (2026-07-07).
-const PARTNERS: { name: string; url: string }[] = [
-  { name: "Flag Football Finder", url: "https://flagfootballfinder.com" },
-  { name: "Athleads", url: "https://athleads.com" },
-  { name: "Flag Football Nation", url: "https://www.instagram.com/flagfootballnationofficial/" },
-  { name: "Women's College Flag Football", url: "https://www.womenscollegeflagfootball.com" },
-];
+// Partners are managed at /admin/partners (table `partners`, migration 028).
+export async function PartnersStrip() {
+  const partners = await getLivePartners();
+  if (partners.length === 0) return null;
 
-export function PartnersStrip() {
   return (
     <section className="bg-brand-black border-t border-brand-white/5 py-16 px-6" aria-label="Partners">
       <div className="max-w-5xl mx-auto text-center">
@@ -18,7 +15,7 @@ export function PartnersStrip() {
             Our Partners
           </p>
           <Marquee durationSeconds={24}>
-            {PARTNERS.map((p) => (
+            {partners.map((p) => (
               <a
                 key={p.name}
                 href={p.url}

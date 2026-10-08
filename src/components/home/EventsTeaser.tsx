@@ -1,5 +1,6 @@
 import { createServerClient } from "@/lib/supabase";
 import Link from "next/link";
+import { eventPath } from "@/lib/events/path";
 // Each row is now a link to the internal /events/[id] detail page
 
 interface TeaserEvent {
@@ -29,7 +30,7 @@ export async function EventsTeaser() {
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, title, start_date, end_date, city, country, level, event_type, website_url, is_featured")
+    .select("id, slug, title, start_date, end_date, city, country, level, event_type, website_url, is_featured")
     .gte("start_date", today)
     .order("start_date", { ascending: true })
     .limit(3);
@@ -63,7 +64,7 @@ export async function EventsTeaser() {
             return (
               <Link
                 key={event.id}
-                href={`/events/${event.id}`}
+                href={eventPath(event)}
                 className="flex items-center gap-6 py-5 group hover:bg-brand-white/2 -mx-4 px-4 transition-colors"
                 aria-label={`View details for ${event.title}`}
               >

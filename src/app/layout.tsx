@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Anton, Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -47,6 +48,12 @@ export const metadata: Metadata = {
   },
 };
 
+// Umami web analytics (self-hosted, cookieless). Off until both variables are
+// set in Vercel. data-domains stops preview deploys and localhost from being
+// counted as real visits.
+const UMAMI_SRC = process.env.NEXT_PUBLIC_UMAMI_SRC;
+const UMAMI_WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${anton.variable} ${inter.variable}`}>
@@ -64,6 +71,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
         </PlayerProvider>
         <FloatingCTA />
+        {UMAMI_SRC && UMAMI_WEBSITE_ID && (
+          <Script
+            src={UMAMI_SRC}
+            data-website-id={UMAMI_WEBSITE_ID}
+            data-domains="talkinflag.com,www.talkinflag.com"
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );

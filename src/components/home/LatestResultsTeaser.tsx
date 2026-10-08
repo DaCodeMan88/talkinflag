@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/eval/admin-client";
+import { eventPath } from "@/lib/events/path";
 
 type ResultEvent = {
   id: string;
@@ -28,7 +29,7 @@ export async function LatestResultsTeaser() {
   // Get last 3 past events that have results
   const { data: raw } = await db
     .from("events")
-    .select("id, title, start_date, city, country, level, event_results(place, team_name)")
+    .select("id, slug, title, start_date, city, country, level, event_results(place, team_name)")
     .lt("start_date", today)
     .order("start_date", { ascending: false })
     .limit(10);
@@ -78,7 +79,7 @@ export async function LatestResultsTeaser() {
           {withResults.map((e) => (
             <Link
               key={e.id}
-              href={`/events/${e.id}`}
+              href={eventPath(e)}
               className="group flex items-center justify-between gap-4 bg-[#0d0d0d] border border-white/10 hover:border-[#FDDD58]/40 transition-colors px-5 py-4"
             >
               <div className="min-w-0 flex-1">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { ResultsForm } from "./ResultsForm";
+import { eventPath } from "@/lib/events/path";
 
 type Result = {
   id: string;
@@ -23,7 +24,7 @@ export default async function AdminEventResultsPage({
   const supabase = createAdminClient();
 
   const [{ data: event }, { data: resultsRaw }] = await Promise.all([
-    supabase.from("events").select("id, title, start_date").eq("id", id).single(),
+    supabase.from("events").select("id, slug, title, start_date").eq("id", id).single(),
     supabase
       .from("event_results")
       .select("id, place, team_name, division, score, notes")
@@ -42,7 +43,7 @@ export default async function AdminEventResultsPage({
           ← Events
         </Link>
         <span className="text-white/10">/</span>
-        <Link href={`/events/${id}`} className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors">
+        <Link href={eventPath(event ?? { id })} className="text-white/30 hover:text-white/60 text-xs font-display uppercase tracking-widest transition-colors">
           Event
         </Link>
       </div>

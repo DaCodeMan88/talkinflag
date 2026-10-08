@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { buildMetadata } from "@/lib/seo";
+import { eventPath } from "@/lib/events/path";
 
 export const revalidate = 3600;
 
@@ -51,7 +52,7 @@ export default async function ResultsPage({
   // Upcoming events (future-dated, no results required)
   const { data: upcomingRaw } = await db
     .from("events")
-    .select("id, title, start_date, end_date, city, country, level, event_type, website_url")
+    .select("id, slug, title, start_date, end_date, city, country, level, event_type, website_url")
     .eq("is_approved", true)
     .gte("start_date", today)
     .order("start_date", { ascending: true })
@@ -61,7 +62,7 @@ export default async function ResultsPage({
   // Past events with results
   let query = db
     .from("events")
-    .select("id, title, start_date, city, country, country_code, level, event_results(id, place, team_name)")
+    .select("id, slug, title, start_date, city, country, country_code, level, event_results(id, place, team_name)")
     .eq("is_approved", true)
     .lt("start_date", today)
     .order("start_date", { ascending: false });
@@ -229,7 +230,7 @@ export default async function ResultsPage({
             {filtered.map((e) => (
               <Link
                 key={e.id}
-                href={`/events/${e.id}`}
+                href={eventPath(e)}
                 className="group flex items-center justify-between gap-4 bg-[#0d0d0d] border border-white/10 hover:border-[#FDDD58]/40 transition-colors px-5 py-4"
               >
                 <div className="min-w-0 flex-1">

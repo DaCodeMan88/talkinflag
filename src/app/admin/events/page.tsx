@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/admin";
 import { createAdminClient } from "@/lib/eval/admin-client";
+import Link from "next/link";
 import EventApproveRejectButtons from "./EventApproveRejectButtons";
+import { eventPath, isPastEvent } from "@/lib/events/path";
 
-export const metadata = { title: "Event Submissions | Admin" };
+export const metadata = { title: "Events | Admin" };
 
 const LEVEL_LABELS: Record<string, string> = {
   youth: "Youth",
@@ -42,11 +44,22 @@ export default async function AdminEventsPage() {
 
   const pending = (events ?? []) as EventRow[];
 
+  const { data: approvedRaw } = await supabase
+    .from("events")
+    .select("id, slug, title, start_date, end_date, city, country, event_results(count)")
+    .eq("is_approved", true)
+    .order("start_date", { ascending: false });
+  const approved = (approvedRaw ?? []) as {
+    id: string; slug: string | null; title: string; start_date: string; end_date: string | null;
+    city: string | null; country: string | null; event_results: { count: number }[];
+  }[];
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="min-h-screen bg-brand-black pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="border-l-4 border-brand-yellow pl-6 mb-10">
-          <h1 className="font-display text-4xl uppercase text-brand-white leading-none">Event Submissions</h1>
+          <h1 className="font-display text-4xl uppercase text-brand-white leading-none">Events</h1>
           <p className="text-brand-white/40 mt-2 text-sm">{pending.length} pending review</p>
         </div>
 
@@ -113,6 +126,55 @@ export default async function AdminEventsPage() {
                 </p>
 
                 <EventApproveRejectButtons eventId={ev.id} canEmail={!!ev.submitter_email} />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="border-l-4 border-brand-yellow pl-6 mb-6">
+          <h2 className="font-display text-2xl uppercase text-brand-white leading-none">All Events</h2>
+          <p className="text-brand-white/40 mt-2 text-sm">
+            {approved.length} live. Edit details (location, dates, description) or add results once an event is over.
+          </p>
+        </div>
+        <div className="divide-y divide-brand-white/5 border border-brand-white/10">
+          {approved.map((ev) => {
+            const past = isPastEvent(ev, today);
+            const resultCount = ev.event_results?.[0]?.count ?? 0;
+            const location = [ev.city, ev.country].filter(Boolean).join(", ");
+            const needsLocation = !ev.city || /^tbd$/i.test(ev.city.trim());
+            return (
+              <div key={ev.id} className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-brand-white text-sm font-semibold truncate">{ev.title}</p>
+                  <p className="text-brand-white/40 text-xs">
+                    {new Date(ev.start_date + "T12:00:00Z").toLocaleDateString("en-US", {
+                      month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
+                    })}
+                    {location && ` · ${location}`}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  {needsLocation && (
+                    <span className="text-amber-300 text-[10px] font-display uppercase tracking-widest border border-amber-300/40 px-2 py-0.5">
+                      Location TBD
+                    </span>
+                  )}
+                  {past && resultCount === 0 && (
+                    <span className="text-amber-300 text-[10px] font-display uppercase tracking-widest border border-amber-300/40 px-2 py-0.5">
+                      Needs results
+                    </span>
+                  )}
+                  <Link href={`/admin/events/${ev.id}/edit`} className="text-brand-yellow text-xs font-display uppercase tracking-widest hover:underline">
+                    Edit
+                  </Link>
+                  <Link href={`/admin/events/${ev.id}/results`} className="text-brand-white/60 text-xs font-display uppercase tracking-widest hover:text-brand-yellow">
+                    Results{resultCount > 0 ? ` (${resultCount})` : ""}
+                  </Link>
+                  <Link href={eventPath(ev)} className="text-brand-white/40 text-xs font-display uppercase tracking-widest hover:text-brand-white">
+                    View ↗
+                  </Link>
+                </div>
               </div>
             );
           })}

@@ -4,6 +4,7 @@ import { createServerClient } from "@/lib/supabase";
 import { staticPosts } from "@/lib/static-posts";
 import { getPublishedDbPosts } from "@/lib/blog/posts";
 import type { Player } from "@/types/player";
+import { eventPath, isPastEvent } from "@/lib/events/path";
 
 const BASE_URL = "https://talkinflag.com";
 
@@ -77,11 +78,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const [playersResult, eventsResult, coachesResult] = await Promise.all([
       supabase.from("players").select("id, updated_at").eq("is_verified", true).eq("is_approved", true),
-      supabase.from("events").select("id, start_date").eq("is_approved", true).gte("start_date", today),
+      // Past events stay in: a finished event is its results page, and it is
+      // often the most-searched page right after it ends.
+      supabase.from("events").select("id, slug, start_date, end_date").eq("is_approved", true),
       supabase.from("coaches").select("id, updated_at").eq("is_verified", true),
     ]);
     const players = playersResult.data as Pick<Player, "id" | "updated_at">[] | null;
-    const events = eventsResult.data as { id: string; start_date: string }[] | null;
+    const events = eventsResult.data as { id: string; slug: string | null; start_date: string; end_date: string | null }[] | null;
     const coaches = coachesResult.data as { id: string; updated_at?: string }[] | null;
 
     if (players) {
@@ -94,12 +97,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     if (events) {
-      eventPages = events.map((e) => ({
-        url: `${BASE_URL}/events/${e.id}`,
-        lastModified: new Date(e.start_date),
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      }));
+      eventPages = events.map((e) => {
+        const past = isPastEvent(e, today);
+        return {
+          url: `${BASE_URL}${eventPath(e)}`,
+          lastModified: new Date(e.start_date),
+          changeFrequency: past ? ("monthly" as const) : ("weekly" as const),
+          priority: past ? 0.5 : 0.7,
+        };
+      });
     }
 
     if (coaches) {
