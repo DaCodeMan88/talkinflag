@@ -5,7 +5,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = {
   ...buildMetadata({

@@ -5,7 +5,7 @@ import { createServerClient } from "@/lib/supabase";
 import { COLLEGE_COMMITS } from "@/lib/world-rankings";
 import Link from "next/link";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Teams | Talkin Flag — World & College Flag Football",

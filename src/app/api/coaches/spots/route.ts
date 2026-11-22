@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { refreshRecruiting } from "@/lib/cache/refresh";
 
 const VALID_POSITIONS = ["QB", "WR", "DB", "Rusher"];
 
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  refreshRecruiting();
   return NextResponse.json({ ok: true });
 }
 
@@ -54,5 +56,6 @@ export async function DELETE(req: NextRequest) {
     .eq("id", id)
     .eq("coach_id", coach.id);
 
+  refreshRecruiting();
   return NextResponse.json({ ok: true });
 }

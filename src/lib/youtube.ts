@@ -94,7 +94,7 @@ export async function getEpisodeById(id: string): Promise<Episode | null> {
     url.searchParams.set("id", id);
     url.searchParams.set("part", "snippet");
 
-    const res = await fetch(url.toString(), { next: { revalidate: 3600 } });
+    const res = await fetch(url.toString(), { next: { revalidate: 21600 } /* 6 h: new episodes show the same day without hourly page rebuilds */ });
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -142,7 +142,7 @@ async function fetchDurations(ids: string[]): Promise<Map<string, number>> {
     vidUrl.searchParams.set("key", API_KEY!);
     vidUrl.searchParams.set("id", ids.slice(0, 50).join(","));
     vidUrl.searchParams.set("part", "contentDetails");
-    const vres = await fetch(vidUrl.toString(), { next: { revalidate: 3600 } });
+    const vres = await fetch(vidUrl.toString(), { next: { revalidate: 21600 } /* 6 h: new episodes show the same day without hourly page rebuilds */ });
     if (!vres.ok) {
       console.error("YouTube videos API error:", vres.status);
       return new Map();
@@ -169,7 +169,7 @@ async function fetchPlaylistVideos(playlistId: string, maxResults: number): Prom
     listUrl.searchParams.set("playlistId", playlistId);
     listUrl.searchParams.set("maxResults", String(Math.min(maxResults, 50)));
     listUrl.searchParams.set("part", "snippet,contentDetails");
-    const res = await fetch(listUrl.toString(), { next: { revalidate: 3600 } });
+    const res = await fetch(listUrl.toString(), { next: { revalidate: 21600 } /* 6 h: new episodes show the same day without hourly page rebuilds */ });
     if (!res.ok) {
       console.error("YouTube playlistItems API error:", res.status);
       return [];
@@ -238,7 +238,7 @@ export async function getEpisodes(maxResults = 50): Promise<Episode[]> {
     searchUrl.searchParams.set("part", "snippet");
 
     const res = await fetch(searchUrl.toString(), {
-      next: { revalidate: 3600 },
+      next: { revalidate: 21600 } /* 6 h: new episodes show the same day without hourly page rebuilds */,
     });
 
     if (!res.ok) {

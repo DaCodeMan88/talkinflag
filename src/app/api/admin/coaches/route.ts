@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { isAdminEmail } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
+import { refreshCoaches } from "@/lib/cache/refresh";
 
 export async function PATCH(req: NextRequest) {
   const supabase = await createClient();
@@ -81,5 +82,6 @@ export async function PATCH(req: NextRequest) {
     });
   }
 
+  refreshCoaches();
   return NextResponse.json({ ok: true });
 }

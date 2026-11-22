@@ -3,6 +3,7 @@ import { createServerClient } from "@/lib/supabase";
 import { hasDisplayableValue } from "@/lib/profile-visibility";
 import { sanitizeStatsPayload, shouldResetVerification, sanitizeIdentityPayload, sanitizeGradYear } from "@/lib/profile-edit";
 import { NextRequest, NextResponse } from "next/server";
+import { refreshPlayer } from "@/lib/cache/refresh";
 
 export async function PATCH(
   req: NextRequest,
@@ -98,5 +99,6 @@ export async function PATCH(
     return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 
+  refreshPlayer(id);
   return NextResponse.json({ ok: true });
 }

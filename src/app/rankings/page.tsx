@@ -5,7 +5,7 @@ import { DIMENSION_LABELS, type DimensionKey } from "@/lib/eval/dimensions";
 import { cohortForLevel, COHORT_LABELS } from "@/lib/rankings/cohort";
 import { RankingsCohortTable } from "@/components/rankings/RankingsCohortTable";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "TF Rankings | Talkin Flag — Community-Weighted Player Rankings",

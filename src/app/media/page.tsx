@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getLiveInstagramPosts } from "@/lib/media/instagram";
 
 // The reel grid is curated at /admin/media and re-read at most every 5 minutes.
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Media & Gallery | Talkin Flag",

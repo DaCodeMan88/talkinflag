@@ -8,7 +8,7 @@ import { eventPath, isPastEvent } from "@/lib/events/path";
 
 const BASE_URL = "https://talkinflag.com";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
