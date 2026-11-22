@@ -1,7 +1,7 @@
 import { staticPosts } from "@/lib/static-posts";
 import { getPublishedDbPosts } from "@/lib/blog/posts";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 /**
  * GEO discoverability: a plain-text list of published blog post URLs for AI

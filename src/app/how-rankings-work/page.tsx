@@ -4,7 +4,7 @@ import { createServerClient } from "@/lib/supabase";
 import Link from "next/link";
 import { DIMENSION_LABELS, type DimensionKey } from "@/lib/eval/dimensions";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "How Rankings Work | Talkin Flag",

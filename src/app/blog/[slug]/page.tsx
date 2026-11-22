@@ -13,7 +13,7 @@ import { RichText } from "@/components/blog/RichText";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { YouTubeFacade } from "@/components/episodes/YouTubeFacade";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export async function generateStaticParams() {
   const slugs = new Set<string>();

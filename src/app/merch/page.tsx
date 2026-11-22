@@ -3,7 +3,7 @@ import { getProducts } from "@/lib/printful";
 import { ProductCard } from "@/components/merch/ProductCard";
 import { buildMetadata } from "@/lib/seo";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Merch | Talkin Flag — Official Store",

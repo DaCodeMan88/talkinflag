@@ -7,7 +7,7 @@ import { SpotifyPlayer } from "@/components/episodes/SpotifyPlayer";
 import { buildMetadata } from "@/lib/seo";
 import { Suspense } from "react";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 // Spotify show ID for the audio player. Set NEXT_PUBLIC_SPOTIFY_SHOW_ID in Vercel
 // (or hard-code the ID here) to activate the "Listen on Spotify" section below.

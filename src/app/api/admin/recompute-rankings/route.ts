@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminEmail } from "@/lib/admin";
 import { runRecompute } from "@/lib/rankings/recompute";
+import { refreshAllPlayers } from "@/lib/cache/refresh";
 
 const CRON_SECRET = process.env.CRON_SECRET ?? "";
 
@@ -15,6 +16,8 @@ async function recompute() {
   if (!result.ok) {
     return NextResponse.json({ error: result.error }, { status: 500 });
   }
+  // New ranks touch every player page and every list; rebuild them on next visit.
+  refreshAllPlayers();
   return NextResponse.json({ ok: true, rankedCount: result.rankedCount });
 }
 

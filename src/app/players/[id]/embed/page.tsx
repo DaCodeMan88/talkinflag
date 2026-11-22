@@ -3,7 +3,7 @@ import { createServerClient } from "@/lib/supabase";
 import { formatHeight, formatWeight } from "@/lib/measurements";
 import { cohortRankLabel } from "@/lib/rankings/cohort";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 type Props = { params: Promise<{ id: string }> };
 

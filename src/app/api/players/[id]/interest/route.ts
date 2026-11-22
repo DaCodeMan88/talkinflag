@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { sendEmail } from "@/lib/email";
+import { refreshPlayer } from "@/lib/cache/refresh";
 
 export async function POST(
   req: NextRequest,
@@ -72,6 +73,7 @@ export async function POST(
     }
   }
 
+  refreshPlayer(id);
   return NextResponse.json({ ok: true });
 }
 
@@ -98,5 +100,6 @@ export async function DELETE(
     .eq("coach_id", coach.id)
     .eq("player_id", id);
 
+  refreshPlayer(id);
   return NextResponse.json({ ok: true });
 }

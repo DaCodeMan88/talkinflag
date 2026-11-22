@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/eval/admin-client";
 import { isAdminEmail } from "@/lib/admin";
 import { kindLabel } from "@/lib/career/kinds";
 import { sendEmail } from "@/lib/email";
+import { refreshAllPlayers, refreshCoaches } from "@/lib/cache/refresh";
 
 export async function PATCH(
   req: NextRequest,
@@ -55,6 +56,10 @@ export async function PATCH(
       .from("players")
       .update({ updated_at: new Date().toISOString() })
       .eq("claimed_by", update.subject_user_id);
+
+    // A career update can change a coach row and a player page; refresh both.
+    refreshAllPlayers();
+    refreshCoaches();
 
     // Notify the member their update is live.
     const { data: userData } = await db.auth.admin.getUserById(update.subject_user_id);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { refreshCoaches } from "@/lib/cache/refresh";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -23,5 +24,6 @@ export async function POST(req: NextRequest) {
     .eq("is_verified", true);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  refreshCoaches();
   return NextResponse.json({ ok: true });
 }

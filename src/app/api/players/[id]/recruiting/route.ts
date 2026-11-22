@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
+import { refreshPlayer } from "@/lib/cache/refresh";
 
 export async function PATCH(
   req: NextRequest,
@@ -39,5 +40,6 @@ export async function PATCH(
   const { error } = await db.from("players").update(update).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  refreshPlayer(id);
   return NextResponse.json({ ok: true });
 }

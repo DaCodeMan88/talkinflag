@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { Player } from "@/types/player";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Players | Talkin Flag — Flag Football Rankings",

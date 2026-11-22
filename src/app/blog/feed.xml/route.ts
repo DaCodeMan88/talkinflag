@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { staticPosts } from "@/lib/static-posts";
 import { getPublishedDbPosts } from "@/lib/blog/posts";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 const SITE_URL = "https://talkinflag.com";
 

@@ -21,7 +21,7 @@ export async function getProducts(): Promise<PrintfulProduct[]> {
   try {
     const res = await fetch(`${PRINTFUL_API}/store/products`, {
       headers: { Authorization: `Bearer ${apiKey}` },
-      next: { revalidate: 3600 },
+      next: { revalidate: 86400 }, // merch changes rarely; one day
     });
     if (!res.ok) return [];
     const data = await res.json();

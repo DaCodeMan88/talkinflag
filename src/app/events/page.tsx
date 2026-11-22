@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { eventUrl } from "@/lib/events/path";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Events | Talkin Flag — Flag Football Calendar",

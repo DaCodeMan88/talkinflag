@@ -5,7 +5,7 @@ import Link from "next/link";
 import RecruitBrowser from "./RecruitBrowser";
 import RosterSpotsBoard from "./RosterSpotsBoard";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Recruiting | Talkin Flag — Flag Football Player Marketplace",

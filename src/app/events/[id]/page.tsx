@@ -7,7 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 import { eventPath, eventUrl, isPastEvent, isUuid } from "@/lib/events/path";
 import { formatDateRange } from "@/lib/events/dates";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 // ---------------------------------------------------------------------------
 // Types

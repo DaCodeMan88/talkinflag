@@ -18,7 +18,7 @@ import { Suspense } from "react";
 import { JoinCTA } from "@/components/home/JoinCTA";
 import { LatestResultsTeaser } from "@/components/home/LatestResultsTeaser";
 
-export const revalidate = 3600;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Talkin Flag | The Global Flag Football Podcast",

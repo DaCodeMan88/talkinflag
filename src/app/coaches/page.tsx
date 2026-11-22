@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 export const metadata = buildMetadata({
   title: "Coaches | Talkin Flag — Flag Football Coaches Directory",

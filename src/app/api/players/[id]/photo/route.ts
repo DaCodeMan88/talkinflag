@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
+import { refreshPlayer } from "@/lib/cache/refresh";
 
 export async function POST(
   req: NextRequest,
@@ -74,5 +75,6 @@ export async function POST(
     return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 
+  refreshPlayer(id);
   return NextResponse.json({ photo_url: photoUrl });
 }

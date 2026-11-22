@@ -3,6 +3,7 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import { isAdminEmail } from "@/lib/admin";
+import { refreshEvents } from "@/lib/cache/refresh";
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => (
@@ -72,5 +73,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  refreshEvents();
   return NextResponse.json({ ok: true });
 }

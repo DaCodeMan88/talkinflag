@@ -21,7 +21,7 @@ import SocialLinks from "@/components/players/SocialLinks";
 import { profileViewerState } from "@/lib/profile/viewer-state";
 import { cohortForLevel, COHORT_LABELS } from "@/lib/rankings/cohort";
 
-export const revalidate = 300;
+export const revalidate = 86400; // one day; edits refresh pages directly (src/lib/cache/refresh.ts)
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

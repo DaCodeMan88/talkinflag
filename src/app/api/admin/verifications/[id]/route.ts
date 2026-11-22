@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/eval/admin-client";
 import { isAdminEmail } from "@/lib/admin";
 import { sendEmail } from "@/lib/email";
+import { refreshPlayer } from "@/lib/cache/refresh";
 
 export async function PATCH(
   req: NextRequest,
@@ -44,6 +45,7 @@ export async function PATCH(
 
     if ((count ?? 0) >= 1) {
       await db.from("players").update({ is_verified: true }).eq("id", playerId);
+      refreshPlayer(playerId);
     }
 
     // Email the player who claimed this profile

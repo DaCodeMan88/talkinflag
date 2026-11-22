@@ -27,15 +27,18 @@ export function Nav() {
   // Close mobile menu on route change
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  // Show the Admin link only to signed-in admins
+  // Show the Admin link only to signed-in admins. Signed-out visitors (and
+  // crawlers) skip the server call entirely: it ran on every page view and
+  // each one spent Vercel server time on a Supabase auth lookup.
   useEffect(() => {
+    if (!signedIn) return;
     let active = true;
     fetch("/api/admin/check")
       .then((r) => (r.ok ? r.json() : { isAdmin: false }))
       .then((d) => { if (active) setIsAdmin(!!d.isAdmin); })
       .catch(() => {});
     return () => { active = false; };
-  }, [pathname]);
+  }, [pathname, signedIn]);
 
   // Sign In vs Dashboard link, based on auth state
   useEffect(() => {
@@ -112,7 +115,7 @@ export function Nav() {
             </div>
 
             <div className="hidden md:flex items-center gap-5">
-              {isAdmin && (
+              {signedIn && isAdmin && (
                 <Link
                   href="/admin"
                   className="font-display text-sm tracking-widest uppercase text-brand-yellow/80 hover:text-brand-yellow transition-colors"
@@ -175,7 +178,7 @@ export function Nav() {
               </Link>
             );
           })}
-          {isAdmin && (
+          {signedIn && isAdmin && (
             <Link
               href="/admin"
               className="block font-display text-xl uppercase tracking-widest text-brand-yellow hover:text-brand-yellow/80 transition-colors"
